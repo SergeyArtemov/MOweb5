@@ -1,0 +1,213 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <style>
+        .korpus0 {
+            position: relative;
+        }
+
+            .korpus0 > div, .korpus0 > input {
+                display: none;
+                min-height: 150px; /* 50px × 3 вкладки */
+            }
+
+            .korpus0 label {
+                position: absolute;
+                right: 0;
+                top: 0;
+                width: 50px;
+                height: 50px;
+                border: 1px solid #aaa;
+                line-height: 50px;
+                text-align: center;
+                cursor: pointer;
+            }
+
+                .korpus0 label:nth-of-type(2) {
+                    top: 51px; /* 50px + 1px border */
+                }
+
+                .korpus0 label:nth-of-type(3) {
+                    top: 102px; /* 50px + 1px border первой вкладки + 1px border второй вкладки */
+                }
+
+            .korpus0 input[type="radio"]:checked + label {
+                border-left: 1px solid #fff;
+            }
+
+            .korpus0 > input:nth-of-type(1):checked ~ div:nth-of-type(1),
+            .korpus0 > input:nth-of-type(2):checked ~ div:nth-of-type(2),
+            .korpus0 > input:nth-of-type(3):checked ~ div:nth-of-type(3) {
+                display: block;
+                padding: 1px 55px 1px 5px;
+                border: 1px solid #aaa;
+            }
+    </style>
+
+
+</head>
+<body>
+    <div class="korpus0">
+        <input type="radio" name="odin" checked="checked" id="vkl1" /><label for="vkl1">1</label>
+        <input type="radio" name="odin" id="vkl2" /><label for="vkl2">2</label>
+        <input type="radio" name="odin" id="vkl3" /><label for="vkl3">3</label>
+        <div>первая вкладка</div>
+        <div>вторая вкладка</div>
+        <div>третья вкладка</div>
+    </div>
+
+
+
+    <style>
+        .tabs {
+            position: relative; /* Относительное позиционирование */
+        }
+
+        .tab, .tab-title {
+            display: inline-block; /* Выстраиваем по горизонтали */
+        }
+
+            .tab input[type="radio"] {
+                display: none;
+            }
+
+        .tab-title {
+            background: lightblue; /* Цвет фона */
+            padding: 3px 3px; /* Поля вокруг текста */
+            border: 1px solid blue; /* Параметры рамки */
+            border-bottom: none; /* Снизу линию убираем */
+            border-top-left-radius: 10px;
+            border-top-right-radius: 5px;
+        }
+
+        .tab-content {
+            position: absolute; /* Абсолютное позиционирование */
+            border: 1px solid blue; /* Параметры рамки */
+            padding: 5px; /* Поля вокруг текста */
+            left: 0; /* Размещаем у левого края */
+            width: calc(100% - 20px); /* Ширина содержимого */
+            display: none; /* Прячем вкладку */
+        }
+
+        .tab :checked + .tab-title {
+            position: relative; /* Относительное позиционирование */
+            background: #fff; /* Цвет фона */
+            top: 1px; /* Сдвигаем вниз */
+            z-index: 1; /* Отображаем поверх содержимого */
+        }
+
+        .tab :checked ~ .tab-content {
+            display: block; /* Показываем активную вкладку */
+        }
+    </style>
+    <div class="tabs">
+        <div class="tab">
+            <input type="radio" id="tab1" name="tab-group" checked>
+            <label for="tab1" class="tab-title">Вкладка 1</label>
+            <section class="tab-content">Один</section>
+        </div>
+        <div class="tab">
+            <input type="radio" id="tab2" name="tab-group">
+            <label for="tab2" class="tab-title">Вкладка 2</label>
+            <section class="tab-content">Два</section>
+        </div>
+        <div class="tab">
+            <input type="radio" id="tab3" name="tab-group">
+            <label for="tab3" class="tab-title">Вкладка 3</label>
+            <section class="tab-content">Три</section>
+        </div>
+    </div>
+
+    <br /><br /><br />
+
+    <style>
+        .treeHTML div {
+            position: relative;
+            padding: 0 0 0 .8em;
+        }
+
+            .treeHTML div:not(:last-child), div:last-child:before {
+                border-left: 1px dashed blue;
+            }
+
+            .treeHTML div:before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: .8em;
+                height: .5em;
+                border-bottom: 1px dashed blue;
+            }
+
+        .treeHTML summary {
+            position: absolute;
+            top: 0;
+            left: 0;
+            cursor: pointer;
+        }
+
+        .treeHTML details summary {
+            outline: none;
+        }
+
+        .treeHTML input {
+            margin: 0;
+            padding: 0;
+        }
+
+        .colorRectangle {
+            display: inline-block;
+            width: 9px;
+            height: 9px;
+            border: 1px solid black;
+            margin: 1px;
+        }
+    </style>
+    <div class="treeHTML">
+        Сайт
+        <div>
+            <input type="checkbox" value="2" />
+            <p class="colorRectangle" style="background-color: red;"></p>ssss
+            <details>
+                <summary></summary>
+                <div>
+                    <input type="checkbox" value="2" />
+                    <p class="colorRectangle" style="background-color: red;"></p>HTML
+                </div>
+                <div>
+                    <input type="checkbox" value="2" />
+                    <p class="colorRectangle" style="background-color: red;"></p>CSS
+                </div>
+                <div>
+                    <input type="checkbox" value="2" />
+                    <p class="colorRectangle" style="background-color: red;"></p>JavaScript
+                </div>
+            </details>
+        </div>
+        <div>
+            Контакты
+            <details>
+                <summary></summary>
+                <div>
+                    HTML
+                    <details>
+                        <summary></summary>
+                        <div>HTML</div>
+                        <div>CSS</div>
+                        <div>JavaScript</div>
+                    </details>
+                </div>
+                <div>CSS</div>
+                <div>JavaScript</div>
+            </details>
+        </div>
+    </div>
+</body>
+</html>

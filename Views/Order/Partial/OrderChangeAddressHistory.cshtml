@@ -1,0 +1,29 @@
+﻿<div>
+    <table style="border-collapse: collapse;" class="table table-condensed">
+        @if (ViewData["ChangeAddressHistory"] != null)
+        {
+            System.Data.DataSet historyDataSet = (System.Data.DataSet)ViewData["ChangeAddressHistory"];
+            <tr style="background-color:#c2e3ff;">
+                @for (int hstr = 0; hstr < historyDataSet.Tables["ChangeAddressHistory"].Columns.Count; hstr++)
+                {
+                    
+                    string [] caption = historyDataSet.Tables["ChangeAddressHistory"].Columns[hstr].Caption.Split(" - ");
+                    <th style="border: 1px solid #8b9cff;"><b>
+                        @(caption[1] != ""? caption[1] : historyDataSet.Tables["ChangeAddressHistory"].Columns[hstr].Caption)
+                    </b></th>                   
+                }
+            </tr>
+            @for (int rows = 0; rows < historyDataSet.Tables["ChangeAddressHistory"].Rows.Count; rows++)
+            {
+                <tr ondblclick="showAddressOnMap(@historyDataSet.Tables["ChangeAddressHistory"].Rows[rows]["int - ID адреса"])">
+                @for (int cols = 0; cols < historyDataSet.Tables["ChangeAddressHistory"].Columns.Count; cols++)
+                {
+                    <td style="border: 1px solid #8b9cff;">
+                        @historyDataSet.Tables["ChangeAddressHistory"].Rows[rows].ItemArray[cols]
+                    </td>
+                }
+                </tr>
+            }
+        }
+    </table>
+</div>

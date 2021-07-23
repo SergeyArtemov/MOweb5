@@ -1,0 +1,248 @@
+﻿@model MOUserClasses.MOUser;
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>MOUserForm</title>
+
+</head>
+<body>
+    <script src="/js/md5Unit.js"></script>
+
+
+
+    <h1>@Model.App.CurrentUser.Login </h1>
+    <br />
+    <br />
+
+
+    <form id="user_form" asp-action="MOUserFormOk" method="post" name="user_form">
+        <input type="text" id="AccountId" value="@Model.AccountId" asp-for="AccountId" hidden /> <br />
+
+        <label>Фамилия</label>
+        <input type="text" id="Surname" value="@Model.Surname" asp-for="Surname" /> <br />
+
+        <label>Имя</label>
+        <input type="text" id="Name" value="@Model.Name" asp-for="Name" /> <br />
+
+        <label>АРМ</label>
+        <input type="date" id="DateARM" value="@Model.DateARM" asp-for="DateARM" />
+
+        <select id="cbARMTypeList" value="@Model.ARMTypeId" asp-for="ARMTypeId">
+            @for (int i = 0; i < Model.ARMTypeList.Count; i++)
+            {
+                @if (Model.ARMTypeId == @Model.ARMTypeList[i].id)
+                {
+                    <option value="@Model.ARMTypeList[i].id" selected> @Model.ARMTypeList[i].Name </option>
+                }
+                else
+                {
+                    <option value="@Model.ARMTypeList[i].id"> @Model.ARMTypeList[i].Name </option>
+                }
+            }
+        </select>
+        <br />
+
+
+        <label>Login</label>
+        <input type="text" id="Login" value="@Model.Login" asp-for="Login" /> <br />
+
+        <label>Филиал</label>
+        <select id="Filial" value="@Model.Filial" asp-for="Filial">
+            @for (int i = 0; i < Model.Filials.Count; i++)
+            {
+                @if (Model.Filial == Model.Filials[i].id)
+                {
+                    <option value="@Model.Filials[i].id" selected> @Model.Filials[i].Name </option>
+                }
+                else
+                {
+                    <option value="@Model.Filials[i].id"> @Model.Filials[i].Name </option>
+                }
+            }
+        </select>
+        <br />
+
+
+        <input id="ChBoxSave" type="checkbox" checked="@(!(Model.FiredDate == default))" value="Model.ChBoxSave" />Уволен c
+        <input type="date" id="FiredDate" value="@Model.FiredDate" asp-for="FiredDate" /> <br />
+
+        <label>Пароль</label>
+        <input type="password" id="pwd" value="" /> <br />
+
+        <input type="text" id="md5_pass" value="@Model.md5_pass" asp-for="md5_pass" hidden /> <br />
+
+        <label>Имя в нотификациях</label>
+        <input type="text" id="NameForTransaction" value="@Model.NameForTransaction" asp-for="NameForTransaction" /> <br />
+
+        <label>Логин CallOCall</label>
+        <select id="CallOCallUserId" value="@Model.CallOCallUserId" asp-for="CallOCallUserId">
+            @for (int i = 0; i < Model.Call_O_CallLogins.Count; i++)
+            {
+                @if (Model.CallOCallUserId == Model.Call_O_CallLogins[i].id)
+                {
+                    <option value="@Model.Call_O_CallLogins[i].id" selected> @Model.Call_O_CallLogins[i].Name </option>
+                }
+                else
+                {
+                    <option value="@Model.Call_O_CallLogins[i].id"> @Model.Call_O_CallLogins[i].Name </option>
+                }
+            }
+        </select>
+        <br />
+
+        <label>Логин Webim</label>
+        <select id="WebimOperatorId" value="@Model.WebimOperatorId" asp-for="WebimOperatorId">
+            @for (int i = 0; i < Model.WebimLogins.Count; i++)
+            {
+                @if (Model.WebimOperatorId == Model.WebimLogins[i].id)
+                {
+                    <option value="@Model.WebimLogins[i].id" selected> @Model.WebimLogins[i].Name </option>
+                }
+                else
+                {
+                    <option value="@Model.WebimLogins[i].id"> @Model.WebimLogins[i].Name </option>
+                }
+            }
+        </select>
+        <br />
+
+        <label>Логин Chatra</label>
+        <select id="ChatraId" value="@Model.ChatraId" asp-for="ChatraId">
+            @for (int i = 0; i < Model.ChatraLogins.Count; i++)
+            {
+                @if (Model.ChatraId == Model.ChatraLogins[i].Name)
+                {
+                    <option value="@Model.ChatraLogins[i].Name" selected> @Model.ChatraLogins[i].Name </option>
+                }
+                else
+                {
+                    <option value="@Model.ChatraLogins[i].Name"> @Model.ChatraLogins[i].Name </option>
+                }
+            }
+        </select>
+        <br />
+
+        <label>Логин Blinger</label>
+        <select id="ChatraId" value="@Model.BlingerId" asp-for="BlingerId">
+            @for (int i = 0; i < Model.BlingerLogins.Count; i++)
+            {
+                @if (Model.BlingerId == Model.BlingerLogins[i].id)
+                {
+                    <option value="@Model.BlingerLogins[i].id" selected> @Model.BlingerLogins[i].Name </option>
+                }
+                else
+                {
+                    <option value="@Model.BlingerLogins[i].id"> @Model.BlingerLogins[i].Name </option>
+                }
+            }
+        </select>
+        <br />
+
+        <label>Табельный номер</label>
+        <select id="TabNo" value="@Model.BlingerId" asp-for="TabNo">
+            @for (int i = 0; i < Model.TabNoItems.Count; i++)
+            {
+                @if (Model.TabNo == Model.TabNoItems[i].Tab)
+                {
+                    <option value="@Model.TabNoItems[i].Tab" selected> @(Model.TabNoItems[i].Tab + " (" + Model.TabNoItems[i].FIO + ")") </option>
+                }
+                else
+                {
+                    <option value="@Model.TabNoItems[i].Tab"> @(Model.TabNoItems[i].Tab + " (" + Model.TabNoItems[i].FIO + ")") </option>
+                }
+            }
+        </select>
+        <br />
+
+
+        <label>Основная привязка</label>
+        <select id="TabNo" value="@Model.IDGeneralEmployee" asp-for="IDGeneralEmployee">
+            @for (int i = 0; i < Model.BasicBindings.Count; i++)
+            {
+                @if (Model.IDGeneralEmployee == Model.BasicBindings[i].id)
+                {
+                    <option value="@Model.BasicBindings[i].id" selected> @Model.BasicBindings[i].Name  </option>
+                }
+                else
+                {
+                    <option value="@Model.BasicBindings[i].id"> @Model.BasicBindings[i].Name </option>
+                }
+            }
+        </select>
+
+        <br />
+        <br />
+
+        <label>email</label>
+
+        <input type="text" id="email" value="@Model.email" asp-for="email" />
+        <br />
+        <br />
+        <br />
+    </form>
+
+    <button class="" id="OkButton" onclick="btnOkClick()">Ok</button>
+    <input type="button" value="Отменить!!!" onClick="document.location.href = '@Url.Action("MOUserFormCancel", "MOUser" )' " />
+
+    <script type="text/javascript">
+      
+            function btnOkClick() {
+
+                    //проверим некоторые данные перед сохранением=============
+                    var ErrMsg = '';
+                    lgn = document.getElementById('Login');
+
+                    if ((lgn.value == '') | (lgn.value == null)) {
+                        if (ErrMsg == '') {
+                            ErrMsg = 'Поле Login не может быть не заполнено';
+                        } else {
+                            ErrMsg = ';\nПоле Login не может быть не заполнено';
+                        }
+                    }
+
+                    edit = document.getElementById('AccountId');
+                    var AccId = edit.value;
+
+                    pwd = document.getElementById('pwd');
+
+                    if (((pwd.value == '') | (pwd.value == null) | (pwd.value == undefined)) & (AccId == 0)) //Новый юзер пустой пароль
+                    {
+                        
+                        if (ErrMsg == '') {
+                            ErrMsg = ' Для нового пользователя поле "Пароль" не может быть не заполнено';
+                        } else {
+                            ErrMsg += ';\nДля нового пользователя поле "Пароль" не может быть не заполнено';
+                        }
+                    }
+
+                    if ((ErrMsg != '')) {
+                        alert(ErrMsg);
+                        return;
+                    }
+
+                    if ((pwd.value != '')&(pwd.value != null)&(pwd.value != undefined)){ //Введен пароль
+                        if (AccId != 0) { //Старый юзер
+                            if (!confirm('Вы действительно хотите изменить пароль этого пользователя?')) { return; }
+                        }
+                        //Собственно делаем хеш
+                        var s = md5(pwd.value)
+
+                        e_md5 = document.getElementById('md5_pass');
+                        e_md5.value = s;
+                    }
+                    //=====================================================
+
+                    elem = document.getElementById('user_form');
+                    elem.submit()
+            }
+    </script>
+
+</body>
+</html>

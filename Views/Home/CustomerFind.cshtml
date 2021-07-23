@@ -1,0 +1,313 @@
+﻿@model CustomerFinder.CustomerFind
+@{
+    <!--Layout = "_layout";-->
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<!---->
+<head>
+    <script src="~/js/Unloader.js"></script>
+
+    <meta name="viewport" content="width=device-width" />
+    <title>CustomerFind</title>
+
+    <style type="text/css">
+
+        .container-fluid {
+            overflow: auto;
+            white-space: nowrap;
+        }
+
+        .table.table-condensed tr th {
+            border-spacing: 0px;
+            border-collapse: collapse;
+            padding: 0;
+        }
+
+        .inline-block {
+            display: inline-block;
+        }
+
+
+        .table {
+            display: table;
+        }
+
+            .table > a {
+                display: table-row;
+            }
+
+                .table > a > div {
+                    display: table-cell;
+                }
+    </style>
+</head>
+<body onload="Init(0)" style="text-align: center;">
+
+    <script src="/js/Calls.js"></script>
+
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+
+    <script src="~/js/commonScript.js"></script>
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script src="~/lib/jquery/dist/jquery-ui.js"></script>
+    <script src="~/lib/jquery.unobtrusive-ajax/jquery.unobtrusive-ajax.min.js"></script>
+
+
+
+
+    <div class="container-fluid">
+        <form>
+            <label>email</label><input type="email" name="email" value="@Model.FindEmail" /><input type="submit" value="Найти" formaction="~/home/FindCustomerEmail" formmethod="post" />
+            <label>id</label><input type="number" name="customer" value="@Model.FindCustomer" /><input type="submit" value="Найти" formaction="~/home/FindCustomerId" formmethod="post" />
+            <label>mobile</label><input type="number" name="phone" value="@Model.FindMobile" /><input type="submit" value="Найти" formaction="~/home/FindCustomerPhone" formmethod="post" />
+            <label>order</label><input type="number" name="order" value="@Model.FindOrder" /><input type="submit" value="Найти" formaction="~/home/FindCustomerOrder" formmethod="post" />
+        </form>
+    </div>
+
+    <div class="container-fluid">
+        <table border="1" class="table table-striped table-bordered table-hover table-condensed">
+            @if (@Model.Customers != null)
+            {
+                <tr style="background-color:beige">
+                    <td>ID</td>
+                    <td>Хост</td>
+                    <td>имя</td>
+                    <td>Email</td>
+                    <td>Mobile</td>
+                    <td>Region</td>
+                    <td>Метод связи</td>
+                    <td>Активность</td>
+                </tr>
+
+                @foreach (var customerinfo in Model.Customers)
+                {
+
+                    var onDblClickAction = "";
+                    if (customerinfo.CI_Order > 0)
+                    {
+                        onDblClickAction = String.Format($"location.href='{@Url.Action("ShowOrders", "Order")}?CustomerId={customerinfo.CI_Customer}&Host={customerinfo.CI_Host}&OrderNo={customerinfo.CI_Order}&CurrentUser={Model.App.CurrentUser.AccountId}'");
+                    }
+                    else
+                    {
+                        onDblClickAction = String.Format($"location.href = '{@Url.Action("ShowCustomerOrders", "Order")}?CustomerId={customerinfo.CI_Customer}&Host={customerinfo.CI_Host}&OrderNo={customerinfo.CI_Order}'");
+                    }
+                    <tr ondblclick="@onDblClickAction">
+                        <td>@customerinfo.CI_Customer</td>
+                        <td>@customerinfo.CI_HostName</td>
+                        <td>@customerinfo.CI_Name</td>
+                        <td>@customerinfo.CI_Email</td>
+                        <td>@customerinfo.CI_Mobile</td>
+                        <td>@customerinfo.CI_Region</td>
+                        <td>@customerinfo.CI_ComMethod</td>
+                        <td>@customerinfo.CI_Active</td>
+                    </tr>
+                }
+            }
+        </table>
+    </div>
+    <div hidden>
+        <br />
+        <br />
+
+
+        <label>Телефор</label>
+        <input type="text" id="TelPhone" name="TelPhone" value="79057881444" />
+        <br />
+        <br />
+
+        <label>Линия</label>
+        <input type="text" id="Line" name="Line" value="0016" />
+
+        <br />
+        <br />
+
+        <button onclick="showOnOk1()"> Позвонить</button>
+
+        <a id="coll" href=text download="cosc_msg.txt" hidden>Позвонить</a>
+    </div>
+
+
+    <input type="text" id="NeededConnect" value="" hidden />
+
+
+    <input type="text" id="intervalID" value="" hidden />
+    <a id="ShowCardForCall" href="~/Order/ShowOrderHost?OrderNo=1369743&HostId=1" hidden>RedirectTest</a>
+
+
+
+    <script type="text/javascript">
+    function Init(forcibly = 0) {
+            var el = document.getElementById('intervalID');
+            el.value = setInterval("get_card_for_call()", 1000);
+
+            el = document.getElementById('NeededConnect');
+            if (el.value == "") { el.value = @Model.App.NeedConnectToCollOColl; }
+            NeededConnect = el.value;
+
+            if (forcibly == 0) {
+                if (NeededConnect != null && NeededConnect > 0) {
+                    pass_identifier(@Model.App.Id, @Model.App.CurrentUser.AccountId);
+                }
+            }
+            else {pass_identifier(@Model.App.Id, @Model.App.CurrentUser.AccountId); }
+        }
+
+        function HandlingCardForCallResult(res) {
+            if (res != '') {
+                var intervalID = document.getElementById('intervalID').value;
+                clearInterval(intervalID);
+                var substringArray = res.split("|");
+                OrderNo = substringArray[0];
+                Host = substringArray[1];
+                Customer = substringArray[2];
+                if (OrderNo > 0) {
+                    content = '<a id="ShowCardForCall" href="@Url.Action("ShowOrders", "Order")?CustomerId=' + Customer +
+                        '&Host=' + Host +
+                        '&OrderNo=' + OrderNo +
+                        '&CurrentUser=' + @Model.App.CurrentUser.AccountId + '" hidden>RedirectTest</a>';
+                }
+                else {
+                    content = '<a id="ShowCardForCall" href="@Url.Action("ShowCustomerOrders", "Order")?CustomerId=' + Customer +
+                        '&Host=' + Host + '&OrderNo=0' +
+                        '" hidden>RedirectTest</a>';
+                }
+                var el = document.getElementById('ShowCardForCall');
+                el.outerHTML = content;
+                el = document.getElementById('ShowCardForCall');
+                el.click()
+            }
+        }; //HandlingCardForCallResult
+
+        function get_card_for_call() {
+            $.ajax({
+                url: '/Home/ExistsCardForCall',
+                data: {},
+                type: 'GET',
+                success: function (data) { HandlingCardForCallResult(data) } ,
+                error: function (data) { ; }
+            });
+        };
+
+
+
+        function showOnOk1() {
+            var TP = document.getElementById('TelPhone');
+            var LN = document.getElementById('Line');
+            SendCallParams(TP.value, LN.value);
+
+    /*
+                $.ajax({
+                    url: '/Order/ShowMap',
+                    data: { str: review, scale: scaleMap },
+                    type: 'POST',
+                    success: function (html) { $("#map").replaceWith(html); },
+                    error: function (xhr) { alert('error'); }
+                });
+
+    */
+
+    //            var text = '@Url.Action("", "Home")' + '?' + 'Phone=' + TP.Value + '&Line=' + LN.Value">
+    //            var content = '<a id="coll" href="' + text + '" hidden>Позвонить</a>';
+
+    //            var CL = document.getElementById("coll");
+    //            if (CL == null) {
+    //                let CL = document.createElement("a")
+    //                CL.id = "coll"
+    //            }
+    //            CL.outerHTML = content;
+    //            CL = document.getElementById('coll');
+    //            CL.click()
+
+                //alert(LN.value)
+                //the_call(TP.value, LN.value)
+        }
+
+
+
+        function pass_identifier(id, UserId) {
+            var text = 'MsgType=PASS_IDENTIFIER;ID=' + id + ';UserId=' + UserId + ';'
+            text = '"data:text/plain;charset=utf-8,%EF%BB%BF' + encodeURIComponent(text) + '"';
+            var content = '<a id="coll" href=' + text + ' download="cosc_msg.txt" hidden>Позвонить</a>';
+
+            var CL = document.getElementById("coll");
+            if (CL == null) {
+                let CL = document.createElement("a")
+                CL.id = "coll"
+            }
+            CL.outerHTML = content;
+            CL = document.getElementById('coll');
+            CL.click()
+
+            var el = document.getElementById('NeededConnect');
+
+            $.ajax({
+                url: '/Home/ResetNeededConnectToCallOColl',
+                data: { AppId: id },
+                type: 'POST',
+                success: function (data) { ResetNeededConnect(); },
+                error: function (data) { alert('pass_identifier error'); }
+            });
+
+        } //pass_identifier
+
+        function ResetNeededConnect(){
+            var el = document.getElementById('NeededConnect');
+            el.value = 0;
+
+            history.replaceState(null, "", "@Url.Action("ToCustomerFind", "Main")");
+        }
+
+        function SendCallParams(Phone, Line, Customer = 0, Host = 3, TypeClientCard = 1) {
+            $.ajax({
+                url: '/Home/MakeCall',
+                data: {Phone: Phone, Line: Line, Customer: Customer, Host: Host, TypeClientCard: TypeClientCard},
+                type: 'POST',
+                success: function (data) { ; },
+                error: function (data) { alert('error'); }
+            });
+        };
+    </script>
+
+
+    <!--<button type="button" data-toggle="modal" data-target="#exampleModal">Карточка клиента</button>
+
+        <div class="modal" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        Trololo
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" data-dismiss="modal">Close</button>
+                        <button type="button">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    navigator.clipboard.writeText("что-то в буфер");
+
+
+        -->
+</body>
+</html>
+
+
+

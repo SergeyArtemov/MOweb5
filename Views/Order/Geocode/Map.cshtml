@@ -1,0 +1,216 @@
+﻿<style>
+    .spoiler {display: none;}
+    .spoiler + label ~ div {display: none;}
+    .spoiler + label {
+        color: green;
+        cursor: pointer;
+        display: inline-block; 
+        margin: 3px;
+        /*-moz-box-shadow: inset 5px 5px 15px rgba(174, 238, 255, 0.66);
+        -webkit-box-shadow: inset 5px 5px 15px rgba(174, 238, 255, 0.66);
+        box-shadow: inset 5px 5px 15px rgba(174, 238, 255, 0.66);
+        border-radius: 5px;
+        border: 1px solid rgb(174, 238, 255);
+        padding: 3px;*/ 
+    }
+    .spoiler:checked + label {
+        color: red;
+        cursor: pointer;
+        display: inline-block; 
+        /*-moz-box-shadow: inset 5px 5px 15px rgba(174, 238, 255, 0.95);
+        -webkit-box-shadow: inset 5px 5px 15px rgba(174, 238, 255, 0.95);
+        box-shadow: inset 5px 5px 15px rgba(174, 238, 255, 0.95);
+        border-radius: 5px;
+        border: 2px solid rgb(174, 238, 255);
+        padding: 2px;*/ 
+
+    }
+    .spoiler:checked + label + div {display: block;}
+</style>
+
+<form asp-action="GetMap" data-ajax="true" data-ajax-method="POST" data-ajax-update="#map" data-ajax-mode="replace" data-ajax-loading="#loading">
+    <div id="map" style="align-items:stretch;">
+        @if (ViewData["GeocodeMapResult"] != null)
+        {
+            var strFIASID = ((Orders.GeocodeMapResult)@ViewData["GeocodeMapResult"]).FIASID;
+            var strAddress = ((Orders.GeocodeMapResult)@ViewData["GeocodeMapResult"]).Address;
+            var strUnrestrictedAdress = ((Orders.GeocodeMapResult)@ViewData["GeocodeMapResult"]).UnrestrictedAdress;
+            var strPostCode = ((Orders.GeocodeMapResult)@ViewData["GeocodeMapResult"]).PostCode;
+            var strRegion = ((Orders.GeocodeMapResult)@ViewData["GeocodeMapResult"]).Region;
+            var strRegionType = ((Orders.GeocodeMapResult)@ViewData["GeocodeMapResult"]).RegionType;
+            var strArea = ((Orders.GeocodeMapResult)@ViewData["GeocodeMapResult"]).Area;
+            var strAreaType = ((Orders.GeocodeMapResult)@ViewData["GeocodeMapResult"]).AreaType;
+            var strCity = ((Orders.GeocodeMapResult)@ViewData["GeocodeMapResult"]).City;
+            var strCityType = ((Orders.GeocodeMapResult)@ViewData["GeocodeMapResult"]).CityType;
+            var strSettelment = ((Orders.GeocodeMapResult)@ViewData["GeocodeMapResult"]).Settelment;
+            var strSettelmentType = ((Orders.GeocodeMapResult)@ViewData["GeocodeMapResult"]).SettelmentType;
+            var strStreet = ((Orders.GeocodeMapResult)@ViewData["GeocodeMapResult"]).Street;
+            var strStreetType = ((Orders.GeocodeMapResult)@ViewData["GeocodeMapResult"]).StreetType;
+            var strHouse = ((Orders.GeocodeMapResult)@ViewData["GeocodeMapResult"]).House;
+            var strHouseType = ((Orders.GeocodeMapResult)@ViewData["GeocodeMapResult"]).HouseType;
+            var strBlock = ((Orders.GeocodeMapResult)@ViewData["GeocodeMapResult"]).Block;
+            var strBlockType = ((Orders.GeocodeMapResult)@ViewData["GeocodeMapResult"]).BlockType;
+            var strCityArea = ((Orders.GeocodeMapResult)@ViewData["GeocodeMapResult"]).CityArea;
+            var strCityDistrict = ((Orders.GeocodeMapResult)@ViewData["GeocodeMapResult"]).CityDistrict;
+            var strCityDistrictType = ((Orders.GeocodeMapResult)@ViewData["GeocodeMapResult"]).CityDistrictType;
+            var strKLADR = ((Orders.GeocodeMapResult)@ViewData["GeocodeMapResult"]).KLADR;
+            var dblLat1 = ((Orders.GeocodeMapResult)@ViewData["GeocodeMapResult"]).Lat1;
+            var dblLng1 = ((Orders.GeocodeMapResult)@ViewData["GeocodeMapResult"]).Lng1;
+            var intFiasLevel = ((Orders.GeocodeMapResult)@ViewData["GeocodeMapResult"]).FiasLevel;
+            <label id="GeocodeMapResult.Address" onclick="finishGeocode()" style="color:red; font-size:14px; padding: 4px; font-weight: bold">@strAddress</label>
+            if (!String.IsNullOrEmpty(((Orders.GeocodeMapResult)ViewData["GeocodeMapResult"]).Map))
+            {
+                var imgSrc = ((Orders.GeocodeMapResult)ViewData["GeocodeMapResult"]).Map;
+                <div id="mapImage"><image src="@imgSrc" alt="" style="width:585; height:405px;" /></div>
+            }
+            else
+            {
+               <image style="width:585; height:405px; background-color:aliceblue;" />
+            }
+
+
+            <div>
+                <input type="checkbox" id="hd" class="spoiler" />
+                <label for="hd" class="orderButton"> Подробности</label>
+                <div>
+                    <br />strFIASID = <label id="GeocodeMapResult.FIASID">@strFIASID</label>
+                    <br />strAddress = <label id="GeocodeMapResult.Address">@strAddress</label>
+                    <br />strUnrestrictedAdress = <label id="GeocodeMapResult.UnrestrictedAdress">@strUnrestrictedAdress</label>
+                    <br />strPostCode = <label id="GeocodeMapResult.PostCode">@strPostCode</label>
+                    <br />strRegion = <label id="GeocodeMapResult.Region">@strRegion</label>
+                    <br />strRegionType = <label id="GeocodeMapResult.RegionType">@strRegionType</label>
+                    <br />strArea = <label id="GeocodeMapResult.Area">@strArea</label>
+                    <br />strAreaType = <label id="GeocodeMapResult.AreaType">@strAreaType</label>
+                    <br />strCity = <label id="GeocodeMapResult.City">@strCity</label>
+                    <br />strCityType = <label id="GeocodeMapResult.CityType">@strCityType</label>
+                    <br />strSettelment = <label id="GeocodeMapResult.Settelment">@strSettelment</label>
+                    <br />strSettelmentType = <label id="GeocodeMapResult.SettelmentType">@strSettelmentType</label>
+                    <br />strStreet = <label id="GeocodeMapResult.Street">@strStreet</label>
+                    <br />strStreetType = <label id="GeocodeMapResult.StreetType">@strStreetType</label>
+                    <br />strHouse = <label id="GeocodeMapResult.House">@strHouse</label>
+                    <br />strHouseType = <label id="GeocodeMapResult.HouseType">@strHouseType</label>
+                    <br />strBlock = <label id="GeocodeMapResult.Block">@strBlock</label>
+                    <br />strBlockType = <label id="GeocodeMapResult.BlockType">@strBlockType</label>
+                    <br />strCityArea = <label id="GeocodeMapResult.CityArea">@strCityArea</label>
+                    <br />strCityDistrict = <label id="GeocodeMapResult.CityDistrict">@strCityDistrict</label>
+                    <br />strCityDistrictType = <label id="GeocodeMapResult.CityDistrictType">@strCityDistrictType</label>
+                    <br />strKLADR = <label id="GeocodeMapResult.KLADR">@strKLADR</label>
+                    <br />dblLat1 = <label id="GeocodeMapResult.Lat1">@dblLat1</label>
+                    <br />dblLng1 = <label id="GeocodeMapResult.Lng1">@dblLng1</label>
+                    <br />intFiasLevel = <label id="GeocodeMapResult.FiasLevel">@intFiasLevel</label>
+                </div>
+            </div>
+            <label id="sp__InsertDeliveryAddr"></label>
+        }
+        else
+        {
+            <label style="color:red; font-size:14px; font-weight: bold;">Адрес не выбран из списка</label>
+            <br /><image style="width:585; height:405px; background-color:aliceblue;" />
+        }
+
+    </div>
+</form>
+<script type="text/javascript">
+    function finishGeocode() {
+        //alert("close");
+        document.getElementById('geocodeAddr').value = document.getElementById('GeocodeMapResult.Address').textContent;
+        try {
+            $.ajax({
+                url: '/Order/InsertDeliveryAddr',
+                data: {
+                        PostalCode: document.getElementById('GeocodeMapResult.PostCode').textContent,
+                        Region: document.getElementById('GeocodeMapResult.Region').textContent,
+                        RegionType: document.getElementById('GeocodeMapResult.RegionType').textContent,
+                        Area: document.getElementById('GeocodeMapResult.Area').textContent,
+                        AreaType: document.getElementById('GeocodeMapResult.AreaType').textContent,
+                        City: document.getElementById('GeocodeMapResult.City').textContent,
+                        CityType: document.getElementById('GeocodeMapResult.CityType').textContent,
+                        Settelment: document.getElementById('GeocodeMapResult.Settelment').textContent ,
+                        SettelmentType: document.getElementById('GeocodeMapResult.SettelmentType').textContent,
+                        Street: document.getElementById('GeocodeMapResult.Street').textContent,
+                        StreetType: document.getElementById('GeocodeMapResult.StreetType').textContent,
+                        House: document.getElementById('GeocodeMapResult.House').textContent,
+                        HouseType: document.getElementById('GeocodeMapResult.HouseType').textContent,
+                        Block: document.getElementById('GeocodeMapResult.Block').textContent,
+                        BlockType: document.getElementById('GeocodeMapResult.BlockType').textContent,
+                        Lat: document.getElementById('GeocodeMapResult.Lat1').textContent,
+                        Lon: document.getElementById('GeocodeMapResult.Lng1').textContent,
+                        Author: 3,
+                        User: document.getElementById('order.CurrentUser').value,
+                        FIAS: document.getElementById('GeocodeMapResult.FIASID').textContent,
+                        KLADR: document.getElementById('GeocodeMapResult.KLADR').textContent,
+                        CityArea: document.getElementById('GeocodeMapResult.CityArea').textContent,
+                        CityDistrict: document.getElementById('GeocodeMapResult.CityDistrict').textContent,
+                        CityDistrictType: document.getElementById('GeocodeMapResult.CityDistrictType').textContent,
+                        FIASLevel: document.getElementById('GeocodeMapResult.FiasLevel').textContent,
+                        Flat: document.getElementById('order.Delivery.DeliveryApartment').value,
+                        Floor: document.getElementById('order.Delivery.DeliveryFloor').value,
+                        Entrance: document.getElementById('order.Delivery.DeliveryEntrance').value,
+                        Intercom: document.getElementById('order.Delivery.DeliveryIntercom').value,
+                        Name: document.getElementById('order.Delivery.DeliveryName').value,
+                        Surname: document.getElementById('order.Delivery.DeliverySurname').value,
+                        Email: "",
+                        Phone: document.getElementById('order.Delivery.DeliveryPhone').value                        
+                      },
+                type: 'POST',
+                beforeSend: function () { $("#loading").show(); },
+                success: function (data) {
+                    if (data != "") {
+                        var json = JSON.parse(data).InsertDeliveryAddr;
+                        if (json.length > 0) {
+                            //alert(  'idAddr: '+ json[0].idAddr + '\n' +
+                            //        'idRouteAdr: '+ json[0].idRouteAdr + '\n' +
+                            //        'idDeliveryAdr: '+ json[0].idDeliveryAdr + '\n' +
+                            //        'DelOld: '+ json[0].DelOld + '\n' +
+                            //        'DelNew: '+ json[0].DelNew + '\n' +
+                            //        'PostCode: '+ json[0].PostCode + '\n' +
+                            //        'KLADR: '+ json[0].KLADR + '\n' +
+                            //        'Region: '+ json[0].Region + '\n' +
+                            //        'RegionType: '+ json[0].RegionType + '\n' +
+                            //        'Area: '+ json[0].Area + '\n' +
+                            //        'AreaType: '+ json[0].AreaType + '\n' +
+                            //        'City: '+ json[0].City + '\n' +
+                            //        'CityType: '+ json[0].CityType + '\n' +
+                            //        'Settelment: '+ json[0].Settelment + '\n' +
+                            //        'SettelmentType: '+ json[0].SettelmentType + '\n' +
+                            //        'Street: '+ json[0].Street + '\n' +
+                            //        'StreetType: '+ json[0].StreetType + '\n' +
+                            //        'House: '+ json[0].House + '\n' +
+                            //        'HouseType: '+ json[0].HouseType + '\n' +
+                            //        'Block: '+ json[0].Block + '\n' +
+                            //        'BlockType: ' + json[0].BlockType + '\n'
+                            //);
+                            document.getElementById('order.Delivery.DeliveryAddrId').value = json[0].idAddr;
+                            document.getElementById('order.Delivery.DeliveryAddrRouteId').value = json[0].idRouteAdr;
+                            document.getElementById('order.Delivery.DeliveryAddrDelivId').value = json[0].idDeliveryAdr;
+                            document.getElementById('order.Delivery.DeliveryPostCode').value = json[0].PostCode;
+                            document.getElementById('order.Delivery.DeliveryKLADR').value = json[0].KLADR;
+                            document.getElementById('order.Delivery.DeliveryRegion').value = json[0].Region + ' ' + json[0].RegionType;
+                            document.getElementById('order.Delivery.DeliveryRaion').value = json[0].Area + ' ' + json[0].AreaType;
+                            document.getElementById('order.Delivery.DeliveryCity').value = json[0].CityType + ' ' + json[0].City;
+                            document.getElementById('order.Delivery.DeliveryPunkt').value = json[0].SettelmentType + ' ' + json[0].Settelment;
+                            document.getElementById('order.Delivery.DeliveryStreet').value = json[0].StreetType + ' ' + json[0].Street;
+                            document.getElementById('order.Delivery.DeliveryHouse').value = json[0].HouseType + ' ' + json[0].House;
+                            document.getElementById('order.Delivery.DeliveryCorps').value = json[0].BlockType + ' ' + json[0].Block;
+
+                        }
+                        //alert(JSON.stringify(json.InsertDeliveryAddr));
+                        //for (i = 0; i < json.InsertDeliveryAddr.length; i++) alert(json.InsertDeliveryAddr[i].idAddr);
+                    };
+                    $("#loading").hide();
+                    location.href = "#close";
+                    document.getElementById('btn_model_upd').click();
+                },
+                error: function () {
+                    alert('Сбой при добавлении адреса доставки');
+                    $("#loading").hide();
+                }
+            });
+        }
+        catch (e) {
+            alert('Ошибка ' + e.name + ":" + e.message + "\n" + e.stack);
+        }
+    }
+
+</script>
+

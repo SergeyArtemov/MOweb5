@@ -1,0 +1,32 @@
+﻿<div>
+    <table style="border-collapse: collapse;" class="table table-condensed">
+        @if (ViewData["PickPointList"] != null)
+        {
+            System.Data.DataSet dataSet = Newtonsoft.Json.JsonConvert.DeserializeObject<System.Data.DataSet>((System.String)ViewData["PickPointList"]);
+            <tr style="background-color:#c2e3ff;">
+                @for (int cnt = 0; cnt < dataSet.Tables["PickPointList"].Columns.Count; cnt++)
+                {
+
+                    string[] caption = dataSet.Tables["PickPointList"].Columns[cnt].Caption.Split(" - ");
+                    <th style="border: 1px solid #8b9cff; padding: 3px; min-width: 30px;">
+                        <b>
+                            @(caption[1] != "" ? caption[1] : dataSet.Tables["PickPointList"].Columns[cnt].Caption)
+                        </b>
+                    </th>
+                }
+            </tr>
+            @for (int rows = 0; rows < dataSet.Tables["PickPointList"].Rows.Count; rows++)
+            {
+                var onClickFunc = "getNameAndPriceOfAgent(" + ViewBag.ShipService + ", '" + dataSet.Tables["PickPointList"].Rows[rows].ItemArray[5] + "')";
+                <tr onclick="@onClickFunc">
+                    @for (int cols = 0; cols < dataSet.Tables["PickPointList"].Columns.Count; cols++)
+                    {
+                        <td style="border: 1px solid #8b9cff;">
+                            @dataSet.Tables["PickPointList"].Rows[rows].ItemArray[cols]
+                        </td>
+                    }
+                </tr>
+            }
+        }
+    </table>
+</div>

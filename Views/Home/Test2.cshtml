@@ -1,0 +1,327 @@
+﻿<!--@{
+    Layout = null;
+}
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <environment include="Development">
+        <script src="~/lib/jquery/dist/jquery.js"></script>
+        <script src="~/lib/jquery/dist/jquery-ui.js"></script>
+        <script src="~/lib/jquery.unobtrusive-ajax/jquery.unobtrusive-ajax.js"></script>
+    </environment>
+    <style type="text/css">
+        div.dragElement {
+            font-size: large;
+            border: thin solid black;
+            padding: 16px;
+            width: 8em;
+            text-align: center;
+            background-color: lightgray;
+            margin: 4px
+        }
+
+        #container {
+            border: medium double black;
+            width: 100vw;
+            height: 100vh;
+        }
+    </style>
+    <script type="text/javascript">
+        $(function () {
+
+            $('.dragElement').draggable({
+                containment: "parent"
+            }).filter('#dragH').draggable("option", "axis", "x");
+
+        });
+    </script>
+</head>
+<body>
+    <div id="container">
+        <div id="dragH" class="dragElement ui-widget ui-corner-all ui-state-error">
+            Перетащить по горизонтали
+        </div>
+        <div class="dragElement ui-widget ui-corner-all ui-state-error">
+            Перетащить внутри родителя
+        </div>
+    </div>
+</body>
+</html>
+-->
+<!--
+<style type="text/css">
+    nav {
+        background: lightpink;
+        user-select: none;
+    }
+
+        nav ul {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+            nav ul:after {
+                content: "";
+                display: none;
+                clear: both;
+            }
+
+        nav a {
+            text-decoration: none;
+            display: block;
+        }
+
+    .topmenu > li {
+        float: left;
+        position: relative;
+        border: 1px solid black;
+    }
+
+        .topmenu > li > a {
+            padding: 5px 10px;
+            font-size: 12px;
+            text-transform: uppercase;
+            color: black;
+            letter-spacing: 4px;
+        }
+
+            .topmenu > li > a.active,
+            .submenu a:hover {
+                color: red;
+            }
+
+    .topmenu .fa,
+    .submenu {
+        position: absolute;
+      left: 50%;
+        z-index: 5;
+        min-width: 200px;
+        visibility: hidden;
+        opacity: 0;
+        transform-origin: 0% 0%;
+        transform: rotateX(-90deg);
+        transition: .1s linear;
+        border-top: 1px solid #CBCBCC;
+        border-left: 1px solid #CBCBCC;
+        border-right: 1px solid #CBCBCC;
+    }
+
+        .submenu li {
+            position: relative;
+        }
+
+            .submenu li a {
+                color: #282828;
+                padding: 5px 10px;
+                font-size: 13px;
+                border-bottom: 1px solid #CBCBCC;
+            }
+
+        .submenu .submenu {
+            position: absolute;
+            left: calc(100% + 1px);
+            top: -1px;
+            transition: .1s linear;
+        }
+
+    nav li:active > .submenu {
+        transform: rotateX(0deg);
+        visibility: visible;
+        opacity: 1;
+    }
+
+  .submenu:hover {
+        transform: rotateX(0deg);
+        visibility: visible;
+        opacity: 1;
+    }
+
+  .submenu li:hover > .submenu {
+        transform: rotateX(0deg);
+        visibility: visible;
+        opacity: 1;
+    }
+</style>
+<input /><br />
+<input /><br />
+<input />
+<div>
+    <nav>
+        <ul class="topmenu">
+            <li>
+                <a>действия</a>
+                <ul class="submenu">
+                    <li>
+                        <a>меню второго уровня</a>
+                    </li>
+                    <li>
+                        <a>меню второго уровня</a>
+                        <ul class="submenu">
+                            <li><a>меню третьего уровня</a></li>
+                            <li><a>меню третьего уровня</a></li>
+                            <li><a>меню третьего уровня</a></li>
+                        </ul>
+                    </li>
+                    <li><a>меню второго уровня</a></li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+</div>
+-->
+<!--
+<style type="text/css">
+    #nav, #nav ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    #nav {
+        padding-left: 0;
+        padding-top: 0;
+        position: relative;
+        z-index: 0;
+    }
+
+        #nav ul {
+            left: -9999px;
+            position: absolute;
+            top: 30px;
+            width: auto;
+        }
+
+        #nav li {
+            float: left;
+            margin-right: 5px;
+            position: relative;
+        }
+
+            #nav li a {
+                background: #eafaff;
+                color: #444;
+                display: block;
+                float: left;
+                font-size: 13px;
+                box-shadow: 0 0 1px 1px lightblue;
+                padding: 4px 10px;
+                text-decoration: none;
+                -moz-border-radius: 6px;
+                -webkit-border-radius: 6px;
+                -o-border-radius: 6px;
+                border-radius: 6px;
+                border: 1px solid blue;
+            }
+
+        #nav > li > a {
+            -moz-border-radius: 6px;
+            -webkit-border-radius: 6px;
+            -o-border-radius: 6px;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        #nav li a.fly {
+            padding-right: 10px;
+            border: 1px solid blue;
+        }
+
+        #nav ul li {
+            margin: 1px;
+        }
+
+            #nav ul li a {
+                width: 100px;
+            }
+
+        #nav li:hover > a {
+            background-color: #caf2ff;
+            color: #000;
+        }
+        /*#nav li a:focus { outline-width:100px; background-color:red;}*/
+        #nav li a:active + ul.dd, #nav li a:focus + ul.dd, #nav li ul.dd:hover {
+            left: 30px;
+        }
+
+        #nav ul.dd li a:active + ul, #nav ul.dd li a:hover + ul, #nav ul.dd li ul:hover {
+            top: -1px;
+            left: 125px;
+        }
+</style>
+
+<label>2222</label>
+<div>
+    <ul id="nav">
+        <li>
+            <a href="#"><b>Действия</b></a>
+            <ul class="dd">
+                <li><a href="#">уровень1</a></li>
+                <li>
+                    <a href="#">уровень1</a>
+                    <ul>
+                        <li><a href="#">уровень2</a></li>
+                        <li><a href="#">уровень2</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</div>
+<br /><br />
+<label>3333</label>
+
+<script>
+
+</script>
+-->
+@*<html><head><title>Дата поставки по заказу №2047761637(1)</title><meta http-equiv="Content-Type" content="text/html; charset=windows-1251" /></head>
+    <body>
+        <div><br/>Дата поставки по заказу №2047761637(1)</div>
+        <table border="1">
+            <tr>
+                <th>Номер заказа</th>
+            <th>CSCU</th>
+            <th>Вариант</th>
+            <th>Количество</th>
+            <th>Документ</th>
+            <th>Кампания</th>
+            <th>Дата поставки</th>
+            </tr>
+            <tr bgcolor="#FFFFE0"><td align="left">2047761637</td><td align="left">W18081892730</td><td align="left">6,5</td><td align="right">2</td><td align="left">&#160;</td><td align="left">180824GRETTA</td><td align="center">24.10.2019</td></tr>
+            <tr bgcolor="#FFFFFF"><td align="left">2047761637</td><td align="left">W17091918788</td><td align="left">S</td><td align="right">2</td><td align="left">&#160;</td><td align="left">CATALOG</td><td align="center">17.10.2019</td></tr>
+            <tr bgcolor="#FFFFE0"><td align="left">2047761637</td><td align="left">W15082627070</td><td align="left">M</td><td align="right">1</td><td align="left">&#160;</td><td align="left">180711LINDA</td><td align="center">24.10.2019</td></tr>
+        </table><br/><i><font color="#A0A0A0" size="1">©KhS, 2017. Создан: 17.10.2019 16:13:24, KUPIVIP00000</font></i>
+    </body>
+    </html>*@
+
+<html>
+<head>
+    <title>Добавление метки с собственным изображением</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <script src="https://api-maps.yandex.ru/2.1.78/?lang=ru_RU" type="text/javascript"></script>
+    <script charset="utf-8" src="~/js/yandexmap.js"></script>
+    <style>
+
+        html, body, #map {
+            width: 100%;
+            height: 95%;
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+    <script>
+    </script>
+</head>
+<body onload="yandex_initialize()">
+    <input type="button" onclick="btn_click()" />
+    <input type="button" onclick="yandex2_CreateNewArea(56.04528829466855, 37.76602721773088, 5, 5000, '000000', 'FFFFFF', 'Новая область 02.03.2021 11:32:09', '{8D61478A-4CAF-44F6-8B84-C84244862342}')" />
+    <input id="AreaXML" value="">
+    <input id="ClickCoord" value="">
+    <input id="forDebug" value="" style="width: 98%;" />
+    <div id="map" style="width:100%; height:92%"></div>
+</body>
+</html>
+

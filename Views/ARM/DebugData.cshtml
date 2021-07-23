@@ -1,0 +1,129 @@
+﻿@model ARMClasses.ARM_Manager;
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>DebugData</title>
+</head>
+<body>
+
+
+
+    <div>
+
+        <br />
+        <br />
+        <a asp-controller="ARM" asp-action="ARMForm">ARMForm Now</a>
+        <br />
+        <br />
+        <a asp-controller="MOUser" asp-action="MOUserList">MOUserList</a>
+
+    </div>
+
+    <br />
+    <br />
+
+
+
+    @ViewBag.Text1
+    <button onclick="alert(" aaaaq")">1</button>
+    <br />werwrwe
+    <br />rwerwerw
+    <br />
+    <br />
+
+
+    <h1>Полный список АРМов </h1>
+
+    <select id="cbARMTypeList" onchange="cbARMTypeListChange();">
+        @for (int i = 0; i < Model.ARMTypeList.Count; i++)
+        {
+            <option value="@Model.ARMTypeList[i].id"> @Model.ARMTypeList[i].Name </option>
+            /* <br />@i*/
+            /*<a>    @Model.ARMTypeList[i].Name</a>*/
+
+        }
+    </select>
+
+    /*Запуск обработки формы при выборе значения поля SELECT
+
+    Добавьте в «select» «onchange='this.form.submit()'», пример:
+
+    <form action="" method="post" name="form">
+        <select name="currency" onchange="this.form.submit()">
+            <option value="grn">ГРН</option>
+            <option value="usd">USD</option>
+            <option value="eur">EUR</option>
+        </select>
+    </form>
+
+    */
+
+
+    <h1>@Model.ARMTypeList[17].Name </h1>
+
+    <h4>Задачи</h4>
+    <p>@Model.ARMTypeList[17].TaskList.Count</p>
+
+    @for (int i = 0; i < Model.ARMTypeList[17].TaskList.Count; i++)
+    {
+        <pre> @if(Model.ARMTypeList[17].TaskList[i].Check){@Model.ARMTypeList[17].TaskList[i].Check}        @Model.ARMTypeList[17].TaskList[i].Item.Name </pre>
+
+    }
+
+    <br />
+    <br />
+    <br />
+    <br />
+
+    <h4>Ref Отчеты</h4>
+    <p>@Model.ARMTypeList[17].RefReportList.Count</p>
+
+    @for (int i = 0; i < Model.ARMTypeList[17].RefReportList.Count; i++)
+    {
+        <pre> @if(Model.ARMTypeList[17].RefReportList[i].Check){@Model.ARMTypeList[17].RefReportList[i].Check}        @Model.ARMTypeList[17].RefReportList[i].Item.Name </pre>
+
+    }
+
+
+
+
+
+    <br />
+    <br />
+    <br />
+    <br />
+
+    <h4>FR Отчеты</h4>
+    <p>@Model.ARMTypeList[17].FRReportList.Count</p>
+
+    @for (int i = 0; i < Model.ARMTypeList[17].FRReportList.Count; i++)
+    {
+        <pre> @if(Model.ARMTypeList[17].FRReportList[i].Check){@Model.ARMTypeList[17].FRReportList[i].Check}        @Model.ARMTypeList[17].FRReportList[i].Item.Name </pre>
+
+    }
+
+
+
+
+
+<pre>22             22<pre>
+
+
+
+
+</body>
+    <script type="text/javascript">
+        function cbARMTypeListChange()
+        {
+            alert("el.options[el.selectedIndex].value");
+        }
+    </script>
+
+</html>

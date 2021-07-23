@@ -1,0 +1,324 @@
+﻿@{
+    Layout = "_LayoutPassport";
+}
+
+@model MOweb.Models.ViewModels.PassportViews.PasspView
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper MOweb.Infrastructure.*, MOweb
+
+<style>
+    input, label, a {
+        font-size: 12px !important;
+        margin: 0px !important;
+        padding: 0px !important
+    }
+
+    div {
+        margin: 0px !important;
+        padding: 0px !important
+    }
+
+    .col {margin: 0 10px!important;}
+</style>
+
+<style>
+@@-webkit-keyframes pulsate {
+ 50% { color: #fff; text-shadow: 0 -1px rgba(0,0,0,.3), 0 0 5px #ffd, 0 0 8px #fff; }
+}
+@@keyframes pulsate {
+ 50% { color: #fff; text-shadow: 0 -1px rgba(0,0,0,.3), 0 0 5px #ffd, 0 0 8px #fff; }
+}
+#blink7 {
+  color: rgb(245,245,245);
+  text-shadow: 0 -1px rgba(0,0,0,.1);
+  background: green;
+  -webkit-animation: pulsate 1.2s linear infinite;
+  animation: pulsate 1.2s linear infinite;
+}
+}
+</style>
+
+<style>
+    @@-webkit-keyframes pulsate {
+        50% {
+            color: #fff;
+            text-shadow: 0 -1px rgba(0,0,0,.3), 0 0 5px #ffd, 0 0 8px #fff;
+        }
+    }
+
+    @@keyframes pulsate {
+        50% {
+            color: #fff;
+            text-shadow: 0 -1px rgba(0,0,0,.3), 0 0 5px #ffd, 0 0 8px #fff;
+        }
+    }
+
+    #blink71 {
+        color: rgb(245,245,245);
+        text-shadow: 0 -1px rgba(0,0,0,.1);
+        background: #FFD700;
+        -webkit-animation: pulsate 1.2s linear infinite;
+        animation: pulsate 1.2s linear infinite;
+    }
+    }
+</style>
+
+<style>
+    @@-webkit-keyframes pulsate {
+        50% {
+            color: #fff;
+            text-shadow: 0 -1px rgba(0,0,0,.3), 0 0 5px #ffd, 0 0 8px #fff;
+        }
+    }
+
+    @@keyframes pulsate {
+        50% {
+            color: #fff;
+            text-shadow: 0 -1px rgba(0,0,0,.3), 0 0 5px #ffd, 0 0 8px #fff;
+        }
+    }
+
+    #blink72 {
+        color: rgb(245,245,245);
+        text-shadow: 0 -1px rgba(0,0,0,.1);
+        background: #DC143C;
+        -webkit-animation: pulsate 1.2s linear infinite;
+        animation: pulsate 1.2s linear infinite;
+    }
+    }
+</style>
+
+<form class="p-a-1" asp-action="RsvpForm" method="post" id="PasspForm">
+
+
+    <button hidden type="submit" formaction="~/Passport/RsvpForm">ОК</button>
+
+    <div class="card card-outline-primary m-1 p-1">
+        <div class="bg-faded p-1">
+
+            <div page-model="@Model" page-action="List" page-classes-enabled="true"
+                 page-class="btn" page-class-normal="btn-secondary"
+                 page-class-selected="btn-primary" class="btn-group pull-right m-1">
+            </div>
+
+            @if (@Model.PageForShow == 1)
+            {
+                <div>
+
+
+                    @if (@Model.LegalRF == 2)
+                    {
+                        <div id="blink7">
+                            <center>
+                                <label>ПАСПОРТНЫЕ ДАННЫЕ и ИНН - ВЕРНЫ!!!</label>
+                            </center>
+                        </div>
+                    }
+
+                    @if (@Model.LegalRF == 1)
+                    {
+                        <div id="blink71">
+                            <center>
+                                <label>ПАСПОРТНЫЕ ДАННЫЕ - ВЕРНЫ, ИНН - НЕВЕРНЫЙ!!!</label>
+                            </center>
+                        </div>
+                    }
+
+                    @if (@Model.LegalRF != 2 && @Model.LegalRF != 1)
+                    {
+                        <div id="blink72">
+                            <center>
+                                <label><label>ПАСПОРТНЫЕ ДАННЫЕ и ИНН - НЕВЕРНЫ!!!</label></label>
+                            </center>
+                        </div>
+                    }
+
+                    <div class="row">
+                        <div class="col">
+                            <label asp-for="Surname">Фамилия:</label>
+                            <!--<input id="Surname" class="form-control is-valid" asp-for="Surname" />-->
+                            <input id="Surname" class="form-control" asp-for="Surname" />
+                        </div>
+                        <div class="col">
+                            <label asp-for="Name">Имя:</label>
+                            <!--<input id="Name" class="form-control is-invalid" asp-for="Name" />-->
+                            <input id="Name" class="form-control" asp-for="Name" />
+                        </div>
+                        <div class="col">
+                            <label asp-for="Patronimic">Отчество:</label>
+                            <input id="Patronimic" class="form-control" asp-for="Patronimic" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <label asp-for="PassRange">Серия паспорта:</label>
+                            <input id="PassRange" class="form-control" asp-for="PassRange" />
+                        </div>
+                        <div class="col">
+                            <label asp-for="PassNumber">Номер паспорта:</label>
+                            <input id="PassNumber" class="form-control" asp-for="PassNumber" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <label asp-for="PassIssueDate">Дата выдачи паспорта:</label>
+                            <input id="PassIssueDate" class="form-control" asp-for="PassIssueDate" />
+                        </div>
+                        <div class="col">
+                            <label asp-for="Birthday">День рождения:</label>
+                            <input id="Birthday" class="form-control" asp-for="Birthday" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <label asp-for="PassDepartmentCode">Код департамента выдачи паспорта:</label>
+                            <input id="PassDepartmentCode" class="form-control" asp-for="PassDepartmentCode" />
+                        </div>
+                        <div class="col">
+                            <label asp-for="PassDepartmentAddr">Адрес выдачи паспорта:</label>
+                            <input id="PassDepartmentAddr" class="form-control" asp-for="PassDepartmentAddr" />
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <label asp-for="PassRegisteredAddress">Адрес регистрации:</label>
+                            <input id="PassRegisteredAddress" class="form-control" asp-for="PassRegisteredAddress" />
+                        </div>
+                    </div>
+                    <hr color="green" width="300">
+                    <div class="row">
+                        <div class="col">
+                            <label asp-for="Inn">ИНН:</label>
+                            <input id="DeliveryINN" class="form-control" asp-for="Inn" />
+                        </div>
+                    </div>
+                    <input id="PageNext" class="form-control" asp-for="PageNext" hidden />
+                    <input id="PageForShow" class="form-control" asp-for="PageForShow" hidden />
+                    <input id="Customerid" class="form-control" asp-for="Customerid" hidden />
+                    <input id="Host" class="form-control" asp-for="Host" hidden />
+                </div>
+            
+                }
+
+                @if (@Model.PageForShow == 2)
+                {
+                    //PassportViews.psp1view.SurnameNerez = passp.SurnameNerez;
+                    //PassportViews.psp1view.NameNerez = passp.NameNerez;
+                    //PassportViews.psp1view.PatronymicNerez = passp.PatronymicNerez;
+                    //PassportViews.psp1view.PassRangeNerez = passp.PassRangeNerez;
+                    //PassportViews.psp1view.PassNumberNerez = passp.PassNumberNerez;
+                    //PassportViews.psp1view.PassDepartmentAddrNerez = passp.PassDepartmentAddrNerez;
+                    //PassportViews.psp1view.PassIssueDateNerez = passp.PassIssueDateNerez;
+                    <div>
+                        <label asp-for="SurnameNerez">Фамилия(нерез):</label>
+                        <input id="SurnameNerez" class="form-control" asp-for="SurnameNerez" />
+                        <label asp-for="NameNerez">Имя(нерез):</label>
+                        <input id="NameNerez" class="form-control" asp-for="NameNerez" />
+                        <label asp-for="PatronymicNerez">Отчество(нерез):</label>
+                        <input id="PatronymicNerez" class="form-control" asp-for="PatronymicNerez" />
+                        <label asp-for="PassRangeNerez">Серия паспорта(нерез):</label>
+                        <input id="PassRangeNerez" class="form-control" asp-for="PassRangeNerez" />
+                        <label asp-for="PassNumberNerez">Номер паспорта(нерез):</label>
+                        <input id="PassNumberNerez" class="form-control" asp-for="PassNumberNerez" />
+                        <label asp-for="PassDepartmentAddrNerez">Адрес выдачи паспорта(нерез):</label>
+                        <input id="PassDepartmentAddrNerez" class="form-control" asp-for="PassDepartmentAddrNerez" />
+                        <label asp-for="PassIssueDateNerez">Дата выдачи паспорта(нерез):</label>
+                        <input id="PassIssueDateNerez" class="form-control" asp-for="PassIssueDateNerez" />
+
+                        <input id="PageNext" class="form-control" asp-for="PageNext" hidden />
+                        <input id="PageForShow" class="form-control" asp-for="PageForShow" hidden />
+                        <input id="Customerid" class="form-control" asp-for="Customerid" hidden />
+                        <input id="Host" class="form-control" asp-for="Host" hidden />
+                    </div>
+                }
+
+                @if (@Model.PageForShow == 3)
+                {
+                    <div>
+                        <label asp-for="SurnameZagr">Фамилия(загр):</label>
+                        <input class="form-control" asp-for="SurnameZagr" />
+                        <label asp-for="NameZagr">Имя(загр):</label>
+                        <input class="form-control" asp-for="NameZagr" />
+                        <label asp-for="PatronymicZagr">Отчество(загр):</label>
+                        <input class="form-control" asp-for="PatronymicZagr" />
+                        <label asp-for="PassRangeZagr">Серия паспорта(загр):</label>
+                        <input class="form-control" asp-for="PassRangeZagr" />
+                        <label asp-for="PassNumberZagr">Номер паспорта(загр):</label>
+                        <input class="form-control" asp-for="PassNumberZagr" />
+                        <label asp-for="PassDepartmentAddrZagr">Адрес выдачи паспорта(загр):</label>
+                        <input class="form-control" asp-for="PassDepartmentAddrZagr"  />
+                        <label asp-for="PassIssueDateZagr">Дата выдачи паспорта(загр):</label>
+                        <input class="form-control" asp-for="PassIssueDateZagr" />
+                        <label asp-for="BirthdayZagr">День рождения(загр):</label>
+                        <input class="form-control" asp-for="BirthdayZagr" />
+
+                        <input id="PageNext" class="form-control" asp-for="PageNext" hidden />
+                        <input id="PageForShow" class="form-control" asp-for="PageForShow" hidden />
+                        <input id="Customerid" class="form-control" asp-for="Customerid" hidden />
+                        <input id="Host" class="form-control" asp-for="Host" hidden />
+                    </div>
+                }
+
+                @if (@Model.PageForShow == 4)
+                {
+                    <div>
+                        <label asp-for="CancelReason">Причина отмены:</label>
+                        <input class="form-control" asp-for="CancelReason" />
+
+                        <input id="PageNext" class="form-control" asp-for="PageNext" hidden />
+                        <input id="PageForShow" class="form-control" asp-for="PageForShow" hidden />
+                        <input id="Customerid" class="form-control" asp-for="Customerid" hidden />
+                        <input id="Host" class="form-control" asp-for="Host" hidden />
+                    </div>
+                }
+
+
+                @if (@Model.PageForShow == 5)
+                {
+                    <div>
+                        <label asp-for="CustomerPostCode">Почтовый индекс:</label>
+                        <input class="form-control" asp-for="CustomerPostCode" />
+                        <label asp-for="CustomerCity">Город:</label>
+                        <input class="form-control" asp-for="CustomerCity" />
+                        <label asp-for="CustomerAdressStreet">Улица:</label>
+                        <input class="form-control" asp-for="CustomerAdressStreet" />
+                        <label asp-for="CustomerAdressHouse">Дом:</label>
+                        <input class="form-control" asp-for="CustomerAdressHouse" />
+                        <label asp-for="CustomerAdressCorps">Корпус:</label>
+                        <input class="form-control" asp-for="CustomerAdressCorps" />
+                        <label asp-for="CustomerAdressApartment">Квартира:</label>
+                        <input class="form-control" asp-for="CustomerAdressApartment" />
+
+                        <input id="PageNext" class="form-control" asp-for="PageNext" hidden />
+                        <input id="PageForShow" class="form-control" asp-for="PageForShow" hidden />
+                        <input id="Customerid" class="form-control" asp-for="Customerid" hidden />
+                        <input id="Host" class="form-control" asp-for="Host" hidden />
+                    </div>
+                }
+
+            </div>
+
+        </div>
+
+        <div class="text-center">
+            <button class="btn btn-primary" type="submit" formaction="~/Passport/RsvpFormOK">СОХРАНИТЬ и ВЕРИФИЦИРОВАТЬ</button>
+            <button class="btn btn-primary" type="submit" formaction="~/Passport/RsvpFormOKOK">ЗАКРЫТЬ ФОРМУ</button>
+        </div>
+    </form>
+
+    <script type="text/javascript">
+        function func1(mypage) {
+            //          if (evnt.keyCode == 13)
+            //elem = document.getElementById('FirstName');
+            //alert('РАБОТАЕT ONBLUR');
+            //cb = document.getElementById('cbARMTypeList');
+
+            document.getElementById('PageNext').value = mypage;
+            //document.getElementById('PageForShow').value = mypage;
+            document.getElementById('PasspForm').submit();
+
+            //this.form.submit()
+        }
+    </script>
+

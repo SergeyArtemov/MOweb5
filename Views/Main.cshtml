@@ -1,0 +1,115 @@
+﻿
+@{
+    Layout =  "_Layout";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <script charset="utf-8" src="~/js/commonScript.js"></script>
+    <script charset="utf-8" src="~/js/commonScript.min.js"></script>
+    <script charset="utf-8" src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script charset="utf-8" src="~/lib/jquery/dist/jquery-ui.js"></script>
+    <script charset="utf-8" src="~/lib/jquery.unobtrusive-ajax/jquery.unobtrusive-ajax.min.js"></script>
+    <title>Home</title>
+    <style>
+        input, select, button {
+            background-color: rgba(255, 255, 255, 0.66);
+            font-family: Tahoma, Geneva, sans-serif;
+            font-size: 12px;
+            margin: 0;
+            padding: 2px;
+            border-radius: 3px;
+            box-shadow: none;
+            outline: none;
+            border: 1px solid rgba(0, 150, 255, 0.3);
+        }
+
+        button {
+            background-color: lightcyan;
+        }
+
+            input:hover, input:focus, select:hover, select:focus, button:hover, button:focus {
+                padding: 2px;
+                border: 1px solid blue;
+            }
+        .menuButton {
+            width: calc(100% - 6px);
+            margin: 3px;
+        }
+    </style>
+</head>
+<body onload="mainLoad(@ViewBag.AppId, @ViewBag.AccountId)">
+
+    <form style="width: 100%; height: 100%; position: fixed; top: 0; left: 0; display: flex; align-items: center;
+        align-content: center; justify-content: center;">
+        <div style=" display: inline-block; padding: 10px; border: 2px solid blue; min-width: 100px; border-radius: 10px; overflow: auto; background-color: lightgray;">
+            <button id="btn_CaseFinForm" class="menuButton" asp-controller="Main" asp-action="ShowCaseFindForm">Поиск заявок</button><br />
+            <button id="btn_MRPSheduleForm" hidden class="menuButton" asp-controller="Main" asp-action="ShowWorkShedulerForm">Перейти к расписанию MRP</button><br />
+            <button id="btn_MRPOrderForm" hidden class="menuButton" asp-controller="Main" asp-action="ShowMRPPickUpForm">Форма заказа MRP</button>
+            <button id="btn_IncomingCall" class="menuButton" asp-controller="Main" asp-action="ShowReports">Отчёты</button>
+            <button id="btn_IncomingCall" class="menuButton" asp-controller="Main" asp-action="ToCustomerFind">Входящие</button>
+            <button id="btn_Confirm" class="menuButton" asp-controller="Order" asp-action="ShowOrders">Подтверждение 2019104934</button>
+            <div hidden>
+                <input name="CustomerId" value="420125999" />
+                <input name="Host" value="1" />
+                <input name="OrderNo" value="2019104934" />
+                <input name="CurrentUser" value="2463" />
+            </div>
+        </div>
+    </form>
+
+    <script>
+        var CurrentUserARMAccesses = null;
+        getARMCheckAccess();
+
+        function checkElementsConditionsARMAccessible() {
+            /* состояние элементов управления в зависимости от прав доступа*/
+            if (checkARMAccess(86)) document.getElementById("btn_MRPSheduleForm").hidden = false;
+            if (checkARMAccess(86)) document.getElementById("btn_MRPOrderForm").hidden = false;
+        }
+
+        function mainLoad(AppId, AccountId) {
+            if (AppId != null && AccountId != null)
+                //alert("" + AppId + " / " + AccountId);
+                pass_identifier(AppId, AccountId);
+        }
+
+        function getARMCheckAccess() {
+            try {
+                $.ajax({
+                url: '/Main/GetAllARMCheckAccesses',
+                    data: {},
+                    type: 'POST',
+                    success: function (data) {
+                        CurrentUserARMAccesses = JSON.parse(data).ArmAccesses;
+                        if (CurrentUserARMAccesses) {
+                            checkElementsConditionsARMAccessible();
+                        }
+                    },
+                    error: function () { alert('Не удалось получить перечень прав доступа текущего пользователя'); $("#loading").hide(); }
+                });
+            }
+            catch (e) { alert('Ошибка ' + e.name + ":" + e.message + "\n" + e.stack); }
+        }
+
+        function pass_identifier(AppId, UserId) {
+            let text = 'tel:MsgType=PASS_ALL|ID=' + AppId + '|UserId=' + UserId + '|URL=' + location.protocol + '//' + location.host + '/Home/ShowOrderByPhone?Phone={Phone}&Line={Line}&IdApp={ID}'
+            let CL = document.createElement("a");
+            CL.href = text;
+            CL.click();
+
+/*
+            let text = 'MsgType=PASS_IDENTIFIER;ID=' + AppId + ';UserId=' + UserId + ';'
+            let CL = document.createElement("a");
+            CL.href = "data:text/plain;charset=utf-8,%EF%BB%BF" + encodeURIComponent(text);
+            CL.download = 'cosc_msg.txt';
+            CL.click();
+*/
+
+
+        }
+    </script>
+</body>
+</html>

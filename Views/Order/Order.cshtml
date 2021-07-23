@@ -1,0 +1,1937 @@
+﻿@model Orders.Order;
+@{
+    Layout = null;
+    string addTitle = "";
+    switch (Model.OrderForm)
+    {
+        case "frmConfirm": addTitle = "Подтверждение"; break;
+        case "frmShipping": addTitle = "Доставка"; break;
+        default: addTitle = ""; break; 
+    }
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="http-equiv" content="Content-type: text/html; charset=UTF-8">
+    <link rel="stylesheet" type="text/css" href="~/css/order.css" />
+    <link rel="stylesheet" type="text/css" href="~/css/common.css" />
+    <title>Заказ @Model.OrderNo @addTitle</title>
+    <!--<environment include="Development">-->
+    <script charset="utf-8" src="~/js/order.js"></script>
+    <script charset="utf-8" src="~/js/commonScript.js"></script>
+    <script charset="utf-8" src="~/js/commonScript.min.js"></script>
+    <script charset="utf-8" src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script charset="utf-8" src="~/lib/jquery/dist/jquery-ui.js"></script>
+    <script charset="utf-8" src="~/lib/jquery.unobtrusive-ajax/jquery.unobtrusive-ajax.min.js"></script>
+    <!--</environment>-->
+
+</head>
+<body onload="onLoadPage()">
+    <style type="text/css">
+    </style>
+
+    <div id="dragArea">
+        <form method="post" action="UpdateOrder">
+            <input hidden id="NextOrder" name="NextOrder" />
+            <input hidden id="ReloadOrder" name="ReloadOrder"/>
+            <input hidden id="order.CurrentUser" name="order.CurrentUser" value="@Model.CurrentUser" />
+            <input hidden id="order.OrderNo" name="order.OrderNo" value="@Model.OrderNo" />
+            <input hidden id="order.Host" name="order.Host" value="@Model.Host" />
+            <input hidden id="order.Currency" name="order.Currency" value="@Model.Currency" />
+            <input hidden name="order.OrderType" value="@Model.OrderType" />
+            <input hidden id="order.OutLine" name="order.OutLine" value="@Model.OutLine" />
+            <input hidden id="order.History" name="order.History" value="@Model.History" />
+            <input hidden id="order.OpenWithParams" name="order.OpenWithParams" value="@Model.OpenWithParams" />
+            <input hidden id="order.PassDataCorrect" name="order.PassDataCorrect" value="@Model.PassDataCorrect" />
+            <input hidden id="order.NeedCheckPassData" name="order.NeedCheckPassData" value="@Model.NeedCheckPassData" />
+            <input hidden id="order.OrderList" name="order.OrderList" value="@Model.OrderList" />
+            <input hidden id="order.OrderForm" name="order.OrderForm" value="@Model.OrderForm" />
+
+            <div class="page-layout no-select">
+                <div class="box row-head" hidden>
+                </div>
+
+                <div class="box left" style="display: flex; flex-direction: column;">
+                    <div style="flex: 1 1 auto; overflow: auto;">
+                        <input hidden id="customer.CallLine" />
+                        <table class="customerTable">
+                            <tbody>
+                                <tr><td colspan="2"><input hidden id="order.Customer.ID" name="order.Customer.ID" value="@Model.Customer.ID" /></td></tr>
+                                <tr><td>Имя </td><td><input id="order.Customer.Name" name="order.Customer.Name" value="@Model.Customer.Name" /></td></tr>
+                                <tr><td>Фамилия </td><td><input id="order.Customer.Surname" name="order.Customer.Surname" value="@Model.Customer.Surname" /></td></tr>
+                                <tr><td>Телефон </td><td><input id="order.Customer.Phone" name="order.Customer.Phone" value="@Model.Customer.Phone" /></td></tr>
+                                <tr><td>Почта </td><td><input id="order.Customer.Email" name="order.Customer.Email" value="@Model.Customer.Email" /></td></tr>
+                                <tr><td>Дата рожд</td><td><input type="date" id="customer.Birthday" /></td></tr>
+                                <tr><td>Пол</td><td><select id="customer.Gender"><option value="0"></option><option value="1">Мужской</option><option value="2">Женский</option></select></td></tr>
+                                <tr><td>Первый заказ: </td><td><label id="customer.FirstOrder"></label></td></tr>
+                                <tr><td>Регион</td><td><select id="customer.Region" style="font-size: 11px;"></select></td></tr>
+                                <tr><td>Способ связи</td><td><select id="customer.PrefContact"></select></td></tr>
+                                <tr id="customer.ManagerLine"><td>Менеджер</td><td><select id="customer.PersManager"></select></td></tr>
+                            <tbody>
+                        </table>
+                        <div style="padding-left: 10px;">
+                            <div id="lbl_customerPassport" style="font-weight: bold; color: red; word-break: normal; white-space: normal;"></div>
+                            <div style="font-size: 10px; color: red;"><input id="customer.NotToSDEK" type="checkbox" /><label for="customer.NotToSDEK">Не доставлять партнёрами</label></div>
+                            <div style="font-size: 10px;"><input id="customer.AutoShipping" type="checkbox" /><label for="customer.AutoShipping">Автосогласование доставки</label></div>
+                            <div style="font-size: 10px;"><input id="customer.PromoCall" type="checkbox" /><label for="customer.PromoCall">Участие в опросах</label></div>
+                            <div style="font-size: 10px;"><input id="customer.Upsell" type="checkbox" /><label for="customer.Upsell">Предлагать товары Upsell</label></div>
+                            <div style="font-size: 10px; color: red;"><input id="customer.NotToRobot" type="checkbox" /><label for="customer.NotToRobot">Не звонить роботом</label></div>
+                            <div style="color: deeppink; font-weight: bold;"><label id="customer.Segment"></label></div>
+                            <div style="color: blue;">Макс заказ: <label id="customer.MaxOrderAmount"></label></div>
+                            <div style="font-weight: bold; color: saddlebrown;">Сумма выкупа: <label id="customer.Buyout"></label></div>
+                        </div>
+
+                        @*@if (ViewData["Customers"] != null) {
+                    System.Data.DataSet ds = (System.Data.DataSet)ViewData["Customers"];
+                    int b = 2;}*@
+                    </div>
+                    <div style="flex: 0 1 auto; overflow: auto; padding-left: 10px;">
+                        <!--<label class="orderButton" onclick="showmodal('orderActions', '', '')">Действия</label>-->
+                        <button type="button" title="Действия" id="orderActions" class="orderButton" onclick="orderActionsMenuSettings()"><img style="height:18px; width: 0;" />&equiv; Действия</button>
+                        <button type="button" class="orderButton" title="Открыть звонки по заказу" onclick="getRingsOnOrder()">
+                            <img src="~/images/calls.png" style="width: 18px; height: 18px;" />
+                        </button>
+                        <button type="button" hidden id="btnChangeShippingAmount" class="orderButton" title="Сменить стоимость доставки" onclick="btnChangeShippingAmountClick()">
+                            <img src="~/images/pen.png" style="width: 18px; height: 18px;" />
+                        </button>
+                        <button type="button" class="orderButton" title="Открыть список отзывов" onclick="">
+                            <img src="~/images/man.png" style="width: 18px; height: 18px;" />
+                        </button>
+                    </div>
+                </div>
+
+                <div class="box main" style="display: flex; flex-direction: column;">
+                    <div style="flex: 0 1 auto;">
+                        <label style="font-weight: bold; word-wrap: break-word; white-space: normal; color: blue; font-size: 14px;" id="orderMessage">
+                            <!--Здесь надо вставить сообщение из заказа. Здесь надо вставить сообщение из заказа. Здесь надо вставить сообщение из заказа.
+                            Здесь надо вставить сообщение из заказа. Здесь надо вставить сообщение из заказа. Здесь надо вставить сообщение из заказа.-->
+                        </label>
+                    </div>
+                    <div style="flex: 1 1 auto; overflow: auto;">
+                        <table class="tableleftcolor" style="word-break: normal; white-space: normal; font-size: 12px;">
+                            <thead style="position: sticky; top: 0; left: 0;">
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Номер заказа</td>
+                                    <td onclick="navigator.clipboard.writeText(@Model.OrderNo);"><input hidden name="order.OrderNo" value="@Model.OrderNo" />@Model.OrderNo</td>
+                                    <td>Дата заказа</td>
+                                    <td><input hidden name="order.OrderDate" value="@Model.OrderDate" />@Model.OrderDate</td>
+                                </tr>
+                                <tr>
+                                    <td>Акция</td>
+                                    <td id="order.Campaign" colspan="3"><input hidden name="order.Campaign" value="@Model.Campaign" />@Model.Campaign</td>
+                                </tr>
+                                <tr>
+                                    <td>Метод оплаты</td>
+                                    <td><input hidden name="order.Payment.Description" value="@Model.Payment.Description" />@Model.Payment.Description</td>
+                                    <td>Сумма заказа</td>
+                                    @{
+                                        var orderAmount = 0.0;
+                                        foreach (var item in Model.OrderItems)
+                                        {
+                                            orderAmount += item.Quantity * item.Price;
+                                        }
+                                        orderAmount += Model.Shipping.ShippingAmount;
+                                    }
+                                    <td>
+                                        <input hidden id="order.OrderAmount" name="order.OrderAmount" value="@orderAmount" />
+                                        <label id="lbl_order.OrderAmount">@orderAmount @Model.Currency</label>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Сумма предоплаты</td>
+                                    <td><input hidden name="order.CashlessAmount" value="@Model.CashlessAmount" />@Model.CashlessAmount @Model.Currency</td>
+                                    @{ double summToPay = @orderAmount - @Model.CashlessAmount; }
+                                    <td>Сумма к оплате</td>
+                                    <td><label id="lbl_summToPay">@summToPay @Model.Currency</label></td>
+                                </tr>
+                                <tr>
+                                    <td>Агент доставки</td>
+                                    <td id="shippingAgent" colspan="3">
+                                        <input hidden name="order.ListPriceAgent" value="@Model.ListPriceAgent" />
+                                        <input hidden id="order.Shipping.ShippingService" name="order.Shipping.ShippingService" value="@Model.Shipping.ShippingService" />
+                                        <input hidden id="order.Shipping.Description" name="order.Shipping.Description" value="@Model.Shipping.Description" />
+                                        <label id="lbl_order.Shipping.Description">@Model.Shipping.Description</label>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Стоимость доставки</td>
+                                    <td>
+                                        <input hidden id="order.Shipping.ShippingAmount" name="order.Shipping.ShippingAmount" value="@Model.Shipping.ShippingAmount" />
+                                        <label id="lbl_order.Shipping.ShippingAmount">@Model.Shipping.ShippingAmount @Model.Currency</label>
+                                    </td>
+                                    <td>Количество позиций</td>
+                                    <td><input hidden name="order.CountItems" value="@Model.CountItems" />@Model.CountItems</td>
+                                </tr>
+                                <tr>
+                                    <td>Ориентир. дата доставки</td>
+                                    <td style="background-color: rgba(255, 200, 0, 0.4);" ondblclick="showmodal('estimatedDeliveryDate', '', '');">
+                                        <input hidden name="order.EstimatedDeliveryDate" value="@Model.EstimatedDeliveryDate" />@Model.EstimatedDeliveryDate
+                                    </td>
+                                    <td>
+                                        Дата и время доставки
+                                        <input hidden id="order.Shipping.ShippingDateFrom" name="order.Shipping.ShippingDateFrom" value="@Model.Shipping.ShippingDateFrom" />
+                                        <input hidden id="order.Shipping.ShippingDateTo" name="order.Shipping.ShippingDateTo" value="@Model.Shipping.ShippingDateTo" />
+                                    </td>
+
+                                    @if (@Model.Shipping.ShippingDateFrom != default & @Model.Shipping.ShippingDateTo != default)
+                                    {
+                                        <td id="lbl_shippingInterval" style="margin:0; padding:0; background-color:rgba(0, 255, 0, 0.2)">
+                                            @Model.Shipping.ShippingDateFrom.ToString("dd.MM.yyyy [ HH:mm") - @Model.Shipping.ShippingDateTo.ToString("HH:mm ]")
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        <td></td>
+                                    }
+                                </tr>
+                                <tr>
+                                    <td>Статус заказа</td>
+                                    <td colspan="3">
+                                        <input hidden id="order.State" name="order.State" value="@Model.State" />
+                                        <input hidden id="order.StateDescr" name="order.StateDescr" value="@Model.StateDescr" />
+                                        <input hidden id="order.CancelReasons" name="order.CancelReasons" value="@Model.CancelReasons" />
+                                        <input hidden id="order.InDispatchReasons" name="order.InDispatchReasons" value="@Model.InDispatchReasons" />
+                                        <input hidden id="order.PartialCancelReasons" name="order.PartialCancelReasons" value="@Model.PartialCancelReasons" />
+                                        <label id="lbl_order.StateDescr">@Model.StateDescr</label>
+                                    </td>
+                                </tr>
+                                @if (String.IsNullOrEmpty(Model.Driver) == false && String.IsNullOrEmpty(Model.CarNum) == false)
+                                {
+                                    <tr>
+                                        <td>Водитель</td>
+                                        <td><input hidden name="order.Driver" value="@Model.Driver" />@Model.Driver</td>
+                                        <td>Номер машины</td>
+                                        <td><input hidden name="order.CarNum" value="@Model.CarNum" />@Model.CarNum</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <div style="flex: 0 1 auto; border-top: 1px solid blue; background-color: aliceblue; overflow: auto; font-size: 11px;">
+                        <div style="float:left; width: 140px; height: 100%; top: 0; left: 0; display: flex; align-items: center;">
+                            @if (@Model.Logo != null)
+                            {
+                                @Html.Hidden("order.Logo", @Model.Logo);
+                                <img src="@Model.Logo" alt="" style="height: 56px; width: 140px; border-radius: 3px;" />
+                            }
+                        </div>
+                        <div style="float: right; width: calc(100% - 140px);">
+                            <div id="orderComments" style="float: left; width: 70%; overflow: auto;">
+                                <fieldset style="margin: 0; padding: 0; border: 1px solid blue;">
+                                    <legend>Комментарии</legend>
+                                    <table class="table table-hover table-condensed" style="margin:0;padding:0;">
+                                        <tr><td>Робота</td><td style="width: 100%;"><input style="width: 100%" name="order.RobotComment" readonly value="@Model.RobotComment" /></td></tr>
+                                        <tr><td>Клиента</td><td style="width: 100%;"><input style="width: 100%" name="order.CustomerComment" value="@Model.CustomerComment" /></td></tr>
+                                        <tr><td>Сотрудника</td><td style="width: 100%;"><input style="width: 100%" name="order.EmplComment" value="@Model.EmplComment" /></td></tr>
+                                        <tr><td>Оператору</td><td style="width: 100%;"><input style="width: 100%" name="order.ForOperComment" readonly value="@Model.ForOperComment" /></td></tr>
+                                    </table>
+                                </fieldset>
+                            </div>
+                            <div id="pickPointState" style="float: left; width: 30%; overflow: auto; height: 78px;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="box right" style="display: flex; flex-direction: column;">
+                    <div style="flex: 1 1 auto; overflow: auto;">
+                        <table id="deliveryTable" class="table table-hover table-condensed" style="margin:0;padding:0; width: calc(100% - 4px);">
+                            <thead></thead>
+                            <tbody>
+                                @{ string str = ((Model.Delivery.DeliverySearchAddr == null ? "" : Model.Delivery.DeliverySearchAddr).Length < 1) ?
+                                                                                                             (Model.Delivery.DeliveryRegion == null ? "" : Model.Delivery.DeliveryRegion.Trim() + " ") +
+                                                                                                             (Model.Delivery.DeliveryRaion == null ? "" : Model.Delivery.DeliveryRaion.Trim() + " ") +
+                                                                                                             (Model.Delivery.DeliveryCity == null ? "" : Model.Delivery.DeliveryCity.Trim() + " ") +
+                                                                                                             (Model.Delivery.DeliveryPunkt == null ? "" : Model.Delivery.DeliveryPunkt.Trim() + " ") +
+                                                                                                             (Model.Delivery.DeliveryStreet == null ? "" : Model.Delivery.DeliveryStreet.Trim() + " ") +
+                                                                                                             (Model.Delivery.DeliveryHouse == null ? "" : Model.Delivery.DeliveryHouse.Trim() + " ") +
+                                                                                                             (Model.Delivery.DeliveryCorps == null ? "" : Model.Delivery.DeliveryCorps.Trim()) :
+                                                                                                             Model.Delivery.DeliverySearchAddr.Trim();}
+                                <tr>
+                                    <td colspan="4">
+                                        <input title="@str" style="width:100%" value="@str" id="geocodeAddr" onkeydown="geocodeAddress(event)" /> @*Строка посика адреса*@
+                                        @*<br /><input hidden id="order.Delivery.exec_InsertDeliveryAddr" name="order.Delivery.exec_InsertDeliveryAddr" value="@Model.Delivery.exec_InsertDeliveryAddr" />*@
+                                    </td>
+                                </tr>
+                                <tr><td>Имя</td><td colspan="3" style="text-align:right"><input style="width:100%" id="order.Delivery.DeliveryName" name="order.Delivery.DeliveryName" value="@Model.Delivery.DeliveryName" /></td></tr>
+                                <tr><td>Фаимлия</td><td colspan="3" style="text-align:right"><input style="width:100%" id="order.Delivery.DeliverySurname" name="order.Delivery.DeliverySurname" value="@Model.Delivery.DeliverySurname" /></td></tr>
+                                <tr><td>Телефон</td><td colspan="3" style="text-align:right"><input style="width:100%" id="order.Delivery.DeliveryPhone" name="order.Delivery.DeliveryPhone" value="@Model.Delivery.DeliveryPhone" /></td></tr>
+                                <tr><td>Индекс</td><td colspan="3" style="text-align:right"><input readonly style="width:100%" id="order.Delivery.DeliveryPostCode" name="order.Delivery.DeliveryPostCode" value="@Model.Delivery.DeliveryPostCode" /></td></tr>
+                                <tr><td>КЛАДР</td><td colspan="3" style="text-align:right"><input readonly style="width:100%" id="order.Delivery.DeliveryKLADR" name="order.Delivery.DeliveryKLADR" value="@Model.Delivery.DeliveryKLADR" /></td></tr>
+                                <tr><td>Регион</td><td colspan="3" style="text-align:right"><input readonly style="width:100%" id="order.Delivery.DeliveryRegion" name="order.Delivery.DeliveryRegion" value="@Model.Delivery.DeliveryRegion" /></td></tr>
+                                <tr><td>Район</td><td colspan="3" style="text-align:right"><input readonly style="width:100%" id="order.Delivery.DeliveryRaion" name="order.Delivery.DeliveryRaion" value="@Model.Delivery.DeliveryRaion" /></td></tr>
+                                <tr><td>Город</td><td colspan="3" style="text-align:right"><input readonly style="width:100%" id="order.Delivery.DeliveryCity" name="order.Delivery.DeliveryCity" value="@Model.Delivery.DeliveryCity" /></td></tr>
+                                <tr><td>Пункт</td><td colspan="3" style="text-align:right"><input readonly style="width:100%" id="order.Delivery.DeliveryPunkt" name="order.Delivery.DeliveryPunkt" value="@Model.Delivery.DeliveryPunkt" /></td></tr>
+                                <tr><td>Улица</td><td colspan="3" style="text-align:right"><input readonly style="width:100%" id="order.Delivery.DeliveryStreet" name="order.Delivery.DeliveryStreet" value="@Model.Delivery.DeliveryStreet" /></td></tr>
+                                <tr>
+                                    <td>Дом</td>
+                                    <td><input style="width:100%" id="order.Delivery.DeliveryHouse" name="order.Delivery.DeliveryHouse" value="@Model.Delivery.DeliveryHouse" /></td>
+                                    <td>Корпус</td>
+                                    <td><input style="width:100%" id="order.Delivery.DeliveryCorps" name="order.Delivery.DeliveryCorps" value="@Model.Delivery.DeliveryCorps" /></td>
+                                </tr>
+                                <tr>
+                                    <td>Квартира</td>
+                                    <td><input style="width:100%" id="order.Delivery.DeliveryApartment" name="order.Delivery.DeliveryApartment" value="@Model.Delivery.DeliveryApartment" /></td>
+                                    <td>Домофон</td>
+                                    <td><input style="width:100%" id="order.Delivery.DeliveryIntercom" name="order.Delivery.DeliveryIntercom" value="@Model.Delivery.DeliveryIntercom" /></td>
+                                </tr>
+                                <tr>
+                                    <td>Подъезд</td>
+                                    <td><input style="width:100%" id="order.Delivery.DeliveryEntrance" name="order.Delivery.DeliveryEntrance" value="@Model.Delivery.DeliveryEntrance" /></td>
+                                    <td>Этаж</td>
+                                    <td><input style="width:100%" id="order.Delivery.DeliveryFloor" name="order.Delivery.DeliveryFloor" value="@Model.Delivery.DeliveryFloor" /></td>
+                                </tr>
+                                <tr>
+                                    <td>Офис</td>
+                                    <td>@Html.CheckBox("order.Delivery.DeliveryIsOffice", @Model.Delivery.DeliveryIsOffice)</td>
+                                    <td colspan="2">
+                                        <select id="DeliveryHubSelect" onchange="hubChange(this)">
+                                            <option value="0">НЕ Хаб</option>
+                                            <option value="1">Хаб</option>
+                                            <option value="2">Хаб оф.</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <!--HIDDEN DELIVERY SECTION >>-->
+                        <div hidden>
+                            DeliveryHub<input readonly id="order.Delivery.DeliveryHub" name="order.Delivery.DeliveryHub" value="@Model.Delivery.DeliveryHub" /><br />
+                            DeliveryId<input readonly id="order.Delivery.DeliveryId" name="order.Delivery.DeliveryId" value="@Model.Delivery.DeliveryId" /><br />
+                            DeliveryAddrId<input readonly id="order.Delivery.DeliveryAddrId" name="order.Delivery.DeliveryAddrId" value="@Model.Delivery.DeliveryAddrId" /><br />
+                            DeliveryAddrRouteId<input readonly id="order.Delivery.DeliveryAddrRouteId" name="order.Delivery.DeliveryAddrRouteId" value="@Model.Delivery.DeliveryAddrRouteId" /><br />
+                            DeliveryAddrDelivId<input readonly id="order.Delivery.DeliveryAddrDelivId" name="order.Delivery.DeliveryAddrDelivId" value="@Model.Delivery.DeliveryAddrDelivId" />
+                        </div>
+                        <!--HIDDEN DELIVERY SECTION <<-->
+                    </div>
+                    <div style="flex: 0 1 auto;">
+                        <input type="checkbox" id="order.ImportantVisible" onchange="orderImportantChange(this)" disabled/>
+                        <label for="order.ImportantVisible" style="color: red; font-size: 10px;"><b>Заказ в приоритете</b></label>
+                        <input type="checkbox" id="order.Important" name="order.Important" value="@Model.Important" hidden/><br />
+                        @{
+                            <script>
+                                document.getElementById('order.ImportantVisible').checked = (@Model.Important > 0);
+                                document.getElementById('order.Important').checked = (@Model.Important > 0);
+                            </script>
+                        }
+                        <label id="lblFirstContact" style="color:darkorchid; text-decoration: underline; font-weight: bold; font-size: 10px;"></label><br />
+                        <button type="button" id="outletButton" class="orderButton" onclick="outletButtonClick(event)" style="width: 90px;">ПВЗ</button>
+                        <button type="button" hidden id="passportButton" onclick="location.href='@Url.Action("Index", "Passport")'+'?'+'customerid=@Model.Customer.ID'+'&host=@Model.Host'" class="orderButton">
+                            Данные паспорта
+                        </button><br />
+                        <label id="deliveryZone"></label>
+                    </div>
+                </div>
+
+                <div class="box col-center">
+                    <div style="width: 200px; overflow: hidden; height:100%; float:left; border-right: 2px solid rgba(0, 150, 255, 0.3); text-align: center;" id="itemOnePhoto">
+                    </div>
+
+                    <div style="width: calc(100% - 202px); display: flex; flex-direction: column; height: 100%;">
+                        <div style="flex: 1 1 auto; overflow: auto;">
+                            <div style="width: 55%; float: left; border-right: 2px solid rgba(0, 150, 255, 0.3); height: 100%">
+                                <div style="overflow: auto; height: 100%" id="itemsTableDiv">
+                                    <table class="table table-condensed" id="itemsTable" oncontextmenu="itemsTableOnContextMenu(event)"
+                                           onclick="itemsTableOnClick(event)">
+                                        <thead style="position: sticky; top: 0; left: 0;">
+                                            <tr>
+                                                <th scope="col">№</th>
+                                                <th scope="col">Cклад</th>
+                                                <th scope="col">Кол-во</th>
+                                                <th scope="col">Название</th>
+                                                <th scope="col">Номер</th>
+                                                <th scope="col">Размер</th>
+                                                <th scope="col">Цена</th>
+                                                <th scope="col">На сайте</th>
+                                                <th scope="col">Перс</th>
+                                                <th scope="col">Купон</th>
+                                                <th scope="col">Мобил</th>
+                                                <th scope="col">Прочее</th>
+                                                <th scope="col">Предопл</th>
+                                                <th scope="col">Спец</th>
+                                                <th scope="col">Причина отмены</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @{
+                                                int i = 0;
+                                                foreach (var item in Model.OrderItems)
+                                                {
+                                                    <tr>
+                                                        <td hidden>
+                                                            <input name="order.OrderItems[@i].Url" value="@item.Url" />
+                                                            <input name="order.OrderItems[@i].OrderNo" value="@item.OrderNo" />
+                                                            <input name="order.OrderItems[@i].Host" value="@item.Host" />
+                                                            <input name="order.OrderItems[@i].ItemOpenParams" value="@item.ItemOpenParams" />
+                                                            <input name="order.OrderItems[@i].CancelReasonId" value="@item.CancelReasonId" />
+                                                            <input name="order.OrderItems[@i].CancelReasonDescr" value="@item.CancelReasonDescr" />
+                                                            <input name="order.OrderItems[@i].CSKU" value="@item.CSKU" />
+                                                            <input name="order.OrderItems[@i].Description" value="@item.Description" />
+                                                            <input name="order.OrderItems[@i].LineNo" value="@item.LineNo" />
+                                                            <input name="order.OrderItems[@i].Variant" value="@item.Variant" />
+                                                            <input name="order.OrderItems[@i].inWare" value="@item.inWare" />
+                                                            <input name="order.OrderItems[@i].Price" value="@item.Price" />
+                                                            <input name="order.OrderItems[@i].Changed" value="@item.Changed" />
+                                                            <input name="order.OrderItems[@i].Accumulative" value="@item.Accumulative" />
+                                                            <input name="order.OrderItems[@i].Coupon" value="@item.Coupon" />
+                                                            <input name="order.OrderItems[@i].Mobile" value="@item.Mobile" />
+                                                            <input name="order.OrderItems[@i].Other" value="@item.Other" />
+                                                            <input name="order.OrderItems[@i].Payment" value="@item.Payment" />
+                                                            <input name="order.OrderItems[@i].Special" value="@item.Special" />
+                                                            <input name="order.OrderItems[@i].Quantity" value="@item.Quantity" />
+                                                        </td>
+                                                        <td>@item.LineNo</td>
+                                                        <td>@item.inWare</td>
+                                                        <td>
+                                                            <select name="order.OrderItems[@i].QuantitySelect" onchange="itemQuantityChange(this)"
+                                                                    style="width: 100%; border: none; padding: 0; margin: 0; background-color: rgba(0, 0, 0, 0)">
+                                                                @for (int qty = 0; qty <= Convert.ToInt32(item.ItemOpenParams.Split(";")[0]); qty++)
+                                                                {
+                                                                    if (qty == item.Quantity)
+                                                                    {
+                                                                        <option selected value="@qty">@qty</option> }
+                                                                    else
+                                                                    {
+                                                                        <option value="@qty">@qty</option>}
+                                                                }
+                                                            </select>
+                                                        </td>
+                                                        <td>@item.Description</td>
+                                                        <td>@item.CSKU</td>
+                                                        <td>@item.Variant</td>
+                                                        <td>@item.Price @Model.Currency</td>
+                                                        <td>@{ var onsite = item.Price + item.Accumulative + item.Coupon + item.Mobile + item.Other + item.Payment + item.Special; }@onsite @Model.Currency</td>
+                                                        <td>@item.Accumulative @Model.Currency</td>
+                                                        <td>@item.Coupon @Model.Currency</td>
+                                                        <td>@item.Mobile @Model.Currency</td>
+                                                        <td>@item.Other @Model.Currency</td>
+                                                        <td>@item.Payment @Model.Currency</td>
+                                                        <td>@item.Special @Model.Currency</td>
+                                                        <td onclick="itemPartialReasonChange(this)">@item.CancelReasonDescr</td>
+                                                    </tr>
+                                                    i++;
+                                                }
+                                            }
+                                        <tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div style="width: 40px; overflow:auto; float:left; border-right: 2px solid rgba(0, 150, 255, 0.3); text-align: center; height: 100%">
+                                <div id="intervalsShowDiv" style="margin: 0 2px;">
+                                    <label for="selectWeekOnlyShow">+ нед</label><br>
+                                    <select id="selectWeekOnlyShow" onchange="getShippingIntervalsOnlyShow(document.getElementById('selectWeekOnlyShow').value)">
+                                        <option value="0">0</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                    </select>
+                                    <div id="shippingIntervalsOnlyShowDiv" style="font-size: 0px; width: 36px; padding-bottom: 5px;"></div>
+                                    <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: center;">
+                                        <button hidden type="button" id="btnChangeAgent" class="orderButton" title="Поменять агента доставки">
+                                            <img src="~/images/man.png" /></button>
+                                        <button hidden type="button" id="btnChangeState" class="orderButton" title="Поменять статус вручную" onclick="btnChangeStateClick()">
+                                            <img src="~/images/pen.png" /></button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="width: calc(45% - 44px); overflow: auto; height:100%; float:left">
+                                <div style="border-bottom: 1px solid blue; height: 24px; border-radius: 4px; padding: 0 2px 2px 0;">
+                                    <button type="button" class="orderButton" id="historyFilter" title="Фильтр истории">История</button>
+                                    <button type="button" onclick="showmodal('changeAddressHistory', '', '')" class="orderButton" title="История поиска адреса">Поиск адреса</button>
+                                    @if (/*@Model.Delivery.DeliveryAddrId != null && */ @Model.Delivery.DeliveryAddrId != 0)
+                                    {
+                                        <button type="button" onclick="showAddressOnMap(@Model.Delivery.DeliveryAddrId)" class="orderButton">На карте</button>
+                                    }
+                                    <!--<button type="button" class="orderButton" onclick="window.open('https://www.google.ru/?hl=ru', 'hello', 'width=200,height=200')">Кнопка 1</button>
+    <button type="button" class="orderButton">Кнопка 2</button>-->
+                                    <nav id="historyFilterList" class="event-menu dragElement">
+                                        <ul class="menuHead"><a class="menuClose">x</a></ul>
+                                        <table cellpadding="2">
+                                            <tr>
+                                                <td><label for="history1"><input type="checkbox" id="history1" onchange="getOrderHistory()" />Приоритет</label></td>
+                                                <td><label for="history2"><input type="checkbox" id="history2" onchange="getOrderHistory()" />Очередь дост.</label></td>
+                                                <td><label for="history3"><input type="checkbox" id="history3" onchange="getOrderHistory()" />Пасп. данные</label></td>
+                                            </tr>
+                                            <tr>
+                                                <td><label for="history4"><input type="checkbox" id="history4" onchange="getOrderHistory()" />Склад</label></td>
+                                                <td><label for="history5"><input type="checkbox" id="history5" onchange="getOrderHistory()" />Комментарий</label></td>
+                                                <td><label for="history6"><input type="checkbox" id="history6" onchange="getOrderHistory()" />Рассрочка</label></td>
+                                            </tr>
+                                            <tr>
+                                                <td><label for="history7"><input type="checkbox" id="history7" onchange="getOrderHistory()" />Помощь в выб.</label></td>
+                                                <td><label for="history8"><input type="checkbox" id="history8" onchange="getOrderHistory()" />Автоматич. звонок</label></td>
+                                                <td><label for="history9"><input type="checkbox" id="history9" onchange="getOrderHistory()" />Брал в работу</label></td>
+                                            </tr>
+                                            <tr>
+                                                <td><label for="history10"><input type="checkbox" id="history10" onchange="getOrderHistory()" />Недозвон</label></td>
+                                                <td><label for="history11"><input type="checkbox" id="history11" onchange="getOrderHistory()" />Изменён адресат</label></td>
+                                                <td><label for="history12"><input type="checkbox" id="history12" onchange="getOrderHistory()" />Письмо</label></td>
+                                            </tr>
+                                            <tr>
+                                                <td><label for="history13"><input type="checkbox" id="history13" onchange="getOrderHistory()" />Кол-во товара</label></td>
+                                                <td><label for="history14"><input type="checkbox" id="history14" onchange="getOrderHistory()" />Метод оплаты</label></td>
+                                                <td><label for="history15"><input type="checkbox" id="history15" onchange="getOrderHistory()" />Доставка</label></td>
+                                            </tr>
+                                            <tr>
+                                                <td><label for="history16"><input type="checkbox" id="history16" onchange="getOrderHistory()" />Статус</label></td>
+                                                <td><label for="history17"><input type="checkbox" id="history17" onchange="getOrderHistory()" />СМС</label></td>
+                                                <td><label for="history18"><input type="checkbox" id="history18" onchange="getOrderHistory()" />Перезвонок</label></td>
+                                            </tr>
+                                            <tr>
+                                                <td><label for="history19"><input type="checkbox" id="history19" onchange="getOrderHistory()" />Сохр заказа</label></td>
+                                                <td><label for="history20"><input type="checkbox" id="history20" onchange="getOrderHistory()" />Апселл</label></td>
+                                                <td>
+                                                    <b>
+                                                        <label style="display:inline-block; text-align:center; width:20px; border:2px solid black;" onclick="checkAllSelectHistory(event);">+</label>
+                                                        <label style="display:inline-block; text-align:center; width:20px; border:2px solid black;" onclick="checkNoSelectHistory(event);">-</label>
+                                                    </b>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </nav>
+
+                                </div>
+                                <div id="history" style="height: calc(100% - 28px); overflow:auto;">
+                                    @if (String.IsNullOrEmpty(Model.History) != true)
+                                    {
+                                        System.Data.DataSet history = Newtonsoft.Json.JsonConvert.DeserializeObject<System.Data.DataSet>(Model.History);
+                                        for (int cntHistory = 0; cntHistory < history.Tables["History"].Rows.Count; cntHistory++)
+                                        {
+                                            <label title="@history.Tables["History"].Rows[cntHistory]["DateDescr"]">
+                                                <label hidden>@history.Tables["History"].Rows[cntHistory]["SourceID"]</label>
+                                                @history.Tables["History"].Rows[cntHistory]["DateDescr"]
+                                            </label><br />
+                                        }
+                                    }
+                                </div>
+                                <!--<partial name="~/Views/Order/Partial/OrderHistory.cshtml" />-->
+                            </div>
+                        </div>
+                        <div style="flex: 0 1 auto; width: 100%; border-top: 1px solid blue;">
+                            <div style="overflow: auto; position: relative;">
+                                <div style="float: left;">
+                                    <button type="button" class="orderButton" id="callToButton">Позвонить</button>
+                                    <button type="button" hidden class="orderButton" id="smsButton">SMS</button>
+                                    <button type="button" hidden class="orderButton" id="emailButton">Email</button>
+                                    <button type="button" hidden class="orderButton" onclick="shipAgentButtonClick(this, event)" id="shipAgentButton">Агент доставки</button>
+                                    <button type="button" hidden class="orderButton" onclick="confirmButtonClick()" id="confirmButton">Подтвердить</button>
+                                    <button type="button" hidden class="orderButton" id="cashButton">
+                                        <img src="~/images/cash.png" style="height: 13px;" />Наличными
+                                    </button>
+                                    <button type="button" hidden class="orderButton" onclick="shippingButtonClick(this)" id="shippingButton">Доставка</button>
+                                    <button type="button" class="orderButton" onclick="cancelOrderClick(this, event)" id="cancelButton">Отменить</button>
+                                    <button type="button" class="orderButton" onclick="inDispatchClick(this, event)" id="inDispatchButton">Перенос</button>
+                                    <button type="button" class="orderButton" id="recallButton">Перезвонить</button>
+                                    <button type="button" class="orderButton" id="uncallButton">
+                                        <img src="~/images/uncall.png" style="width: 13px; height: 13px;" />Недозвон
+                                    </button>
+                                </div>
+                                <div style="float: right;">
+                                    <button hidden type="button" id="btnAgentSummRight" class="orderButton"><img style="height: 13px;" src="~/images/ok.png" />Агент и сумма верные</button>
+                                </div>
+                            </div>
+                            <div id="orderButtonsDiv" style="overflow: auto; border-top: 1px solid blue;">
+                                @if (!String.IsNullOrEmpty(Model.OrderList))
+                                {
+                                    var ol = Model.OrderList.Split(",");
+                                    if (ol.Length > 1)
+                                    {
+                                        for (i = 0; i < ol.Length; i++)
+                                        {
+                                            <button type="button" class="orderButton" style="font-size: 12px;" onclick="openNextOrderClick(this)">@ol[i]</button>
+                                        }
+                                    }
+                                }
+                                <!--<button type="button">www</button><button type="button">www</button><button type="button">www</button>
+                                <button type="button">www</button><button type="button">www</button><button type="button">www</button>
+                                <button type="button">www</button><button type="button">www</button><button type="button">www</button>
+                                <button type="button">www</button><button type="button">www</button><button type="button">www</button>
+                                <button type="button">www</button><button type="button">www</button><button type="button">www</button>
+                                <button type="button">www</button><button type="button">www</button><button type="button">www</button>-->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="box col-footer" style="margin-left: 2px; position: relative; display: inline-block; overflow: auto;">
+                    <div style="padding: 2px; float: left;">
+                        <button type="button" id="btn_close" class="orderButton" style="background-color: lightcoral;" onclick="orderClose(this)">Закрыть</button>
+                        <button hidden id="btn_model_upd" value="btn_model_upd" formaction="~/Order/UpdateModel">Ничего</button>
+                        <button hidden id="btn_update" value="btn_update" formaction="UpdateOrder" class="orderButton">Обновить</button>
+                        <button id="btn_save" value="btn_save" onclick="saveOrder(event)" formaction="SaveOrder" class="orderButton">Сохранить</button>
+                        <button hidden id="btn_q" value="btn_q" formaction="Query" class="orderButton">Запрос</button>
+                    </div>
+                    <div style="float: left; font-weight: bold; color: blue; padding: 2px;">
+                        <div id="canForvardPVZDiv" style="display: none;">
+                            <label>Продлить срок хранения на</label>
+                            <select id="forvardPVZDays">
+                            </select>
+                            <label>дн.</label>
+                            <button type="button" class="orderButton">Продлить</button>
+                        </div>
+                    </div>
+                    <div style="float: right; overflow: auto; padding: 2px; position: relative; display: inline-block; background-color: powderblue; border-radius: 3px;">
+                        <div style="float: left; font-size: 11px;">Комментарий<br />по клиенту</div>
+                        <div style="float: right"><textarea id="commentFromCustomerTable" style="resize: none; min-width: 400px; border-radius: 3px;"></textarea></div>
+                    </div>
+
+                    <!--<div id="orderButtonsDiv" style="display: inline-flex; flex-wrap: wrap; overflow: auto; width: 30%; float:left; height: 100%;">
+                    </div>-->
+                </div>
+            </div>
+        </form>
+
+        <!-- >> MODAL form -->
+        <div id="openModal" class="modal no-select">
+            <div id="dialogContent" class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title">Геокодирование адреса</h3>
+                        <a href="#close" title="Close" class="close">×</a>
+                    </div>
+                    <div class="modal-body">
+                        <partial name="~/Views/Order/Geocode/MainGeocode.cshtml" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- << MODAL form -->
+
+    </div>
+    <!-- >> LOADING -->
+    <div id="loading" style="z-index: 9999; opacity: .95; filter: alpha(opacity=95); display:none; text-align: center; width: 100%; height: 100%;
+        position: fixed; top: 0; left: 0;">
+        <div style="border: 2px solid blue; border-radius: 10px; background-color: lightblue; position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%); padding: 10px;">
+            <label style="color: blue; font-size:16px;"><b>Загрузка...</b></label>
+            <br /><img src="~/images/loading.gif" width="100" height="100" />
+        </div>
+    </div>
+    <!-- << LOADING -->
+    <!-- >> MODAL WINDOW with CSS-->
+    <input class="lb_modal__check" type="checkbox" id="lb_modal" onchange="lb_modalChange()" />
+    <div class="lb_modal no-select">
+        <label class="lb_modal__closetwo" for="lb_modal"></label>
+        <div class="lb_modal__info">
+            <div style="height: 16px; padding: 3px;" id="lb_modal_title">
+                <!--MODAL TITLE-->
+            </div>
+            <div id="modalBody" class="modalBody">
+                <!--MODAL BODY-->
+            </div>
+        </div>
+    </div>
+    <!-- << MODAL WINDOW with CSS-->
+    <!-- >> ПРИЧИНЫ ОТМЕНЫ ЗАКАЗА-->
+    <nav id="cancelReasonsMenu" class="event-menu dragElement">
+        <ul class="menuHead"><a class="menuClose">x</a></ul>
+        <ul id="cancelReasons" class="event-menu__items">
+            @if (!String.IsNullOrEmpty(Model.CancelReasons))
+            {
+                System.Data.DataSet cancelReasons = Newtonsoft.Json.JsonConvert.DeserializeObject<System.Data.DataSet>(Model.CancelReasons);
+                for (int cntCancelReasons = 0; cntCancelReasons < cancelReasons.Tables["CancelReasons"].Rows.Count; cntCancelReasons++)
+                {
+                    if (cancelReasons.Tables["CancelReasons"].Rows[@cntCancelReasons]["id"].ToString() != "-1")
+                    {
+                        var cancelFunc = String.Format($"cancelOrderMenuClick({cancelReasons.Tables["CancelReasons"].Rows[@cntCancelReasons]["id"]}," +
+                                                        $" '{@cancelReasons.Tables["CancelReasons"].Rows[@cntCancelReasons]["Description"]}')");
+                        <li class="event-menu__item" onclick="@cancelFunc">
+                            @cancelReasons.Tables["CancelReasons"].Rows[@cntCancelReasons]["Description"]
+                        </li>
+                    }
+                    else
+                    {
+                        <li style="text-align: center;">&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;</li>
+                    }
+                }
+            }
+        </ul>
+    </nav>
+    <!-- << ПРИЧИНЫ ОТМЕНЫ ЗАКАЗА-->
+    <!-- >> ДОСТУПНЫЕ СТАТУСЫ ПРИ ЗАКАЗЕ В ОТПРАВКЕ-->
+    <nav id="inDispatchReasonsMenu" class="event-menu dragElement">
+        <ul class="menuHead"><a class="menuClose">x</a></ul>
+        <ul id="inDispatchReasons" class="event-menu__items">
+            @if (!String.IsNullOrEmpty(Model.InDispatchReasons))
+            {
+                System.Data.DataSet inDispatchReasons = Newtonsoft.Json.JsonConvert.DeserializeObject<System.Data.DataSet>(Model.InDispatchReasons);
+                for (int cntInDispatchReasons = 0; cntInDispatchReasons < inDispatchReasons.Tables["InDispatchReasons"].Rows.Count; cntInDispatchReasons++)
+                {
+                    //var inDispatchFunc = String.Format($"cancelOrderMenuClick({inDispatchReasons.Tables["InDispatchReasons"].Rows[@cntInDispatchReasons]["id"]}," +
+                    //                                $" '{@inDispatchReasons.Tables["InDispatchReasons"].Rows[@cntInDispatchReasons]["Description"]}')");
+                    var inDispatchFunc = "alert('LooooooooL');";
+                    <li onclick="@inDispatchFunc" class="event-menu__item">
+                        @inDispatchReasons.Tables["InDispatchReasons"].Rows[@cntInDispatchReasons]["Description"]
+                    </li>
+                }
+            }
+        </ul>
+    </nav>
+    <!-- << ДОСТУПНЫЕ СТАТУСЫ ПРИ ЗАКАЗЕ В ОТПРАВКЕ-->
+    <!-- >> ДОСТУПНЫЕ АГЕНТЫ ДОСТАВКИ-->
+    <nav id="listPriceAgentMenu" class="event-menu dragElement">
+        <ul class="menuHead"><a class="menuClose">x</a></ul>
+        <ul id="listPriceAgent" class="event-menu__items">
+            @if (!String.IsNullOrEmpty(Model.ListPriceAgent))
+            {
+                System.Data.DataSet listPriceAgent = Newtonsoft.Json.JsonConvert.DeserializeObject<System.Data.DataSet>(Model.ListPriceAgent);
+                for (int cntListPriceAgent = 0; cntListPriceAgent < listPriceAgent.Tables["ListPriceAgent"].Rows.Count; cntListPriceAgent++)
+                {
+                    var agentFunc = String.Format($"selectShipAgent({listPriceAgent.Tables["ListPriceAgent"].Rows[@cntListPriceAgent]["ServiceId"]}, '" +
+                                                    $"{listPriceAgent.Tables["ListPriceAgent"].Rows[@cntListPriceAgent]["AgentName"]}', " +
+                                                    $"{listPriceAgent.Tables["ListPriceAgent"].Rows[@cntListPriceAgent]["IsPickUp"]}, " +
+                                                    $"{listPriceAgent.Tables["ListPriceAgent"].Rows[@cntListPriceAgent]["Price"]})");
+                    <li class="event-menu__item" onclick="@agentFunc">
+                        <b>@listPriceAgent.Tables["ListPriceAgent"].Rows[@cntListPriceAgent]["Price"]руб.</b> -
+                        @listPriceAgent.Tables["ListPriceAgent"].Rows[@cntListPriceAgent]["AgentName"]
+                    </li>
+                }
+            }
+            else
+            {
+                <li>Нет доступных для выборв агентов доставки</li>
+            }
+        </ul>
+    </nav>
+    <!-- << ДОСТУПНЫЕ АГЕНТЫ ДОСТАВКИ-->
+
+    <div hidden id="selectWeekHidden">
+        <label for="selectWeek">+ недель</label>
+        <select id="selectWeek" onchange="getShippingIntervals(document.getElementById('selectWeek').value, 0)">
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+        </select>
+        <label hidden id="lbl_selectedIterval" style="font-size: 18px; font-weight: bold; color: blue; padding: 2px 10px; background-color: rgba(200, 255, 200, 0.5);">
+            Выбранный интервал:
+        </label>
+        <div id="intervalsTable">
+        </div>
+    </div>
+
+    <!-- >> Меню действий с заказом -->
+    <nav id="contextMenuOrderActions" class="event-menu dragElement">
+        <ul class="menuHead"><a class="menuClose">x</a></ul>
+        <ul class="event-menu__items">
+            <li class="event-menu__item">
+                Заявки
+                <nav class="subMenu">
+                    <ul class="event-menu__items" id="customerRequests">
+                        <!--<li class="event-menu__item" onclick="alert('111_1')">111_1</li>
+                        <li class="event-menu__item" onclick="alert('222_1')">222_1</li>-->
+                    </ul>
+                </nav>
+            </li>
+            <li class="event-menu__item" onclick="showmodal('personalDiscount', '', '')">Персональная скидка</li>
+            <li class="event-menu__item">
+                Другие аккаунты
+                <nav class="subMenu">
+                    <ul class="event-menu__items">
+                        <li class="event-menu__item" id="anotherAccounts0">
+                            Подтверждения
+                            <nav class="subMenu">
+                                <ul class="event-menu__items" id="anotherAccounts0List"></ul>
+                            </nav>
+                        </li>
+                        <li class="event-menu__item" id="anotherAccounts1">
+                            Входящие
+                            <nav class="subMenu">
+                                <ul class="event-menu__items" id="anotherAccounts1List"></ul>
+                            </nav>
+                        </li>
+                        <li class="event-menu__item" id="anotherAccounts2">
+                            Доставка
+                            <nav class="subMenu">
+                                <ul class="event-menu__items" id="anotherAccounts2List"></ul>
+                            </nav>
+                        </li>
+                    </ul>
+                </nav>
+            </li>
+            <li class="event-menu__item">
+                Телефоны
+                <nav class="subMenu">
+                    <ul class="event-menu__items" id="customerPhones"></ul>
+                </nav>
+            </li>
+        </ul>
+    </nav>
+    <!-- << Меню действий с заказом -->
+    <!-- >> Увеличенное окно с интервалами-->
+    <nav id="intervalsWidget" class="event-menu dragElement">
+        <ul class="menuHead"><a class="menuClose">x</a></ul>
+        <div id="intervalsWidgetTable" style="font-size: 14px;">
+        </div>
+    </nav>
+    <!-- << Увеличенное окно с интервалами-->
+    <!-- >> Меню действий с товарами -->
+    <nav id="itemsActions" class="event-menu dragElement">
+        <ul class="menuHead"><a class="menuClose">x</a></ul>
+        <ul class="event-menu__items">
+            <li class="event-menu__item" id="itemsActionsShowPhoto" onclick="itemsActionsShowPhotoClick()">Все фото товара</li>
+            <li class="event-menu__item" id="itemsActionsShowPhoto" onclick="itemsActionsItemsInWindow()">Товары в окне</li>
+            <!--<li class="event-menu__item" onclick="changeItemQuantity()">Изменить кол-во</li>-->
+        </ul>
+    </nav>
+    <!-- << Меню действий с товарами -->
+    <!-- >> Меню нажатия на кнопку Позвонить-->
+    <nav id="callToMenu" class="event-menu dragElement">
+        <ul class="menuHead"><a class="menuClose">x</a></ul>
+        <ul class="event-menu__items">
+            <li class="event-menu__item" onclick="callFromOrder(0)">На номер клиента</li>
+            <li class="event-menu__item" onclick="callFromOrder(1)">На номер получателя</li>
+        </ul>
+    </nav>
+    <!-- << Меню нажатия на кнопку Позвонить-->
+    <!-- >> Меню перезвонка-->
+    <nav id="recallMenu" class="event-menu dragElement">
+        <ul class="menuHead"><a class="menuClose">x</a></ul>
+        <ul class="event-menu__items">
+            <li class="event-menu__item">Через 20 минут</li>
+            <li class="event-menu__item">Через 30 минут</li>
+            <li class="event-menu__item">Через 1 час</li>
+            <li class="event-menu__item">Через 2 часа</li>
+            <li class="event-menu__item">Через 3 часа</li>
+            <li class="event-menu__item">Через 6 часов</li>
+            <li class="event-menu__item">Через 24 часа</li>
+            <li class="event-menu__item">В 13:10</li>
+            <li class="event-menu__item">В 14:10</li>
+            <li class="event-menu__item">В 18:10</li>
+            <li class="event-menu__item">В 20:10</li>
+            <li class="event-menu__item">В 21:10</li>
+        </ul>
+    </nav>
+    <!-- << Меню перезвонка-->
+    <!-- >> Меню нажатия на кнопку SMS-->
+    <nav id="smsMenu" class="event-menu dragElement">
+        <ul class="menuHead"><a class="menuClose">x</a></ul>
+        <ul class="event-menu__items">
+            <li style="display: none;" class="event-menu__item" id="smsMenu01">SMS: Неверные контакты</li>
+            <li style="display: none;" class="event-menu__item" id="smsMenu02">SMS: Подтверждение</li>
+            <li style="display: none;" class="event-menu__item" id="smsMenu03">SMS: Недозвон</li>
+            <li style="display: none;" class="event-menu__item" id="smsMenu04">SMS: Отмена</li>
+        </ul>
+    </nav>
+    <!-- << Меню нажатия на кнопку SMS-->
+    <!-- >> Меню нажатия на кнопку Email-->
+    <nav id="emailMenu" class="event-menu dragElement">
+        <ul class="menuHead"><a class="menuClose">x</a></ul>
+        <ul class="event-menu__items">
+            <li style="display: none;" class="event-menu__item" id="emailMenu01">Email: Неверные контакты</li>
+            <li style="display: none;" class="event-menu__item" id="emailMenu02">Email: Подтверждение</li>
+            <li style="display: none;" class="event-menu__item" id="emailMenu03">Email: Недозвон</li>
+            <li style="display: none;" class="event-menu__item" id="emailMenu04">Email: Отмена по недозвону</li>
+            <li style="display: none;" class="event-menu__item" id="emailMenu05">Email: Отмена по просьбе клиента</li>
+            <li style="display: none;" class="event-menu__item" id="emailMenu06">Email: Паспортные данные</li>
+            <li style="display: none;" class="event-menu__item" id="emailMenu07">Email: Недозвон доставка</li>
+        </ul>
+    </nav>
+    <!-- << Меню нажатия на кнопку Email-->
+    <!-- >> dragWidget-->
+    <nav id="dragWidget" class="dragElement dragWidget">
+        <ul class="dragWidgetHead">
+            <label id="dragWidgetTitle"></label>
+            <a class="dragWidgetClose" onclick="dragWidget.classList.remove('dragWidget--active')">x</a>
+        </ul>
+        <div id="dragWidgetContent" style="overflow: auto; max-width: 80vw; max-height: 80vh;">
+        </div>
+    </nav>
+    <!-- << dragWidget-->
+    <!-- >> Items Partial Cancel Reasons-->
+    <div hidden id="itemPartialCancelReasons">
+        <ul id="itemPartialCancelReasonsList">
+            @if (!String.IsNullOrEmpty(Model.PartialCancelReasons))
+            {
+                var partCancelId = 0;
+                var partCancelDescr = "";
+                @*<li onclick="setItemCancelPartialReason(@partCancelId, '@partCancelDescr')">@partCancelDescr</li>*@
+                System.Data.DataSet partCancelReasons = Newtonsoft.Json.JsonConvert.DeserializeObject<System.Data.DataSet>(Model.PartialCancelReasons);
+
+                for (int cntPartCancelReasons = 0; cntPartCancelReasons < partCancelReasons.Tables["PartialCancelReasons"].Rows.Count; cntPartCancelReasons++)
+                {
+                    partCancelId = Convert.ToInt32(partCancelReasons.Tables["PartialCancelReasons"].Rows[cntPartCancelReasons].ItemArray[0]);
+                    partCancelDescr = partCancelReasons.Tables["PartialCancelReasons"].Rows[cntPartCancelReasons].ItemArray[1].ToString();
+                    <li onclick="setItemCancelPartialReason(@partCancelId, '@partCancelDescr')">@partCancelDescr</li>
+                }
+            }
+        </ul>
+    </div>
+    <!-- << Items Partial Cancel Reasons-->
+    <!-- >> Список ПВЗ-->
+    <div hidden id="outletListHidden">
+    </div>
+    <!-- << Список ПВЗ-->
+    
+    @if (String.IsNullOrEmpty(ViewBag.DiviationViewAndMapper) == false)
+    {
+        <input hidden id="order.DiviationViewAndMapper" value="@ViewBag.DiviationViewAndMapper" />
+    }
+
+
+
+    <script type="text/javascript">
+
+    // >> Получение начальных параметров, с которыми открывается заказ
+    var openWithParams = JSON.parse(document.getElementById("order.OpenWithParams").value).OpenWithParams;
+    if (openWithParams.length > 0) {
+        var orderAmount = openWithParams[0].OrderAmount;
+        var orderState = openWithParams[0].State;
+        var orderStateDescr = openWithParams[0].StateDescr;
+        var orderShippingService = openWithParams[0].ShippingService;
+        var orderAgentDescription = openWithParams[0].AgentDescription;
+        var orderShippingAmount = openWithParams[0].ShippingAmount;
+        var orderShippingDateFrom = openWithParams[0].ShippingDateFrom;
+        var orderShippingDateTo = openWithParams[0].ShippingDateTo;
+    }
+    var dragWidget = document.getElementById('dragWidget');
+    var dragWidgetTitle = document.getElementById('dragWidgetTitle');
+    var dragWidgetContent = document.getElementById("dragWidgetContent");
+    var selectedItem = null;
+    var selectedItemPhotoIndex = 0;
+    var itemCancelReasonIdInput = null;  // в такущей строке Товаров элемент с ID причины отмены товара
+    var itemCancelReasonDescrInput = null; // в такущей строке Товаров элемент с Причиной причины отмены товара
+    //alert("" + orderState + " \n " + orderShippingService + " \n " + orderShippingAmount + " \n " + orderShippingDateFrom + " \n " + orderShippingDateTo);
+    // << Получение начальных параметров, с которыми открывается заказ
+    var CurrentUserARMAccesses = null;
+
+    function getARMCheckAccess() {
+        try {
+            $.ajax({
+                url: '/Main/GetAllARMCheckAccesses',
+                data: {},
+                type: 'POST',
+                success: function (data) {
+                    CurrentUserARMAccesses = JSON.parse(data).ArmAccesses;
+                    if (CurrentUserARMAccesses) {
+                        canForwardInPVZ();
+                        checkElementsConditionsARMAccessible();
+                    }
+                },
+                error: function () { alert('Не удалось получить перечень прав доступа текущего пользователя'); $("#loading").hide(); }
+            });
+        }
+        catch (e) { alert('Ошибка ' + e.name + ":" + e.message + "\n" + e.stack); }
+    }
+
+    function checkElementsConditionsARMAccessible() {
+        /* состояние элементов управления в зависимости от прав доступа*/
+        if (checkARMAccess(65)) document.getElementById("btnChangeShippingAmount").hidden = false;
+        if (checkARMAccess(66)) document.getElementById("btnAgentSummRight").hidden = false;
+        if (checkARMAccess(66)) document.getElementById("btnChangeAgent").hidden = false;
+        if (checkARMAccess(69)) document.getElementById("btnChangeState").hidden = false;
+        if (checkARMAccess(74)) document.getElementById("order.ImportantVisible").disabled = false;
+    }
+
+    function onLoadPage() {
+        /*Выполняется при каждой перезагрузке страницы*/
+        try {
+            customerGetData(document.getElementById("order.Customer.ID").value,
+                document.getElementById("order.Host").value, document.getElementById("order.CurrentUser").value);
+            getCustomerPassportVerification();
+            addEventMenu("orderActions", "contextMenuOrderActions", "click");
+            addEventMenu("shipAgentButton", "listPriceAgentMenu", "click");
+            addEventMenu("cancelButton", "cancelReasonsMenu", "click");
+            addEventMenu("inDispatchButton", "inDispatchReasonsMenu", "click");
+            addEventMenu("callToButton", "callToMenu", "click");
+            addEventMenu("smsButton", "smsMenu", "click");
+            addEventMenu("emailButton", "emailMenu", "click");
+            addEventMenu("recallButton", "recallMenu", "click");
+            addEventMenu("historyFilter", "historyFilterList", "click");
+            addEventMenu("itemsTable", "itemsActions", "contextmenu", "itemsTable");
+            getARMCheckAccess();
+            getOrderMessage();
+            getFirstContact();
+            outletGetList();
+            checkAgent();
+            getShippingIntervalsOnlyShow(0);
+            getOrderHistory();
+            getOrderDeliveryZone();            
+            afterOrderSave();
+            colorizeItemsTable();
+            getListPickPointHistory();
+            checkElementsCondition();
+            orderButtonsConditions();
+            itemsQuantityChangeEmbargo();
+            getCommentFromCustomerTable();
+            document.getElementById("itemsTable").oncontextmenu = function (e) { itemsTableOnContextMenu(e) };
+        }
+        catch(e) {
+            alert('Ошибка ' + e.name + ":" + e.message + "\n" + e.stack);
+        }
+    }
+
+    $(function () {
+        /*Выполнение перетаскивания модального окна за заголовок*/
+        $('.dragElement').draggable({
+            containment: "window", cancel: ".modal-body,.event-menu__items,.notMove", cursor: "move", opacity: 0.6
+        });
+    });
+
+    function openNextOrderClick(ths) {
+        /* нажатие на кнопку для перехода в другой заказ*/
+        document.getElementById("NextOrder").value = ths.innerText;
+        document.getElementById("btn_update").click();
+    }
+
+    function getCustomerPassportVerification() {
+        /* Данные о верификации паспорта*/
+        try {
+            $.ajax({
+                url: '/Order/CustomerPassportVerification',
+                data: {
+                    customerId: document.getElementById("order.Customer.ID").value,
+                    host: document.getElementById("order.Host").value,
+                },
+                type: 'POST',
+                success: function (data) {
+                    var json = JSON.parse(data).CustomerPassportVerification;
+                    document.getElementById("lbl_customerPassport").innerText = "ПД: " + (json[0].ResPD == 1 ? "да " : "нет ") +
+                        "ИНН: " + (json[0].ResINN == 1 ? "да " : "нет ") + json[0].Dat;
+                },
+                error: function () { alert('Не удалось получить информацию паспортных данных клиента'); $("#loading").hide(); }
+            });
+        }
+        catch (e) {
+            alert('Ошибка ' + e.name + ":" + e.message + "\n" + e.stack);
+        }
+    }
+
+    function getOrderHistory() {
+        /*Получение истории заказа в зависимости от выбранных чекбоксов*/
+        try {
+            var hstParam = '';
+            if (document.getElementById("history1").checked) hstParam = hstParam + '1,';
+            if (document.getElementById("history2").checked) hstParam = hstParam + '2,';
+            if (document.getElementById("history3").checked) hstParam = hstParam + '3,';
+            if (document.getElementById("history4").checked) hstParam = hstParam + '4,';
+            if (document.getElementById("history5").checked) hstParam = hstParam + '5,';
+            if (document.getElementById("history6").checked) hstParam = hstParam + '6,';
+            if (document.getElementById("history7").checked) hstParam = hstParam + '7,';
+            if (document.getElementById("history8").checked) hstParam = hstParam + '8,';
+            if (document.getElementById("history9").checked) hstParam = hstParam + '9,';
+            if (document.getElementById("history10").checked) hstParam = hstParam + '10,';
+            if (document.getElementById("history11").checked) hstParam = hstParam + '11,';
+            if (document.getElementById("history12").checked) hstParam = hstParam + '12,';
+            if (document.getElementById("history13").checked) hstParam = hstParam + '13,';
+            if (document.getElementById("history14").checked) hstParam = hstParam + '14,';
+            if (document.getElementById("history15").checked) hstParam = hstParam + '15,';
+            if (document.getElementById("history16").checked) hstParam = hstParam + '16,';
+            if (document.getElementById("history17").checked) hstParam = hstParam + '17,';
+            if (document.getElementById("history18").checked) hstParam = hstParam + '18,';
+            if (document.getElementById("history19").checked) hstParam = hstParam + '19,';
+            if (document.getElementById("history20").checked) hstParam = hstParam + '21,22';
+            $.ajax({
+                url: '/Order/GetHistory',
+                data: { orderNo: document.getElementById('order.OrderNo').value, host: document.getElementById('order.Host').value, histParams: hstParam },
+                type: 'POST',
+                success: function (html) {
+                    document.getElementById("history").innerHTML = html;
+                    document.getElementById("history").scrollTop = document.getElementById("history").scrollHeight;
+                    if (hstParam != '') document.getElementById('historyFilter').classList.add('filterButtonPushed');
+                    else document.getElementById('historyFilter').classList.remove('filterButtonPushed');
+                    $("#loading").hide();
+                },
+                beforeSend: function () { $("#loading").show(); },
+                error: function () { alert('Сбой получения истории заказа'); $("#loading").hide(); }
+            });
+        }
+        catch (e) {
+            alert('Ошибка ' + e.name + ":" + e.message + "\n" + e.stack);
+        }
+    }
+
+    function itemsTableOnContextMenu(e) {
+        /*при вызове контекстного меню на таблице товаров*/
+        //e.srcElement.click();
+        selectedItem = e.srcElement.parentElement;
+        //setSingleRowSelect(selectedItem);
+    }
+
+    function itemsActionsShowPhotoClick() {
+        /* показ всех фото товара в отельном окне*/
+        dragWidget.classList.add('dragWidget--active');
+        dragWidget.style.top = "5%";
+        dragWidget.style.left = "5%";
+        setDragWidgetContent();
+    }
+
+    function itemsActionsItemsInWindow() {
+        /* показ товаров в отдельном окне*/
+        if (!dragWidget.classList.contains('dragWidget--active')) dragWidget.classList.add('dragWidget--active');
+        dragWidget.style.top = "5%";
+        dragWidget.style.left = "5%";
+        dragWidgetTitle.innerText = 'Товары заказа';
+        dragWidgetContent.innerHTML = document.getElementById("itemsTableDiv").innerHTML;    
+    }
+
+    function getMP3(callId, ths) {
+        /* получение аудиофайла записи разговора*/
+        setSingleRowSelect(ths);
+        try {
+            $.ajax({
+                url: '/Order/GetMP3',
+                data: { callId: callId },
+                type: 'POST',
+                success: function (data) {
+                    if (data && data != "") {
+                        document.getElementById('callAudio').src = data;
+                        document.getElementById('callAudio').play();
+                    }
+                    else {
+                        alert("Запись разговора не загружена");
+                        //document.getElementById('callAudio').stop();
+                        document.getElementById('callAudio').src = "";
+                    }
+                },
+                error: function () { alert('Сбой получения записи'); }
+            });
+        }
+        catch (e) {
+            alert('Ошибка ' + e.name + ":" + e.message + "\n" + e.stack);
+        }
+    }
+
+    function orderClose(ths) {
+    /* нажатие на кнопку "Закрыть" */
+    let outerHTML = '<a id="closeOrderRef" hidden></a>';
+    ths.outerHTML = outerHTML;
+    document.getElementById("closeOrderRef").href = '/Order/ShowCustomerOrders?CustomerId=' +
+        document.getElementById("order.Customer.ID").value + '&Host=' +
+        document.getElementById("order.Host").value + '&OrderNo=0';
+    document.getElementById("closeOrderRef").click();
+    }
+
+    function setDragWidgetContent() {
+        dragWidgetTitle.innerText = '';
+        dragWidgetContent.innerHTML = '';
+        dragWidgetTitle.innerText = selectedItem.cells[4].innerText + ' ' + selectedItem.cells[5].innerText;
+        if (selectedItem.rowIndex > 0) {
+            var str = "order.OrderItems[" + (selectedItem.rowIndex - 1) + "].Url";
+            var urlarray = selectedItem.children[0].children[str].value.split(',');
+            for (var a = 0; a < urlarray.length; a++) {
+                if (urlarray[a] != '') {
+                    dragWidgetContent.innerHTML += '<image src="' + urlarray[a] +
+                        '" alt="" style="width:auto; height:auto; max-height: 300px; border:2px solid #8ef8ff; border-radius: 4px; margin: 2px; padding: 0;"/>';
+                }
+            }
+            if (dragWidgetContent.clientHeight < 10)
+                dragWidgetContent.innerHTML = '<label style="font-size: 24px;">Не удалось отобразить фото товара по ссылке' + selectedItem.cells[8] + '</label>';
+        }
+        else dragWidgetContent.innerHTML = '<label style="font-size: 24px;">Не выбран товар для отображения</label>';
+    }
+
+    function itemsTableOnClick(e) {
+    /*Щелчок на таблице товаров*/
+        var prevSelectedItem = selectedItem;
+        var prevSelectedItemPhotoIndex = selectedItemPhotoIndex;
+        selectedItem = e.srcElement.parentElement;
+        if (dragWidget.classList.contains("dragWidget--active") && !document.getElementById("outletListMenu")) {
+            if (selectedItem.rowIndex > 0) {
+                setDragWidgetContent();
+            }
+        }
+        //setSingleRowSelect(selectedItem);
+        if (selectedItem.rowIndex > 0) {
+            //var urlarray = selectedItem.cells[8].innerText.split(',');
+            var str = "order.OrderItems[" + (selectedItem.rowIndex - 1) + "].Url";
+            var strCSCU = "order.OrderItems[" + (selectedItem.rowIndex - 1) + "].CSKU";
+            var strDescr = "order.OrderItems[" + (selectedItem.rowIndex - 1) + "].Description";
+            var urlarray = selectedItem.children[0].children[str].value.split(',');
+            var itemOnePhoto = document.getElementById('itemOnePhoto')
+            if (prevSelectedItem != selectedItem)
+                selectedItemPhotoIndex = 0;
+            else
+                selectedItemPhotoIndex += 1;
+            if (selectedItemPhotoIndex > urlarray.length || urlarray[selectedItemPhotoIndex] == '')
+                selectedItemPhotoIndex = 0;
+            //alert(urlarray[selectedItemPhotoIndex]);
+            itemOnePhoto.innerHTML = '<image onclick="onImageClick()" src="' + urlarray[selectedItemPhotoIndex] +
+                '" alt="" style="width:auto; height:auto;  max-height: calc(100% - 4px); max-weight: 194px; margin: 0; padding: 0;"' +
+                'title="' + selectedItem.cells[0].children[strCSCU].value + ' ' + selectedItem.cells[0].children[strDescr].value +
+                '\n' + urlarray[selectedItemPhotoIndex] + '"/>';
+        }
+        //
+    }
+
+    function callFromOrder(to) {
+        var toNumber = "";
+        switch (to) {
+            case 0: toNumber = Number(document.getElementById("order.Customer.Phone").value.replace(/\D+/g, ""));
+            case 1: toNumber = Number(document.getElementById("order.Delivery.DeliveryPhone").value.replace(/\D+/g, ""));
+        }
+        var line = document.getElementById("order.OutLine").value;
+
+        //=================================
+        let text = 'MsgType=OUTCOMING_CALL|Phone=' + toNumber + '|Line=' + line;
+        let CL = document.createElement("a");
+        CL.href = "tel:" + encodeURIComponent(text)
+        CL.click();
+        //=================================
+        /* Старый способ звонить через базу
+        if (toNumber != "") {
+            $.ajax({
+                url: '/Home/MakeCall',
+                data: { Phone: toNumber, Line: line, Customer: 0, Host: 3, TypeClientCard: 1 },
+                type: 'POST',
+                success: function (data) { },
+                error: function (data) { alert('Ошибка при попытке дозвониться'); }
+            });
+        }
+        */
+    }
+
+    function afterOrderSave() {
+        if (document.getElementById("order.DiviationViewAndMapper") && document.getElementById("order.DiviationViewAndMapper").value != '') {
+            document.getElementById("lb_modal_title").innerHTML =
+                '<b>Сообщение после сохранения<label style="font-size: 24px;" class="lb_modal__close" for="lb_modal"> &times;</label></b>'
+            document.getElementById("modalBody").innerHTML = document.getElementById("order.DiviationViewAndMapper").value;
+            document.getElementById("lb_modal").click();
+        }
+    }
+
+    function checkElementsCondition() {
+    /* проверяем какие кнопки были нажаты или должны быть в состоянии нажата и какие элементы нужно скрыть*/
+        //setElementsSizes();
+        var orderStateDescr = document.getElementById("order.StateDescr").value;                // получаем значение строки, содержащей расшифровку статуса заказа
+        var orderShipAgent = document.getElementById("order.Shipping.Description").value;       // получаем значение строки, содержащей расшифровку агента доставки
+        if (orderStateDescr.indexOf("( 2") >= 0) {                                              // если в строке статуса есть статус отмены, то прячем элементы
+            document.getElementById("cancelButton").classList.add('orderButtonPushed');
+            document.getElementById("shippingButton").hidden = true;
+            document.getElementById("shipAgentButton").hidden = true;
+        }
+        if (orderStateDescr.toString().substring(0, 3) == "( 2") {                              // если в строке статуса начальный статус - отмена, то прячем элементы
+            document.getElementById("cancelButton").hidden = true;
+            document.getElementById("shippingButton").hidden = true;
+        }
+        if (orderStateDescr.indexOf(">>") != -1) {                                              // если в строке статуса есть символы ">>", значит произойдёт смена статуса, строку статуса делаем мигающей
+            document.getElementById("lbl_order.StateDescr").classList.add("blinkText");
+            document.getElementById("lbl_order.StateDescr").style.fontWeight = "bold";
+        }
+        if (orderShipAgent.indexOf(">>") != -1) {                                              // если в строке агента доставки есть ">>", значит произойдёт смена агента, строку статуса делаем мигающей
+            document.getElementById("lbl_order.Shipping.Description").classList.add("blinkText");
+            document.getElementById("lbl_order.Shipping.Description").style.fontWeight = "bold";
+            document.getElementById("shipAgentButton").classList.add('orderButtonPushed');
+        }
+        if (document.getElementById("order.Shipping.ShippingAmount").value != orderShippingAmount) {    // если сумма доставки изменилась подсвечиваем строку
+            document.getElementById("lbl_order.Shipping.ShippingAmount").classList.add("blinkText");
+            document.getElementById("lbl_order.Shipping.ShippingAmount").style.fontWeight = "bold";
+        }
+        if (document.getElementById("order.OrderAmount").value != orderAmount) {                        // если изменилась сумма заказа подсвечиваем строки суммы заказа и суммы к оплате
+            document.getElementById("lbl_order.OrderAmount").classList.add("blinkText");
+            document.getElementById("lbl_order.OrderAmount").style.fontWeight = "bold";
+            document.getElementById("lbl_summToPay").classList.add("blinkText");
+            document.getElementById("lbl_summToPay").style.fontWeight = "bold";
+        }
+        if (document.getElementById("order.CancelReasons").value == "")                         // если набор значений причин отмены пустой, то кнопку отмены прячем
+            document.getElementById("cancelButton").hidden = true;
+        if (document.getElementById("order.Campaign").innerText.indexOf("Поставщиковая") >= 0)  // если в строке акции есть надпись "поставщиковая", то подсвечиваем строку
+            document.getElementById("order.Campaign").style.backgroundColor = "#ffcbcb";
+        if (document.getElementById("order.InDispatchReasons").value == "")                     // если нет статусов для заказа в 05 статусе, то кнопку "Перенос" не показываем
+            document.getElementById("inDispatchButton").hidden = true;
+        if (document.getElementById("lbl_shippingInterval"))
+            document.getElementById("shippingButton").classList.add('orderButtonPushed');    
+        if (document.getElementById('order.State').value == '53' || document.getElementById('order.State').value == '56') // если заказ в статусе подтверждён, то сделать кнопку подтверждения нажатой
+            document.getElementById("confirmButton").classList.add('orderButtonPushed');
+        switch (document.getElementById("order.PassDataCorrect").value) {                                                   // подсветка кнопки Паспорт в зависимости от проверки цветом
+            case "0": document.getElementById("passportButton").style.backgroundColor = "rgba(255, 0, 0, 0.3)"; break;
+            case "1": document.getElementById("passportButton").style.backgroundColor = "rgba(255, 255, 0, 0.3)"; break;
+            case "2": document.getElementById("passportButton").style.backgroundColor = "rgba(0, 255, 0, 0.3)"; break;
+        }
+        if (document.getElementById('order.NeedCheckPassData').value > 0)
+            document.getElementById('passportButton').hidden = false;
+        if (document.getElementById("order.OrderForm").value == "frmConfirm") {                 // если форма подтверждения, то показываем 
+            document.getElementById("shipAgentButton").hidden = false;
+            document.getElementById("confirmButton").hidden = false;
+            document.getElementById("cashButton").hidden = false;
+            document.getElementById("smsMenu02").style.display = "block";
+            document.getElementById("smsMenu03").style.display = "block";
+            document.getElementById("emailMenu01").style.display = "block";
+            document.getElementById("emailMenu02").style.display = "block";
+            document.getElementById("emailMenu03").style.display = "block";
+            document.getElementById("emailMenu04").style.display = "block";
+        }
+        if (document.getElementById("order.OrderForm").value == "frmShipping") {                 // если форма доставки, то показываем
+            document.getElementById("shippingButton").hidden = false;
+            document.getElementById("smsMenu03").style.display = "block";
+            document.getElementById("smsMenu04").style.display = "block";
+            document.getElementById("emailMenu05").style.display = "block";
+            document.getElementById("emailMenu07").style.display = "block";
+        }
+        if (document.getElementById("order.OrderForm").value == "frmConfirm" ||
+            document.getElementById("order.OrderForm").value == "frmShipping") {
+            if (document.getElementById("order.StateDescr").value.indexOf("10") == -1 &&
+                document.getElementById("order.StateDescr").value.indexOf("11") == -1) {
+                document.getElementById("smsButton").hidden = false;
+                document.getElementById("emailButton").hidden = false;
+            }
+            else {
+                document.getElementById("recallButton").hidden = true;
+                document.getElementById("uncallButton").hidden = true;
+                document.getElementById("shippingButton").innerText = "Возврат";
+            }
+        }
+    }
+
+    function confirmButtonClick() {
+    /* Щелчёк на кнопке подвтерждения */
+        if (document.getElementById('geocodeAddr').value.trim() == '')
+            showModalMessage('Внимание!', 'Не введён адрес');
+        else if (document.getElementById('order.Delivery.DeliveryKLADR').value.trim() == ''
+            && document.getElementById('order.Host').value != '21'
+            && document.getElementById('order.Host').value != '9')
+            showModalMessage('Внимание!', 'Не введён КЛАДР');
+        else if (document.getElementById('order.Shipping.ShippingService').value == '5'
+            && document.getElementById('order.Host').value != '21'
+            && document.getElementById('order.Host').value != '9')
+            showModalMessage('Внимание!', 'Неуточненный агент!!! Перепробейте КЛАДР!!!');
+        else {
+            if (document.getElementById('confirmButton').classList.contains('orderButtonPushed')) {
+                document.getElementById('order.State').value = orderState;
+                document.getElementById('order.StateDescr').value = orderStateDescr;
+            }
+            else {
+                document.getElementById('order.State').value = 53;
+                document.getElementById('order.StateDescr').value += " >> " + "( 02 ) Подтверждён";
+            }
+            document.getElementById('btn_model_upd').click();
+        }
+    }
+
+    function shippingButtonClick(ths) {
+        /*нажаитие на кнопку "Доставка"*/
+        if (ths.classList.contains('orderButtonPushed')) {
+            var Question = confirm("Будет сброшена дата доставки\nПродолжить?");
+            if (!Question) {
+                e.preventDefault();
+            }
+            else {
+                //ths.classList.remove('orderButtonPushed');
+                clearShippingDates();
+                document.getElementById('btn_model_upd').click();
+            };
+        }
+        else {
+            if (!document.getElementById("outletButton").classList.contains("orderButtonPushed"))
+                showmodal('beginShippingProc');
+            else getShippingIntervals(0, 1);
+        }
+        return;
+    }
+
+    function outletButtonClick(evnt) {
+        /* Щелчёк на кнопке ПВЗ*/
+        if (document.getElementById("order.Shipping.Description").value.indexOf(">>") != -1 &&
+            document.getElementById("order.Shipping.ShippingService").value != orderShippingService) {
+            document.getElementById("order.Shipping.ShippingService").value = orderShippingService;
+            document.getElementById("order.Shipping.Description").value = orderAgentDescription;
+            document.getElementById("order.Shipping.ShippingAmount").value = orderShippingAmount;
+            clearShippingDates();
+            document.getElementById('btn_model_upd').click();
+        }
+        else {
+            dragWidget.classList.remove("dragWidget--active");
+            dragWidgetContent.innerHTML = document.getElementById("outletListHidden").innerHTML;
+            if (document.getElementById("outletListMenu") && document.getElementById("outletListMenu").children[0].children.length > 0) {
+                dragWidgetTitle.innerText = "ПВЗ";
+                dragWidget.style.left = (evnt.x - Math.floor(dragWidget.clientWidth / 2)) + "px";
+                dragWidget.style.top = evnt.y + "px";
+                dragWidget.classList.add("dragWidget--active");
+            }
+        }
+    }
+
+    function clearShippingDates() {
+        /* чистим дату доставки, если она есть */
+        if (document.getElementById("lbl_shippingInterval")) {
+            document.getElementById("order.Shipping.ShippingDateFrom").value = '';
+            document.getElementById("order.Shipping.ShippingDateTo").value = '';
+            alert("Дата доставки была сброшена");
+        }
+    }
+
+    function selectShipAgent(id, descr, pickup, price) {
+        /*выбор пункта меню смены агента*/
+        if (pickup == 0) {
+            if (document.getElementById("order.Shipping.Description").value.indexOf(">>") != -1)
+                document.getElementById("order.Shipping.Description").value = orderAgentDescription;
+            document.getElementById("order.Shipping.ShippingService").value = id;
+            document.getElementById("order.Shipping.Description").value = orderAgentDescription + " >> " + descr;
+            document.getElementById("order.Shipping.ShippingAmount").value = price;
+            document.getElementById('btn_model_upd').click();
+        }
+        else {
+            try {
+                $.ajax({
+                    url: '/Order/GetPickPointList',
+                    data: { kladr: document.getElementById("order.Delivery.DeliveryKLADR").value, shipservice: id },
+                    type: 'POST',
+                    success: function (html) {
+                        document.getElementById("lb_modal_title").innerHTML =
+                            '<b>Доступные точки выдачи PickPoint<label style="font-size: 24px;" class="lb_modal__close" for="lb_modal"> &times;</label></b>'
+                        document.getElementById("modalBody").innerHTML = html;
+                        document.getElementById("lb_modal").click();
+                        $("#loading").hide();
+                    },
+                    beforeSend: function () { $("#loading").show(); },
+                    error: function () { alert('Сбой получения списка пунктов выдачи'); $("#loading").hide(); }
+                });
+            }
+            catch (e) {
+                alert('Ошибка ' + e.name + ":" + e.message + "\n" + e.stack);
+            }
+        }
+    }
+
+    function shipAgentButtonClick(ths, evnt) {
+        /* Нажатие на кнопку выбора агента*/
+        let shipBtn = document.getElementById("shippingButton");
+        if (shipBtn.classList.contains("orderButtonPushed")) {
+            evnt.stopPropagation();
+            shippingButtonClick(shipBtn);
+        }
+        if (ths.classList.contains('orderButtonPushed')) {
+            //evnt.stopPropagation();
+            //ths.classList.remove('orderButtonPushed');
+            //var stAgent = document.getElementById("order.Shipping.Description").value.split(" >> ");
+            document.getElementById("order.Shipping.Description").value = orderAgentDescription;
+            document.getElementById("order.Shipping.ShippingService").value = orderShippingService;
+            document.getElementById("order.Shipping.ShippingAmount").value = orderShippingAmount;
+            document.getElementById('btn_model_upd').click();
+        }
+    }
+
+    function cancelOrderClick(ths, evnt) {
+        /*Нажатие кнопки отмена в заказе*/
+        if (ths.classList.contains('orderButtonPushed')) {
+            //evnt.stopPropagation();
+            //ths.classList.remove('orderButtonPushed');
+            var stStr = document.getElementById("order.StateDescr").value.split(" >> ");
+            document.getElementById("order.StateDescr").value = stStr[0];
+            document.getElementById("order.State").value = orderState;//document.getElementById("order.OpenWithState").value;
+            document.getElementById('btn_model_upd').click();
+        }
+    }
+
+    function inDispatchClick(ths, evnt) {
+        /*Нажатие кнопки перенос в заказе*/
+        if (ths.classList.contains('orderButtonPushed')) {
+            ths.classList.remove('orderButtonPushed');
+            var stStr = document.getElementById("order.StateDescr").value.split(" >> ");
+            document.getElementById("order.StateDescr").value = stStr[0];
+            document.getElementById("order.State").value = orderState;//document.getElementById("order.OpenWithState").value;
+            document.getElementById('btn_model_upd').click();
+        }
+        else {
+            document.getElementById("lb_modal_title").innerHTML =
+                '<b>Перенос заказа / Причины переноса<label style="font-size: 24px;" class="lb_modal__close" for="lb_modal"> &times;</label></b>'
+            document.getElementById("modalBody").innerHTML = document.getElementById("inDispatchReasonsHidden").innerHTML;
+            document.getElementById("lb_modal").click();
+        }
+    }
+
+    function cancelOrderMenuClick(id, descr) {
+        /*выбор пункта меню причин отмены заказа*/
+        changeOrderState(id, descr);
+    }
+
+    function changeOrderState(id, descr) {
+        /*изменение статуса заказа*/
+        document.getElementById("order.State").value = id;
+        document.getElementById("order.StateDescr").value = document.getElementById("order.StateDescr").value + " >> " + descr;
+        document.getElementById('btn_model_upd').click();
+    }
+
+    function hubChange(ths) {
+        /*Обновление хаб/не хаб при выборе пункта из выпадающего списка*/
+        //alert(ths.options[ths.selectedIndex].text);
+        document.getElementById("order.Delivery.DeliveryHub").value = ths.options[ths.selectedIndex].text;
+        document.getElementById('btn_model_upd').click();
+    }
+
+    function geocodeAddress(evnt) {
+        /*При нажатии Энтер в строке адреса показываем окно геокодирования и сразу выполняем запрос*/
+        try {
+            if (evnt.keyCode == 13) {/*alert(document.getElementById('geocode_addr').value);*/
+                var strF = document.getElementById('geocodeAddr').value;
+                document.getElementById('searchAddr').value = strF;
+                location.href = '#openModal';
+                $.ajax({
+                    url: '/Order/ShowFindAddr',
+                    data: { searchAddr: strF },
+                    type: 'POST',
+                    success: function (html) { $("#addressList").replaceWith(html); $("#loading").hide() },
+                    beforeSend: function () { $("#loading").show(); },
+                    error: function () { alert('Сбой получения адресов'); $("#loading").hide(); }
+                });
+            }
+        }
+        catch (e) {
+            alert('Ошибка ' + e.name + ":" + e.message + "\n" + e.stack);
+        }
+    }
+
+    function saveOrder(e) {
+        /*Действия при нажатии на кнопку "Сохранить"*/
+        var saveQuestion = confirm("Сохранить заказ?");
+        if (!saveQuestion) {
+            e.preventDefault();
+            alert("don't save");
+        }
+        else {
+            //e.preventDefault();
+            alert("order save");
+        };
+    }
+
+    function showmodal(what, str, str2) {
+        /*Вывод модального окна в зависимости от того, что мы хотим вывести*/
+        closeAllMenu();
+        try {
+            modalcontent = document.getElementById('modalBody');
+            while (modalcontent.firstChild) {
+                modalcontent.removeChild(modalcontent.firstChild);
+            }
+            if (what == 'ringsOnOrder') {
+                $.ajax({
+                    url: '/Order/GetRingsOnOrder',
+                    data: { orderNo: @Model.OrderNo, host: @Model.Host},
+                    type: 'POST',
+                    success: function (html) {
+                        document.getElementById("lb_modal_title").innerHTML =
+                            '<b>Список звонков по заказу<label style="font-size: 24px;" class="lb_modal__close" for="lb_modal"> &times;</label></b>'
+                        document.getElementById("modalBody").innerHTML = html;
+                        $("#loading").hide();
+                    },
+                    beforeSend: function () { $("#loading").show(); },
+                    error: function () { alert('Сбой загрузки списка звонков по заказу'); $("#loading").hide(); }
+                });
+            }
+            if (what == 'changeAddressHistory') {
+                $.ajax({
+                    url: '/Order/GetChangeAddressHistory',
+                    data: { orderNo: @Model.OrderNo, host: @Model.Host},
+                    type: 'POST',
+                    success: function (html) {
+                        document.getElementById("lb_modal_title").innerHTML =
+                            '<b>История смены адреса<label style="font-size: 24px;" class="lb_modal__close" for="lb_modal"> &times;</label></b>'
+                        document.getElementById("modalBody").innerHTML = html;
+                        $("#loading").hide();
+                    },
+                    beforeSend: function () { $("#loading").show(); },
+                    error: function () { alert('Сбой загрузки истории смены адреса'); $("#loading").hide(); }
+                });
+            }
+            if (what == 'estimatedDeliveryDate') {
+                $.ajax({
+                    url: '/Order/GetEstimatedDeliveryDate',
+                    data: { orderNo: @Model.OrderNo, host: @Model.Host},
+                    type: 'POST',
+                    success: function (html) {
+                        document.getElementById("lb_modal_title").innerHTML =
+                            '<b>Даты поставки товаров<label style="font-size: 24px;" class="lb_modal__close" for="lb_modal"> &times;</label></b>'
+                        document.getElementById("modalBody").innerHTML = html;
+                        $("#loading").hide();
+                    },
+                    beforeSend: function () { $("#loading").show(); },
+                    error: function () { alert('Сбой получения даты поставок'); $("#loading").hide(); }
+                });
+            }
+
+            if (what == 'orderActions') {
+                document.getElementById("lb_modal_title").innerHTML =
+                    '<b>Заказ / Действия<label style="font-size: 24px;" class="lb_modal__close" for="lb_modal"> &times;</label></b>'
+                document.getElementById("modalBody").innerHTML = document.getElementById("orderActionsMenu").innerHTML;
+            }
+
+            if (what == 'personalDiscount') {
+                //document.getElementById('lb_modal').click();
+                $.ajax({
+                    url: '/Order/GetPersonalDiscount',
+                    data: { orderNo: @Model.OrderNo, host: @Model.Host, customer: @Model.Customer.ID},
+                    type: 'POST',
+                    success: function (html) {
+                        document.getElementById("lb_modal_title").innerHTML =
+                            '<b>Персональная скидка, корректировки и т.п.<label style="font-size: 24px;" class="lb_modal__close" for="lb_modal"> &times;</label></b>'
+                        document.getElementById("modalBody").innerHTML = '<div class="personalDiscount">' + html + '</div>';
+                        $("#loading").hide();
+                    },
+                    beforeSend: function () { $("#loading").show(); },
+                    error: function () { alert('Не удалось получить информацию о скидках'); $("#loading").hide(); }
+                });
+            }
+
+            if (what == 'beginShippingProc') {
+                var addrId = document.getElementById("order.Delivery.DeliveryAddrId").value;
+                var addr= document.getElementById("geocodeAddr").value;
+                showShippingGeocode(addrId, 16);
+            }
+            if (what == 'itemPartialCancelReasons') {
+                document.getElementById("lb_modal_title").innerHTML =
+                    '<b>Выберите причину частичной отмены товара<label style="font-size: 24px;" class="lb_modal__close" for="lb_modal"> &times;</label></b>'
+                document.getElementById("modalBody").innerHTML = document.getElementById("itemPartialCancelReasons").innerHTML;
+            }
+            if (what == 'showModalMessage') {
+                document.getElementById("lb_modal_title").innerHTML =
+                    '<b>' + str + '<label style="font-size: 24px;" class="lb_modal__close" for="lb_modal"> &times;</label></b>'
+                document.getElementById("modalBody").innerHTML = '<div style="text-align: center;">' + str2 + '</div>';
+            }
+            document.getElementById("lb_modal").click();
+        }
+        catch (e) {
+            alert('Ошибка ' + e.name + ":" + e.message + "\n" + e.stack);
+        }
+    }
+
+    function showShippingGeocode(addrId, scale) {
+    /* показ формы геокодирования при нажатии на кнопку доставка*/
+        $.ajax({
+            url: '/Order/ShippingGeocode',
+            data: { author: 3, user: document.getElementById('order.CurrentUser').value, addrId: addrId, width: 650, heigth: 450, marker: 1, scale: scale},
+            type: 'POST',
+            success: function (html) {
+                document.getElementById("lb_modal_title").innerHTML = '<b><nobr>Доставка заказа / Точка на карте' +
+                    '</nobr><label style="font-size: 24px;" class="lb_modal__close" for="lb_modal">&times</label></b>'
+                document.getElementById("modalBody").innerHTML = html;
+                document.getElementById("shippingGeoMode").hidden = true;
+                document.getElementById("shippingGeocodeString").hidden = true;
+                document.getElementById("btn_shippingUpdateGeocode").hidden = true;
+                document.getElementById("div_Geocode_FindAddr_rai").hidden = true;
+                document.getElementById("lbl_shippingGeocodeString").hidden = true;
+                document.getElementById("btn_shippingChangePoint").hidden = true;
+                if (document.getElementById("order.Delivery.DeliveryAddrId").value > 0) document.getElementById("btn_shippingChangeInterval").hidden = false;
+                else document.getElementById("btn_shippingChangeInterval").hidden = true;
+                $("#loading").hide();
+            },
+            beforeSend: function () { $("#loading").show(); },
+            error: function () { alert('Сбой получения карты'); $("#loading").hide(); }
+        });
+
+    }
+
+    function shippingGeocode() {
+    /* отображение скрытых элементов при нажатии на кнопку "Геокодировать" в окне геокодирования для доставки*/
+        document.getElementById("shippingMap").src = "";
+        document.getElementById("shippingGeoMode").hidden = false;
+        document.getElementById("shippingGeocodeString").hidden = false;
+        document.getElementById("btn_shippingUpdateGeocode").hidden = false;
+        document.getElementById("div_Geocode_FindAddr_rai").hidden = false;
+        document.getElementById("lbl_shippingGeocodeString").hidden = false;
+        document.getElementById("btn_shippingGeocode").hidden = true;
+        document.getElementById("btn_shippingChangeInterval").hidden = true;
+        document.getElementById("btn_shippingChangePoint").hidden = false;
+        document.getElementById("shippingGeocodeString").value = document.getElementById("geocodeAddr").value.replace(/\s+/g, " ");
+        document.getElementById("shippingMapScale").onchange = function () { getMap(document.getElementById('shippingLat').value,
+            document.getElementById('shippingLon').value, document.getElementById("shippingMapScale").value) };
+        getDataSet_Geocode_FindAddr_rai(document.getElementById('shippingGeocodeString').value, document.getElementById('shippingGeoMode').value);
+    }
+
+    function getMap(lat, lon, scale) {
+        $.ajax({
+            url: '/Order/GetMap',
+            data: { author: 3, user: document.getElementById('order.CurrentUser').value, lat: lat, lng: lon, width: 650, heigth: 450, marker: 1, scale: scale },
+            type: 'POST',
+            success: function (str) {
+                document.getElementById("shippingMap").src = str;
+                $("#loading").hide();
+            },
+            beforeSend: function () { $("#loading").show(); },
+            error: function () { alert('Сбой получения списка адресов'); $("#loading").hide(); }
+        });
+    }
+
+    function getMapFromAddrId(addrId, scale) {
+        //alert(addrId); alert(scale);
+        $.ajax({
+            url: '/Order/GetMapFromAddrId',
+            data: { author: 3, user: document.getElementById('order.CurrentUser').value, addrId: addrId, width: 650, heigth: 450, marker: 1, scale: scale },
+            type: 'POST',
+            success: function (str) {
+                document.getElementById("shippingMap").src = str;
+                $("#loading").hide();
+            },
+            beforeSend: function () { $("#loading").show(); },
+            error: function () { alert('Сбой получения списка адресов'); $("#loading").hide(); }
+        });
+    }
+
+    function getDataSet_Geocode_FindAddr_rai(str, gmode) {
+        /* получение списка адресов при обновлении адреса в форме геокодировния для доставки*/
+        document.getElementById("shippingLat").value = 0;
+        document.getElementById("shippingLon").value = 0;
+        $.ajax({
+            url: '/Order/GetDataSet_Geocode_FindAddr_rai',
+            data: { addrSearch: str, gmode: gmode },
+            type: 'POST',
+            success: function (str) {
+                document.getElementById("div_Geocode_FindAddr_rai").innerHTML = str;
+                var tab = document.getElementById("table_Geocode_FindAddr_rai");
+                if (tab && tab.rows[0]) tab.rows[0].click();
+                $("#loading").hide();
+            },
+            beforeSend: function () { $("#loading").show(); },
+            error: function () { alert('Сбой получения списка адресов'); $("#loading").hide(); }
+        });
+    }
+
+    function shippingChangePoint() {
+        tab = document.getElementById('table_Geocode_FindAddr_rai')
+        addrFound = '';
+        for (i = 0; i < tab.rows.length; i++) {
+            if (tab.rows[i].classList.contains('active')) {
+                addrFound = tab.rows[i].cells[0].innerText;
+                lat = tab.rows[i].cells[1].innerText.replace(',', '.');
+                lng = tab.rows[i].cells[2].innerText.replace(',', '.');
+                break;
+            }
+        }
+        if (addrFound == '') {
+            alert('Адрес не выбран');
+            return;
+        }
+        addrSearch = document.getElementById('shippingGeocodeString').value;
+        //alert("" + lat + "\n" + lng);
+        $.ajax({
+            url: '/Order/Get_map_AddressItemSave',
+            data: { addrSearch: addrSearch, addrFound: addrFound, lat: lat, lng: lng },
+            type: 'POST',
+            success: function (str) {
+                document.getElementById('order.Delivery.DeliveryAddrId').value = str;
+                getShippingIntervals(0, 0);
+                $("#loading").hide();
+            },
+            beforeSend: function () { $("#loading").show(); },
+            error: function () { alert('Сбой получения списка адресов'); $("#loading").hide(); }
+        });
+    }
+
+    function shippingSelectFromAddrList(ths, lat, lon) {
+        /* выбор строки таблицы алресов в форме геокодирования при доставке*/
+        document.getElementById("shippingLat").value = lat;
+        document.getElementById("shippingLon").value = lon;
+        setSingleRowSelect(ths);
+        getMap(lat, lon, document.getElementById('shippingMapScale').value);
+    }
+
+    function shippingAddresssKeyDown(evnt) {
+        if (evnt.keyCode == 13)
+            getDataSet_Geocode_FindAddr_rai(document.getElementById('shippingGeocodeString').value, document.getElementById('shippingGeoMode').value);
+    }
+
+    function checkAllSelectHistory(evnt) {
+        /*Выбор всех чекбоксов на панели выбора истории заказа*/
+        for (a = 1; a < 21; a++) {
+            str = "history" + a;
+            document.getElementById(str).checked = 1;
+        }
+        getOrderHistory();
+    }
+
+    function checkNoSelectHistory(evnt) {
+        /*Отмена всех чекбоксов на панели выбора истории заказа*/
+        for (a = 1; a < 21; a++) {
+            str = "history" + a;
+            document.getElementById(str).checked = 0;
+        }
+        getOrderHistory();
+    }
+
+    function checkAgent() {
+        /*Проверка коректности агента доставки*/
+        try {
+            ship = document.getElementById("shippingAgent");
+            $.ajax({
+                url: '/Order/CheckAgent',
+                data: { orderNo: @Model.OrderNo, host: @Model.Host, kladr: document.getElementById("order.Delivery.DeliveryKLADR").value , shipAgent: @Model.Shipping.ShippingService },
+                type: 'POST',
+                success: function (data) {
+                    switch (data) {
+                        case 0: ship.setAttribute("style", "background-color: #ffcbcb;"); break;
+                        case 1: ship.removeAttribute("style"); break;
+                    }
+                },
+                error: function () { alert('Сбой проверки агента доставки'); $("#loading").hide();}
+            });
+        }
+        catch (e) {
+            alert('Ошибка ' + e.name + ":" + e.message + "\n" + e.stack);
+        }
+    }
+
+    function showAddressOnMap(addrId) {
+        /*Показ заказа на карте Яндекса*/
+        try {
+            $.ajax({
+                url: '/Order/ShowAddressOnMap',
+                data: { addrId: addrId/*document.getElementById('order.Delivery.DeliveryAddrId').value*/ },
+                type: 'POST',
+                success: function (data) {
+                    if (data != "") window.open(data); /*window.open(data, 'Заказ на карте', 'width=90vw,height=90vh');*/
+                    else alert("Адрес некорректен");
+                },
+                error: function () { alert('Сбой поиска адреса'); }
+            });
+        }
+        catch (e) {
+            alert('Ошибка ' + e.name + ":" + e.message + "\n" + e.stack);
+        }
+    }
+
+    function getOrderDeliveryZone() {
+        /*Вывод информации о попадании заказа в зону доставки стрелы*/
+        try {
+            $.ajax({
+                url: '/Order/GetOrderdeliveryZone',
+                data: { orderNo: @Model.OrderNo, host: @Model.Host },
+                type: 'POST',
+                success: function (data) {
+                    if (data[0] != "") {
+                        document.getElementById("deliveryZone").innerHTML = "<label style='color:red; font-size: 12px;'><b>" +
+                            data[0].replace('AreaEditor: ', '') + "</b></label><br />";
+                        var sel = document.getElementById("DeliveryHubSelect");
+                        for (i = 0; i < sel.options.length; i++) {
+                            //alert(" " + document.getElementById("order.Delivery.DeliveryHub").value + " " + sel.options[i].value)
+                            if (sel.options[i].text == document.getElementById("order.Delivery.DeliveryHub").value) /*alert(sel.options[i].value*/
+                                sel.value = sel.options[i].value;
+                        }
+                    }
+                },
+                error: function () { alert('Сбой получения зоны'); }
+            });
+        }
+        catch (e) {
+            alert('Ошибка ' + e.name + ":" + e.message + "\n" + e.stack);
+        }
+    }
+
+    function getShippingIntervals(wk, open) {
+        /*Получение доступного расписания доставки по заказу*/
+        document.getElementById("modalBody").innerHTML = document.getElementById("selectWeekHidden").innerHTML + '<br />';
+        document.getElementById("selectWeek").value = wk;
+        try {
+            $.ajax({
+                url: '/Order/GetShippingIntervals',
+                data: {
+                    addrId: document.getElementById("order.Delivery.DeliveryAddrId").value, shipService: @Model.Shipping.ShippingService,
+                    orderType: @Model.OrderType, orderNo: @Model.OrderNo, host: @Model.Host, week: wk
+                },
+                type: 'POST',
+                success: function (html) {
+                    document.getElementById("lb_modal_title").innerHTML =
+                        '<b>Доступные интервалы доставки<label style="font-size: 24px;" class="lb_modal__close" for="lb_modal"> &times;</label></b>'
+                    document.getElementById("intervalsTable").innerHTML = html;
+                },
+                error: function () { alert('Сбой получения интервалов доставки'); }
+            });
+        }
+        catch (e) {
+            alert('Ошибка ' + e.name + ":" + e.message + "\n" + e.stack);
+        }
+        if (open == 1) { document.getElementById("lb_modal").click(); }
+    }
+
+    function getShippingIntervalsOnlyShow(wk) {
+        /*Получение доступного расписания доставки по заказу только для отображения*/
+        try {
+            $.ajax({
+                url: '/Order/GetShippingIntervals',
+                data: {
+                    addrId: document.getElementById("order.Delivery.DeliveryAddrId").value, shipService: @Model.Shipping.ShippingService,
+                    orderType: @Model.OrderType, orderNo: @Model.OrderNo, host: @Model.Host, week: wk, onlyShow: true
+                },
+                type: 'POST',
+                success: function (html) {
+                    document.getElementById("shippingIntervalsOnlyShowDiv").innerHTML = html;
+                    document.getElementById("intervalsWidgetTable").innerHTML = html;
+                    if (document.getElementById("shippingIntervalsTableOnlyShow"))
+                        addEventMenu("shippingIntervalsTableOnlyShow", "intervalsWidget", "click", "shippingIntervalsTableOnlyShow");
+                },
+                error: function () { alert('Сбой получения интервалов доставки'); }
+            });
+        }
+        catch (e) {
+            alert('Ошибка ' + e.name + ":" + e.message + "\n" + e.stack);
+        }
+    }
+
+    function showCell(ths) {
+        /*щелчёк на ячейке в таблице интервалов*/
+        cells = ths.getElementsByTagName('td');
+        for (var i = 0, len = cells.length; i < len; i++) {
+            cells[i].onclick = function () {
+                document.getElementById("hiddenElementsShippingIntervals").hidden = true;
+                document.getElementById("lbl_selectedIterval").hidden = true;
+                if (this.innerHTML != '') {
+                    document.getElementById("selecteDeliveryDate").value = document.getElementById("d" + this.cellIndex).value;
+                    document.getElementById("rangeTimeFrom").min = parseInt(document.getElementById("timeFrom" + this.parentElement.rowIndex).value, 10);
+                    document.getElementById("rangeTimeFrom").max = parseInt(document.getElementById("timeTo" + this.parentElement.rowIndex).value, 10);
+                    document.getElementById("rangeTimeTo").min = parseInt(document.getElementById("timeFrom" + this.parentElement.rowIndex).value, 10);
+                    document.getElementById("rangeTimeTo").max = parseInt(document.getElementById("timeTo" + this.parentElement.rowIndex).value, 10);
+                    document.getElementById("rangeTimeFrom").value = parseInt(document.getElementById("timeFrom" + this.parentElement.rowIndex).value, 10);
+                    document.getElementById("rangeTimeTo").value = parseInt(document.getElementById("timeTo" + this.parentElement.rowIndex).value, 10);
+                    changeIntervalManual();
+                    setSingleCellSelect(this, ths);
+                }
+                else {
+                    for (var i = 0, len = cells.length; i < len; i++) cells[i].classList.remove('selected-ship-cell');
+                }
+            };
+        }
+    }
+
+    function changeIntervalManual() {
+        /* Обработка нажатия на таблице выбора интервалов */
+        document.getElementById("hiddenElementsShippingIntervals").hidden = false;
+        document.getElementById("lbl_selectedIterval").hidden = false;
+        document.getElementById("lbl_selectedIterval").innerText = "Выбранный интервал: " +
+            document.getElementById("selecteDeliveryDate").value.replace("0:00:00", "") + " с " +
+            document.getElementById("rangeTimeFrom").value + " до " +
+            document.getElementById("rangeTimeTo").value;
+        if (parseInt(document.getElementById("rangeTimeFrom").value, 10) >= parseInt(document.getElementById("rangeTimeTo").value, 10)) {
+            document.getElementById("rangeTimeFrom").value = document.getElementById("rangeTimeFrom").min;
+            document.getElementById("rangeTimeTo").value = document.getElementById("rangeTimeFrom").max;
+            alert("Начало интервала не может превышать его окончание. \n Интервалы сброшены");
+        }
+    }
+
+    function setShippingIntervals() {
+        /* Нажатие на кнопку "Назначить интервал". Переносим интервалы в поля объекта заказа*/
+        var date1 = parseDateFromString(document.getElementById("selecteDeliveryDate").value.toString());
+        var date2 = parseDateFromString(document.getElementById("selecteDeliveryDate").value.toString());
+        var dateFrom = dateFormat(date1.setHours(date1.getHours() + parseInt(document.getElementById("rangeTimeFrom").value, 10)), "dd.mm.yyyy HH:MM:ss");
+        var dateTo = dateFormat(date2.setHours(date2.getHours() + parseInt(document.getElementById("rangeTimeTo").value, 10)), "dd.mm.yyyy HH:MM:ss");
+        document.getElementById("order.Shipping.ShippingDateFrom").value = dateFrom;
+        document.getElementById("order.Shipping.ShippingDateTo").value = dateTo;
+        document.getElementById("lb_modal").click();
+        document.getElementById('btn_model_upd').click();
+    }
+
+    function showModalMessage(caption, message) {
+        /* вызов модального окна для отображения сообщения*/
+        showmodal('showModalMessage', caption, message);
+    }
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+

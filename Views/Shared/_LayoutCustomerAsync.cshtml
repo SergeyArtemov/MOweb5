@@ -1,0 +1,222 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 5px;
+            text-align: left;
+        }
+    </style>
+
+    <style>
+        /*
+        body {
+            background-color: deepskyblue;
+            padding: 0px;
+            margin: 0px;
+            font-family: Tahoma, Geneva, sans-serif;
+            font-size: 12px;
+        }*/
+
+        .layout {
+            display: grid;
+            grid-gap: 5px;
+            margin: 1px 1px;
+            grid-template-rows: 52px 100vh;
+            grid-template-columns: 1fr 3fr;
+        }
+
+        .box {
+            overflow: auto;
+            white-space: nowrap;
+            background-color: aliceblue;
+            border-radius: 1px;
+            display: flex;
+            justify-content: left;
+            align-items: top;
+        }
+
+        .col-head {
+            grid-row: 1;
+            grid-column: span 2;
+            display: inline-flex;
+        }
+
+        .main-left {
+            grid-row: 2;
+            grid-column: 1;
+        }
+
+        .col-footer {
+            grid-row: 3;
+            grid-column: 1;
+        }
+
+        .right {
+            grid-row: span 2;
+            grid-column: 2;
+        }
+
+        .infoLabel {
+            padding: 3px;
+            font-weight: bold;
+            height: 0px;
+            display: table-cell;
+            vertical-align: middle;
+        }
+
+        #dddddd {
+        }
+    </style>
+
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    <link asp-href-include="lib/bootstrap/dist/css/*.min.css" rel="stylesheet" />
+</head>
+<body class="m-1 p-1">
+ 
+        <table style="width:100%">
+            <tr>
+                <th style="width:35%">Клиент</th>
+                <th>Заявка</th>
+                <th style="width:15%">
+                    <form method="post">
+                        <button asp-controller="Home" asp-action="LoginForm">Главное меню</button>
+                    </form>
+                </th>
+
+            </tr>
+            <tr>
+                @{ 
+                    int caseCustomerId = @Model.CaseCustomerId;
+                    }
+                <td>
+                    @await Component.InvokeAsync("MOweb.Components.CustomerSummaryController", new { customerId = caseCustomerId, host = 1})
+                </td>
+                <form asp-action="Case" method="post" id="Case">
+                    <td>
+                        @RenderBody()
+                    </td>
+                </form>
+                    <td>
+                        <table style="width:100%;  font-size: 11px;">
+                            <tr><td><button id="btnPrm" name="btnPrm">Параметры показать</button></td></tr>
+                            <tr><td><button id="btnSend" name="btnSend" onclick="Send()" type ="button">Отправить</button></td></tr>
+                            <tr><td><button id="btnWrk" name="btnWrk">Взять в работу</button></td></tr>
+                            <tr><td><button id="btnEml" name="btnEml">Email</button></td></tr>
+                        </table>
+                    </td>
+            </tr>
+            <tr>
+                <td>ghghghhjgjh1</td>
+                <td>ghghghhjgjh2</td>
+                <td>ghghghhjgjh3</td>
+            </tr>
+
+        </table>
+
+
+        <script>
+
+        function ss() {
+            alert('!!!!!');
+        }
+
+        function SendEmail() {/*(source = "Входящий звонок", tematika = "SPEC Возвраты. Запрос в казначейство") {*/
+            /* Получение списка Сутей на основе значения поля Источник и Тематика */
+
+            let email = document.getElementById("EmailId").value;
+            let text1 = document.getElementById("text1").value;
+
+        alert(email);
+
+       // while (list.children.length) list.removeChild(list.children[0]);
+
+
+        try {
+            $.ajax({
+                url: '/Case/SendEmail',
+                //data: {},
+                data: { Author: 3, User: 2, Case: 1111, Recipients: email, Subject: '', Body: text1, Profile: 1 , PrevEmailId :0, CC : ''},  //
+                type: 'POST',
+                // dataType: 'binary',
+                success: function (data) {
+                    alert('Всё отлично!');
+                }
+            });
+        }
+        catch (e) {
+            alert('Ошибка ' + e.name + ":" + e.message + "\n" + e.stack);
+        }
+
+        }
+
+            function Send() {/*(source = "Входящий звонок", tematika = "SPEC Возвраты. Запрос в казначейство") {*/
+            /* Получение списка Сутей на основе значения поля Источник и Тематика */
+
+                alert('SendSend0!!!');
+
+                let caseId = document.getElementById("caseId").value;
+                let text1 = document.getElementById("text1").value;
+                let reasonCode = document.getElementById("Case_ReasonQueueOnSourceTematikaSut_selected").value;
+                //let orderNo = document.getElementById("OrderNo").value;
+                //let host = document.getElementById("Case_ReasonQueueOnSourceTematikaSut_selected").value;
+                let source = document.getElementById("Case_Source").value;
+                let howToResponse = document.querySelector('input[name="send_option"]:checked').value; 
+                let comment = document.getElementById("text1").value;
+
+                var now = new Date();
+
+                reasonCodePadIndex = document.getElementById("Case_ReasonQueueOnSourceTematikaSut").value.indexOf('Reason=')+7;
+                reasonCode = document.getElementById("Case_ReasonQueueOnSourceTematikaSut").value.slice(reasonCodePadIndex);
+
+        alert(howToResponse);
+
+       // while (list.children.length) list.removeChild(list.children[0]);
+
+
+        try {
+            $.ajax({
+                url: '/Case/SendCase',
+                data: {
+                    Author: 3, User: 2, CaseId: caseId, Caption: ''
+                    , ReasonCode: reasonCode, OrderType: 0, OrderNo: @Model.OrderNo, Host: @Model.Host
+                    , Customer : @Model.CaseCustomerId, StateId :5, SourceString :source, Comment :comment , HowToResponse :howToResponse},
+                type: 'POST',
+                // dataType: 'binary',
+                success: function (data) {
+                            let json = JSON.parse(data);
+                            let param1 = json.Res;
+                            //if (param1.length > 0) {
+                            //    for (let i = 0; i < param1.length; i++) {
+                                    val1 = param1[i].CaseId;
+                            //        list.appendChild(item.cloneNode(true));
+                            //    }
+                            //}
+                    alert(val1);
+                }
+            });
+        }
+        catch (e) {
+            alert('Ошибка ' + e.name + ":" + e.message + "\n" + e.stack);
+        }
+
+        }
+
+
+        </script>
+
+
+</body>
+</html>

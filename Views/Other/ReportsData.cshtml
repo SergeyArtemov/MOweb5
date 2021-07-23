@@ -1,0 +1,32 @@
+﻿<div style="overflow: auto;">
+    @if (ViewBag.Data != null)
+    {
+        System.Data.DataSet ds = (System.Data.DataSet)ViewBag.Data;
+        if (ds.Tables[0].Columns.Count > 0)
+        {
+            <table border = "1" style = "border-collapse: collapse;"><thead><tr>
+            @{
+                string[] caption;
+                <th>No.</th>
+                @for (int col = 0; col < ds.Tables[0].Columns.Count; col++)
+                {
+                    caption = ds.Tables[0].Columns[col].Caption.Split(" - ");
+                    <th>
+                        @(caption.Length > 1 ? caption[1] : caption[0])
+                    </th>
+                }
+            }
+            </tr></thead><tbody>
+            @for(int row = 0; row < ds.Tables[0].Rows.Count; row++)
+            {
+                <tr><td style="font-weight: bold; background-color: lightgrey;">@(row+1)</td>
+                    @for(int col = 0; col < ds.Tables[0].Columns.Count; col++)
+                    {
+                        <td style="margin: 0; padding: 1px; font-size: 11px;">@ds.Tables[0].Rows[row].ItemArray[col].ToString()</td>
+                    }
+                </tr>
+            }
+            </tbody></table>
+        }
+    }
+ </div>

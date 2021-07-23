@@ -1,0 +1,134 @@
+﻿@model MOUserClasses.MOUserManager;
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>MOUserList</title>
+
+    <style type="text/css">
+
+        .container-fluid {
+            overflow: auto;
+            white-space: nowrap;
+        }
+
+        .table.table-condensed tr th {
+            border-spacing: 0px;
+            border-collapse: collapse;
+            padding: 0;
+        }
+
+        .inline-block {
+            display: inline-block;
+        }
+
+
+        .table {
+            display: table;
+        }
+
+            .table > a {
+                display: table-row;
+            }
+
+                .table > a > div {
+                    display: table-cell;
+                }
+    </style>
+
+</head>
+<body>
+
+    <h1>Список пользователей</h1>
+    <br />
+    <input type="button" value="Добавить пользованеля" onClick="document.location.href = '@Url.Action("MOUserForm", "MOUser" )'+ '?' + 'UserId=0' " />
+    <br />
+    <br />
+
+    <environment include="Development">
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+        <link rel="stylesheet" href="~/css/site.css" />
+    </environment>
+    <environment include="Development">
+        <script src="~/lib/jquery/dist/jquery.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+        <script src="~/js/site.js" asp-append-version="true"></script>
+    </environment>
+
+
+    <div id="list" style="max-height:450px;overflow:auto" class="container-fluid">
+        @*<input type="hidden" name="str" value="@ViewBag.Text" />*@
+
+        <table id="tableUserList" border="1" class="table table-striped table-bordered table-hover table-condensed">
+
+
+
+            <!--
+
+                        <div class="container-fluid">
+                            <table border="6" class="table table-striped table-bordered table-hover table-condensed">
+                                if (Model.Customers != null)
+                                {
+                                    <tr style="background-color:beige">
+                                        <td>ID</td>
+                                        <td>Хост</td>
+                                        <td>имя</td>
+
+                -->
+
+
+
+            <thead>
+                <tr style="background-color:beige">
+                    <th>AccountId</th>
+                    <th>Таб. № (1С)</th>
+                    <th>Оператор</th>
+                    <th>Уволен (1С)</th>
+                    <th>Логин (1С)</th>
+                    <th>Тип АРМ (1С)</th>
+
+                    <th>Call-O-Call Имя оператора</th>
+                    <th>Call-O-Call Логин</th>
+                    <th>WebIM Имя оператора</th>
+                    <th>WebIM Логин</th>
+                    <th>Chatra Имя оператора</th>
+                    <th>Chatra Логин</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.Items.Count(); i++)
+                {
+                    var AUser = Model.Items[i];
+                    <tr ondblclick="location.href = '@Url.Action("MOUserForm", "MOUser" )'+ '?' + 'UserId=@AUser.AccountId'">
+                        <td>@AUser.AccountId</td>
+                        <td>@AUser.TabNo_caption</td>
+                        <td>@AUser.Operator_caption</td>
+                        <td>@AUser.DismissalDate</td>
+                        <td>@AUser.Login</td>
+                        <td>@AUser.ArmTypeName</td>
+                        <td>@AUser.CallOCallOperatorName</td>
+                        <td>@AUser.CallOCallOperatorLogin</td>
+                        <td>@AUser.wbRefOperatorName</td>
+                        <td>@AUser.wbRefOperatorLogin</td>
+                        <td>@AUser.ChatraOperatorName</td>
+                        <td>@AUser.wbRefOperatorLogin</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+
+    <script type="text/javascript">
+        function RowClick(AUserId) {
+        }
+    </script>
+
+
+</body>
+</html >

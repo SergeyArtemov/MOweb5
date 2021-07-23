@@ -1,0 +1,44 @@
+﻿@model Orders.CustomerOrders;
+@{
+    Layout = null;
+}
+
+<table border="1" id="customerOrdersTable" class="table table-condensed table-select" style="font-size: 11px;">
+    <tr>
+        <th></th>
+        <th>Номер</th>
+        <th>Тип заказа</th>
+        <th>Дата заказа</th>
+        <th>Дата смены статуса</th>
+        <th>Статус</th>
+        <th>Сумма заказа</th>
+        <th>Доставка</th>
+        <th>Акция</th>
+        <th>Адрес</th>
+    </tr>
+    @if (Model.Orders.Count > 0)
+    {
+        var itmLineNo = 1;
+        @foreach (var item in Model.Orders)
+        {
+            @*<!--ondblclick="location.href = '@Url.Action("ShowCustomerOrders", "Order")?CustomerId=@Model.Customer.ID&Host=@Model.Customer.Host&OrderNo=@item.OrderNo'"-->*@
+            <tr onclick="setSingleRowSelect(this)"                
+                ondblclick="location.href = '@Url.Action("ShowOrders", "Order")?CustomerId=@Model.Customer.ID&Host=@Model.Customer.Host&OrderNo=@item.OrderNo&CurrentUser=@Model.CurrentUser&NextForm=@item.NextForm'">
+                <td hidden name="orderNextForm">@item.NextForm</td>
+                <td hidden name="orderCanChange">@item.CanChange</td>
+                <td name="itemLineNo">@itmLineNo</td>
+                <td name="customerOrdersOrderNo">@item.OrderNo</td>
+                <td>@item.OrderType</td>
+                <td>@item.OrderDate</td>
+                <td>@item.DateStateChange</td>
+                <td>@item.State</td>
+                <td>@item.OrderAmount @Model.Currency</td>
+                <td>@item.ShippingAmount @Model.Currency</td>
+                <td>@item.Campaign</td>
+                <td>@item.Address</td>
+            </tr>
+            itmLineNo++;
+        }
+    }
+</table>
+

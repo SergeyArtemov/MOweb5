@@ -1,0 +1,118 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+@model AppClasses.LoginFrm;
+
+@{
+    Layout = null;
+}
+
+
+
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="~/css/common.css" />
+    <meta name="viewport" content="width=device-width" />
+    <title>DebugData</title>
+    <style>
+        input, select, button {
+            background-color: rgba(255, 255, 255, 0.66);
+            font-family: Tahoma, Geneva, sans-serif;
+            font-size: 12px;
+            margin: 0;
+            padding: 2px;
+            border-radius: 3px;
+            box-shadow: none;
+            outline: none;
+            border: 1px solid rgba(0, 150, 255, 0.3);
+        }
+
+        button {
+            background-color: lightcyan;
+        }
+
+            input:hover, input:focus, select:hover, select:focus, button:hover, button:focus {
+                padding: 2px;
+                border: 1px solid blue;
+            }
+    </style>
+</head>
+<body style="text-align:center; color:darkcyan" onload="GetLastLogin()">
+
+    <script src="/js/md5Unit.js"></script>
+
+    <form id="login_form" asp-action="LoginForm" method="post" name="login_form" style="width: 100%; height: 100%; position: fixed; top: 0; left: 0; display: flex; align-items: center;
+        align-content: center; justify-content: center">
+        <div style=" display: inline-block; padding: 10px; border: 2px solid blue; min-width: 100px; border-radius: 10px; overflow: auto; background-color: lightgray;">
+            <div style="font-size: 24px; font-weight: bold;">Введите Login и пароль </div><br />
+            @if (Model.ErrMsg != "")
+            {
+                <div style="color:#FF0000;"> @Model.ErrMsg </div><br />
+            }
+            <label> login </label>
+            <select id="cbLoginList" value="" asp-for="login">
+                @for (int i = 0; i < Model.LoginList.Count; i++)
+                {
+                    <option value="@Model.LoginList[i]"> @Model.LoginList[i] </option>
+                }
+            </select>
+            <br /><br />
+            <label>пароль</label>
+            <input id="password" type="password" value="" onkeydown="pass_press(event)" />
+            <input id="pwd_md5" type="text" asp-for="password" value="" hidden />
+            <br /><br /><button type="button" class="tablinks" id="SaveChangeInARMbutton" onclick="Ok_function()">Войти в MO-WEB</button>
+            <br /><br /><label>ПЕРЕЙТИ НА ФОРМУ<a asp-area="" asp-controller="CallCheck" asp-action="CallCheck">CallCheck</a></label>
+            <br /><br /><label>ПЕРЕЙТИ НА ФОРМУ<a asp-area="" asp-controller="MamsyMonitor" asp-action="MamsyMonitor">MamsyMonitor</a></label>            
+        </div>
+    </form>
+
+    
+    <script type="text/javascript">
+        function pass_press(evnt) {
+            if (evnt.keyCode == 13) Ok_function();
+        }
+
+        function Ok_function(s) {
+            e_pwd = document.getElementById('password');
+            var s = md5(e_pwd.value)
+            e_pwd.value = ""
+            e_md5 = document.getElementById('pwd_md5');
+            e_md5.value = s;
+
+            SaveLastLogin()
+
+            elem = document.getElementById('login_form');
+            elem.submit()
+        }
+
+        function SaveLastLogin() {
+            e_login = document.getElementById('cbLoginList');
+            var lg = e_login.value;
+            var cookie_string = "LastLogin=" + escape(lg);
+            var expires = new Date();  // Текущая дата и время
+
+            expires.setFullYear(expires.getFullYear() + 100); //плюс 100 лет
+            cookie_string += "; expires=" + expires.toGMTString();
+            document.cookie = cookie_string;
+        }
+
+        function GetLastLogin() {
+            var s
+            var results = document.cookie.match('(^|;) ?' + "LastLogin" + '=([^;]*)(;|$)');
+            if (results) {
+                s = unescape(results[2]);
+            }
+            else {
+                s = '';
+            }
+            e_login = document.getElementById('cbLoginList');
+            if (s) { e_login.value = s; }
+
+        }
+    </script>
+</body>
+</html>

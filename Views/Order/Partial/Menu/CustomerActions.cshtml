@@ -1,0 +1,48 @@
+﻿<!-- >> Меню действий с заказом -->
+<nav id="contextMenuOrderActions" class="event-menu dragElement">
+    <ul class="menuHead"><a class="menuClose">x</a></ul>
+    <ul class="event-menu__items">
+        <li class="event-menu__item">
+            Заявки
+            <nav class="subMenu">
+                <ul class="event-menu__items" id="customerRequests">
+                    <!--<li class="event-menu__item" onclick="alert('111_1')">111_1</li>
+                    <li class="event-menu__item" onclick="alert('222_1')">222_1</li>-->
+                </ul>
+            </nav>
+        </li>
+        <li class="event-menu__item" onclick="showmodal('personalDiscount', '', '')">Персональная скидка</li>
+        <li class="event-menu__item">
+            Другие аккаунты
+            <nav class="subMenu">
+                <ul class="event-menu__items">
+                    <li class="event-menu__item" id="anotherAccounts0">
+                        Подтверждения
+                        <nav class="subMenu">
+                            <ul class="event-menu__items" id="anotherAccounts0List"></ul>
+                        </nav>
+                    </li>
+                    <li class="event-menu__item" id="anotherAccounts1">
+                        Входящие
+                        <nav class="subMenu">
+                            <ul class="event-menu__items" id="anotherAccounts1List"></ul>
+                        </nav>
+                    </li>
+                    <li class="event-menu__item" id="anotherAccounts2">
+                        Доставка
+                        <nav class="subMenu">
+                            <ul class="event-menu__items" id="anotherAccounts2List"></ul>
+                        </nav>
+                    </li>
+                </ul>
+            </nav>
+        </li>
+        <li class="event-menu__item">
+            Телефоны
+            <nav class="subMenu">
+                <ul class="event-menu__items" id="customerPhones"></ul>
+            </nav>
+        </li>
+    </ul>
+</nav>
+<!-- << Меню действий с заказом -->

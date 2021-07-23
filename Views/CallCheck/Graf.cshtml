@@ -1,0 +1,145 @@
+﻿@{
+    <!--Layout = "_layout";-->
+    Layout = null;
+}
+
+
+<meta http-equiv="REFRESH" content="60;" />
+
+<html>
+<body>
+    <input type="button" onclick="history.back();" value="Назад" />
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.min.js"></script>
+
+    <script type="text/javascript" src="js/stats_tab.js"></script>
+
+    <!-- Готовим контейнер для диаграммы -->
+    <div id="content" align="left">
+        <canvas id="myChart" width="870" height="500"></canvas>
+    </div>
+
+    <script type="text/javascript">
+
+            var JArr1 = "@ViewBag.Arr1"
+            var q1 = JArr1.split(",");
+            var JArr2 = "@ViewBag.Arr2"
+            var q2 = JArr2.split(",");
+            var JArr3 = "@ViewBag.Arr3"
+            var q3 = JArr3.split(",");
+            var JArr4 = "@ViewBag.Arr4"
+            var q4 = JArr4.split(",");
+            var JArr5 = "@ViewBag.Arr5"
+            var q5 = JArr5.split(",");
+            var JArr6 = "@ViewBag.Arr6"
+            var q6 = JArr6.split(",");
+            let w1 = [];
+            let w2 = [];
+            let w3 = [];
+            let w4 = [];
+            let w5 = [];
+            let w6 = [];
+            for (var i = 0; i < @ViewBag.Countrow; i++) {
+                w1.push(q1[i]);
+                w2.push(q2[i]);
+                w3.push(q3[i]);
+                w4.push(q4[i]);
+                w5.push(q5[i]);
+                w6.push(q6[i]);
+            }
+
+        //Готовим диаграмму
+        function Diagram() {
+            var ctx = document.getElementById("myChart");
+            var myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: w1, //Подписи оси x
+                    datasets: [
+                        {
+                            label: "Дл.звонка  ",
+                            data: w2, //Данные
+                            borderColor: 'DarkViolet', //Цвет
+                            borderWidth: 2, //Толщина линии
+                            pointBorderColor: 'transparent',
+                            pointBackgroundColor: 'transparent',
+                            fill: false //Не заполнять под графиком
+                        },
+                        {
+                            label: "Дл.задачи  ",
+                            data: w3, //Данные
+                            borderColor: 'blue', //Цвет
+                            borderWidth: 2, //Толщина линии
+                            pointBorderColor: 'transparent',
+                            pointBackgroundColor: 'transparent',
+                            fill: false //Не заполнять под графиком
+                        },
+                        {
+                            label: "% выполнения  ",
+                            data: w4, //Данные
+                            borderColor: 'Green', //Цвет
+                            borderWidth: 2, //Толщина линии
+                            pointBorderColor: 'transparent',
+                            pointBackgroundColor: 'transparent',
+                            fill: false //Не заполнять под графиком
+                        },
+                        {
+                            label: "Max Свободен  ",
+                            data: w5, //Данные
+                            borderColor: 'LightSalmon', //Цвет
+                            borderWidth: 2, //Толщина линии
+                            pointBorderColor: 'transparent',
+                            pointBackgroundColor: 'transparent',
+                            fill: false //Не заполнять под графиком
+                        },
+                        {
+                            label: "Max Ожидание",
+                            data: w6, //Данные
+                            borderColor: 'Red', //Цвет
+                            borderWidth: 2, //Толщина линии
+                            pointBorderColor: 'transparent',
+                            pointBackgroundColor: 'transparent',
+                            fill: false //Не заполнять под графиком
+                        }
+                        //Можно добавить другие графики
+                    ]
+                },
+                options: {
+                    title: {
+                       display: true,
+                        text: 'AutoCall Check - графика',
+                        fontSize: 20
+                    },
+                    animation: {
+                        duration: 0
+                    },
+                    //tooltips: {
+                    //    enabled: false
+                    //  },
+                    responsive: false, //Вписывать в размер canvas
+                    scales: {
+                        xAxes: [{
+                            display: true
+                        }],
+                        yAxes: [{
+                            display: true
+                        }]
+                    }
+                }
+            });
+            //Обновляем
+            myChart.update();
+
+        }
+
+        //Ставим загрузку диаграммы на событие загрузки страницы
+        window.addEventListener("load", Diagram);
+    </script>
+    <noscript>
+        <div align="center">
+            Извините, для работы приложения нужен включённый Javascript
+        </div>
+    </noscript>
+</body>
+</html>

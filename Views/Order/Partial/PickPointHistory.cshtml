@@ -1,0 +1,40 @@
+﻿@if (ViewData["PickPointHistory"] != null)
+{
+    <style>
+        #pickPointHistoryTable {
+            border-collapse: collapse;
+            word-break: normal;
+            white-space: pre-wrap;
+        }
+        #pickPointHistoryTable  td {
+            border: 1px solid lightblue;
+            background-color: whitesmoke;
+        }
+        #pickPointHistoryTable th {
+            background-color: lightblue;
+        }
+    </style>
+    <table id="pickPointHistoryTable" class="table table-condensed">
+        <thead style="position: sticky; top: 0; left: 0;">
+            <tr>
+                <th>Дата</th>
+                <th>Статус</th>
+                <th>ПВЗ</th>
+            </tr>
+        </thead>
+    @{
+        System.Data.DataSet pickPointHistory = (System.Data.DataSet)ViewData["PickPointHistory"];
+        for (int hstr = 0; hstr < pickPointHistory.Tables["PickPointHistory"].Rows.Count; hstr++)
+        {
+            <tr>
+                <td>@pickPointHistory.Tables["PickPointHistory"].Rows[hstr].ItemArray[0]</td>
+                <td>@pickPointHistory.Tables["PickPointHistory"].Rows[hstr].ItemArray[1]</td>
+                <td>@pickPointHistory.Tables["PickPointHistory"].Rows[hstr].ItemArray[2]</td>
+            </tr>
+
+        }
+    }
+    </table>
+}
+
+

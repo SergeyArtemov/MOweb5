@@ -1,0 +1,148 @@
+﻿<htm>
+    <head>
+        <style>
+            .table-centered-header th {
+                text-align: center;
+                background-color: #c2e3ff;
+                border: 1px solid blue;
+            }
+        </style>
+    </head>
+    <body>
+        @if (ViewData["ShippingIntervals"] != null)
+        {
+            System.Data.DataSet shippingIntervals = (System.Data.DataSet)ViewData["ShippingIntervals"];
+            @if (shippingIntervals.Tables[0].Rows.Count > 0)
+            {
+                //string str = Newtonsoft.Json.JsonConvert.SerializeObject(shippingIntervals);
+                //System.Data.DataSet deserial = Newtonsoft.Json.JsonConvert.DeserializeObject<System.Data.DataSet>(str);
+                DateTime starthate = DateTime.Now.Date.AddDays(7 * ViewBag.Week);
+                <table class="table-centered-header" style="border-collapse: collapse; min-height: 14px;" id="shippingIntervalsTableOnlyShow">
+                    <tr>
+                        <th>Зона / число</th>
+                        @*<th>IntervalColor</th>*@
+                        <th><input hidden id="d1" value="@starthate.ToString("yyyy-MM-dd 0:00:00")" />@starthate.ToString("dd.MM")<br />@starthate.ToString("ddd")</th>
+                        <th><input hidden id="d2" value="@starthate.AddDays(1).ToString("yyyy-MM-dd 0:00:00")" />@starthate.AddDays(1).ToString("dd.MM")<br />@starthate.AddDays(1).ToString("ddd")</th>
+                        <th><input hidden id="d3" value="@starthate.AddDays(2).ToString("yyyy-MM-dd 0:00:00")" />@starthate.AddDays(2).ToString("dd.MM")<br />@starthate.AddDays(2).ToString("ddd")</th>
+                        <th><input hidden id="d4" value="@starthate.AddDays(3).ToString("yyyy-MM-dd 0:00:00")" />@starthate.AddDays(3).ToString("dd.MM")<br />@starthate.AddDays(3).ToString("ddd")</th>
+                        <th><input hidden id="d5" value="@starthate.AddDays(4).ToString("yyyy-MM-dd 0:00:00")" />@starthate.AddDays(4).ToString("dd.MM")<br />@starthate.AddDays(4).ToString("ddd")</th>
+                        <th><input hidden id="d6" value="@starthate.AddDays(5).ToString("yyyy-MM-dd 0:00:00")" />@starthate.AddDays(5).ToString("dd.MM")<br />@starthate.AddDays(5).ToString("ddd")</th>
+                        <th><input hidden id="d7" value="@starthate.AddDays(6).ToString("yyyy-MM-dd 0:00:00")" />@starthate.AddDays(6).ToString("dd.MM")<br />@starthate.AddDays(6).ToString("ddd")</th>
+                    </tr>
+                    @for (int shpIntrv = 0; shpIntrv < shippingIntervals.Tables[0].Rows.Count; shpIntrv++)
+                    {
+                        string title = "";
+                        <tr>
+                            @{ title = "Зона " + @shippingIntervals.Tables[0].Rows[shpIntrv].ItemArray[15] + " ID(Уровень): " +
+                                                  @shippingIntervals.Tables[0].Rows[shpIntrv].ItemArray[14] + "(" + @shippingIntervals.Tables[0].Rows[shpIntrv].ItemArray[16] + ")";
+                                string[] timeFromTo = @shippingIntervals.Tables[0].Rows[shpIntrv].ItemArray[0].ToString().Split(" - ");
+                                string timeFrom = "0";
+                                string timeTo = "0";
+                                if (timeFromTo.Length > 1)
+                                {
+                                    timeFrom = @timeFromTo[0].Split(":").Length > 1 ? @timeFromTo[0].Split(":")[0] : "0";
+                                    timeTo = @timeFromTo[1].Split(":").Length > 1 ? @timeFromTo[1].Split(":")[0] : "0";
+                                }
+                            }
+                            <th title="@title">
+                                @{
+                                    string idTimeFrom = "timeFrom" + (shpIntrv + 1);
+                                    string idTimeTo = "timeTo" + (shpIntrv + 1);
+                                }
+                                <input hidden value="@timeFrom" id="@idTimeFrom" />
+                                <input hidden value="@timeTo" id="@idTimeTo" />
+                                @shippingIntervals.Tables[0].Rows[shpIntrv].ItemArray[0]
+                            </th>
+                            @*<th>@shippingIntervals.Tables[0].Rows[shpIntrv].ItemArray[1]</th>*@
+                            @switch (@shippingIntervals.Tables[0].Rows[shpIntrv].ItemArray[2])
+                            {
+                                case 0:
+                                    title = "Недоступно";
+                                    <td title="@title" style="background-color: lightgray; border: 1px solid gray; text-align: center;"></td>; break;
+                                case 1:
+                                    title = "Доступно";
+                                    //title = "Доступно, уже клиентов " + @shippingIntervals.Tables[0].Rows[shpIntrv].ItemArray[18];
+                                    <td title="@title" style="background-color: palegreen; border: 1px solid green; text-align: center;"><b>&times;</b></td>; break;
+                            }
+
+                            @switch (@shippingIntervals.Tables[0].Rows[shpIntrv].ItemArray[3])
+                            {
+                                case 0:
+                                    title = "Недоступно";
+                                    <td title="@title" style="background-color: lightgray; border: 1px solid gray; text-align: center;"></td>; break;
+                                case 1:
+                                    title = "Доступно";
+                                    //title = "Доступно, уже клиентов " + @shippingIntervals.Tables[0].Rows[shpIntrv].ItemArray[19];
+                                    <td title="@title" style="background-color: palegreen; border: 1px solid green; text-align: center;"><b>&times;</b></td>break;
+                            }
+
+                            @switch (@shippingIntervals.Tables[0].Rows[shpIntrv].ItemArray[4])
+                            {
+                                case 0:
+                                    title = "Недоступно";
+                                    <td title="@title" style="background-color: lightgray; border: 1px solid gray; text-align: center;"></td>; break;
+                                case 1:
+                                    title = "Доступно";
+                                    //title = "Доступно, уже клиентов " + @shippingIntervals.Tables[0].Rows[shpIntrv].ItemArray[20];
+                                    <td title="@title" style="background-color: palegreen; border: 1px solid green; text-align: center;"><b>&times;</b></td>break;
+                            }
+                            @switch (@shippingIntervals.Tables[0].Rows[shpIntrv].ItemArray[5])
+                            {
+                                case 0:
+                                    title = "Недоступно";
+                                    <td title="@title" style="background-color: lightgray; border: 1px solid gray; text-align: center;"></td>; break;
+                                case 1:
+                                    title = "Доступно";
+                                    //title = "Доступно, уже клиентов " + @shippingIntervals.Tables[0].Rows[shpIntrv].ItemArray[21];
+                                    <td title="@title" style="background-color: palegreen; border: 1px solid green; text-align: center;"><b>&times;</b></td>break;
+                            }
+                            @switch (@shippingIntervals.Tables[0].Rows[shpIntrv].ItemArray[6])
+                            {
+                                case 0:
+                                    title = "Недоступно";
+                                    <td title="@title" style="background-color: lightgray; border: 1px solid gray; text-align: center;"></td>; break;
+                                case 1:
+                                    title = "Доступно";
+                                    //title = "Доступно, уже клиентов " + @shippingIntervals.Tables[0].Rows[shpIntrv].ItemArray[22];
+                                    <td title="@title" style="background-color: palegreen; border: 1px solid green; text-align: center;"><b>&times;</b></td>break;
+                            }
+                            @switch (@shippingIntervals.Tables[0].Rows[shpIntrv].ItemArray[7])
+                            {
+                                case 0:
+                                    title = "Недоступно";
+                                    <td title="@title" style="background-color: lightgray; border: 1px solid gray; text-align: center;"></td>; break;
+                                case 1:
+                                    title = "Доступно";
+                                    //title = "Доступно, уже клиентов " + @shippingIntervals.Tables[0].Rows[shpIntrv].ItemArray[23];
+                                    <td title="@title" style="background-color: palegreen; border: 1px solid green; text-align: center;"><b>&times;</b></td>break;
+                            }
+                            @switch (@shippingIntervals.Tables[0].Rows[shpIntrv].ItemArray[8])
+                            {
+                                case 0:
+                                    title = "Недоступно";
+                                    <td title="@title" style="background-color: lightgray; border: 1px solid gray; text-align: center;"></td>; break;
+                                case 1:
+                                    title = "Доступно";
+                                    //title = "Доступно, уже клиентов " + @shippingIntervals.Tables[0].Rows[shpIntrv].ItemArray[24];
+                                    <td title="@title" style="background-color: palegreen; border: 1px solid green; text-align: center;"><b>&times;</b></td>break;
+                            }
+                        </tr>
+                    }
+                </table>
+            }
+            else
+            {
+                <div style="background-color: lightcoral; width: 36px; height: 24px;" title="НЕТ ДОСТУПНЫХ ИНТЕРВАЛОВ ДОСТАВКИ">
+                </div>
+            }
+
+        }
+    </body>
+</htm>
+
+
+
+
+
+
+

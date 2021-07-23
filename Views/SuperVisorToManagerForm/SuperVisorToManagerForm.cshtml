@@ -1,0 +1,202 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+@model SuperVisorToManager.SuperVisorToManagerFormClass; 
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="~/css/common.css" />
+    <script charset="utf-8" src="~/js/commonScript.js"></script>
+    <script charset="utf-8" src="~/js/commonScript.min.js"></script>
+    <script charset="utf-8" src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script charset="utf-8" src="~/lib/jquery/dist/jquery-ui.js"></script>
+    <script charset="utf-8" src="~/lib/jquery.unobtrusive-ajax/jquery.unobtrusive-ajax.min.js"></script>
+
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script src="~/lib/jquery.unobtrusive-ajax/jquery.unobtrusive-ajax.min.js"></script>
+
+
+    <title>Назначение супервизоров менеджерам</title>
+    <style>
+        body {
+            background-color: deepskyblue;
+            padding: 0px;
+            margin: 0px;
+            font-family: Tahoma, Geneva, sans-serif;
+            font-size: 12px;
+        }
+
+        .layout {
+            display: grid;
+            grid-gap: 5px;
+            margin: 1px 1px;
+            grid-template-rows: 52px 100vh;
+            grid-template-columns: 1fr 3fr;
+        }
+
+        .box {
+            overflow: auto;
+            white-space: nowrap;
+            background-color: aliceblue;
+            border-radius: 1px;
+            display: flex;
+            justify-content: left;
+            align-items: top;
+        }
+
+        .col-head {
+            grid-row: 1;
+            grid-column: span 2;
+            display: inline-flex;
+        }
+
+        .main-left {
+            grid-row: 2;
+            grid-column: 1;
+        }
+
+        .col-footer {
+            grid-row: 3;
+            grid-column: 1;
+        }
+
+        .right {
+            grid-row: span 2;
+            grid-column: 2;
+        }
+
+        .infoLabel {
+            padding: 3px;
+            font-weight: bold;
+            height: 0px;
+            display: table-cell;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="layout">
+
+        <div class="box col-head">
+            <div style="padding: 3px;">
+                <h1> Назначение супервизоров менеджерам </h1>
+            </div>
+        </div>
+
+        <div id="mainOrderInfo" class="box main-left" style="display: inline-block;">
+
+            <h2> Список АРМ </h2>
+            <br />
+
+            @for (int i = 0; i < Model.ARMTypeList.Count; i++)
+            {
+                var ARM = Model.ARMTypeList[i];
+                var check_id = "ARM" + ARM.ARMTypeEntry.id;
+
+                @if (ARM.Check)
+                {<input id="@check_id" type="checkbox" checked onclick="chbClick(@ARM.ARMTypeEntry.id)">@ARM.ARMTypeEntry.Name<Br>}
+                else
+                {<input id="@check_id" type="checkbox" onclick="chbClick(@ARM.ARMTypeEntry.id)"> @ARM.ARMTypeEntry.Name<Br>}
+            }
+                
+        </div>
+
+        <div class="box right" style="display: inline-block;">
+            <h2> Список пользователей </h2>
+            <br />
+
+            <div style="overflow: auto;">
+                <table style="border-collapse: collapse; width: 100%;" border="1" class="tableleftcolor">
+                    <thead>
+                        <tr style="font-weight: bold; background-color:aquamarine">
+                            <th>Оператор</th>
+                            <th>Супервайзер</th>
+                            <th>Дата назначения</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < Model.UserList.Count; i++)
+                        {
+                            var AUser = Model.UserList[i];
+                            <tr ondblclick="location.href = '@Url.Action("SuperVisorListForUserForm", "SuperVisorToManagerForm")'+ '?' + 'UserId=@AUser.AccountId'">
+                                <td>@AUser.Operator_caption</td>
+                                <td>@AUser.LastSuperVisor</td>
+                                <td>@AUser.LastSuperVisorAssignDate</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div id="orderHistory" style="width: 100%; height: 100%; overflow: auto;"></div>
+        </div>
+    </div>
+
+
+    <script type="text/javascript">
+        function chbClick(item_id) {
+            iid = item_id;
+            FieldId = "TaskStateChange"
+
+            chk = document.getElementById("ARM" + iid);
+            if (chk.checked) { res = true } else { res = false };
+
+            $.ajax({
+                    url: '/SuperVisorToManagerForm/SetCheckValueForARM',
+                    data: {id : iid, Value : res},
+                    type: 'POST',
+                    success: function (data) {window.location.reload();} ,
+                    error: function (data) {alert('error');}
+            });
+        } //chbClick
+
+
+        function InsertValueToStateChangeField(FieldId, item_id, res) {
+            fld = document.getElementById(FieldId);
+            s = fld.value;
+
+            new_item = '[' + item_id + ']' + res + ';'
+            find_res = (res == 1) ? 0 : 1;
+            find_item = '[' + item_id + ']' + find_res + ';'
+
+            pos = s.indexOf(find_item);
+
+            if (pos < 0) {   //не было
+                s = s + new_item;
+            }
+            else if (pos == 0) {  //первая позиция
+                s = s.substring(find_item.length, s.length);
+            }
+            else {  //не первая позиция
+                s = s.substring(0, pos) + s.substring(pos + find_item.length, s.length);
+            }
+            fld.value = s;
+        }
+
+
+
+        function btnSaveARMClick() {
+
+            fld = document.getElementById("ChBoxSave");
+            fld.checked = true;
+            fld.value = fld.checked;
+            //            alert(fld.checked)
+
+            elem = document.getElementById('cb_form');
+            elem.submit()
+        }
+
+    </script>
+
+
+
+</body>
+</html>
+

@@ -1,0 +1,123 @@
+﻿@model SuperVisorToManager.AssignSuperVisorToUserForm_class;
+@{
+}
+
+<html>
+<head>
+
+
+</head>
+<body>
+    <h1>Супервизоры для сотрудника @Model.User.Operator_caption</h1>
+
+    <form id="cb_form" name="cb_form" asp-controller="SuperVisorToManagerForm" asp-action="AssignSuperVisorFormOk" oninput="eFilterTextChange()">
+        <!---->
+        <input id="UserId" name="UserId" type="text" value="@Model.UserId" size="60" asp-for="UserId" hidden />
+
+        <input id="eFilterText" type="text" value="" />
+        <br />
+        <select id="cbSVList" value="@Model.SuperVisorList" size="5" onchange="cbSVListChange()">
+            @for (int i = 0; i < Model.SuperVisorList.Count; i++)
+            {
+                @*if (Model.CurARMTypeId == @Model.ARMTypeList[i].id)
+                {
+                    <option value="@Model.ARMTypeList[i].id" selected> @Model.ARMTypeList[i].Name </option>
+                }
+                else*@
+                {
+                    <option value="@Model.SuperVisorList[i].AccountId"> @Model.SuperVisorList[i].Operator_caption </option>
+                }
+            }
+        </select>
+        <br />
+        <br />
+        <label>Новый супервизор</label>
+        <br />
+        <input id="eSelectedSV" type="text" value="" size="60" />
+        <input id="SelectedSV_id" type="text" value="@Model.SelectedSV_id" asp-for="SelectedSV_id" hidden />
+        <br />
+        <label>начиная с</label>
+        <br />
+        <input id="deSVDate" type="date" value="" asp-for="deSVDate" />
+
+        <br />
+        <br />
+
+
+
+    </form>
+
+    <button class="" id="OkButton" onclick="btnOkClick()">Ok</button>
+    <input type="button" value="Отменить" onClick="document.location.href = '@Url.Action("SuperVisorListForUserForm", "SuperVisorToManagerForm")'+ '?' + 'UserId=@Model.User.AccountId' " />
+
+
+
+    <script type="text/javascript">
+        function eFilterTextChange() {
+
+
+            var fld = document.getElementById("eFilterText");
+            sp = fld.value;
+            sp = sp.toUpperCase();
+
+            var ls = document.getElementById("cbSVList");
+            var cnt = ls.options.length;
+
+            var svn = document.getElementById("eSelectedSV");
+            var eid = document.getElementById("SelectedSV_id");
+            var opt
+            for (i = 0; i < cnt; i++) {
+                var opt = ls.options[i];
+                var opt_txt = opt.label;
+                opt_txt = opt_txt.toUpperCase()
+                if (opt_txt.includes(sp)) {
+                    opt.hidden = false;
+                }
+                else {
+                    opt.hidden = true;
+                    if (eid.value == opt.value) {
+                        ls.selectedIndex = -1;
+                        //                       alert(eid.value);
+                        eid.value = "";
+                        svn.value = "";
+                    }
+                }
+            }
+        }
+
+
+        function cbSVListChange() {
+            var ls = document.getElementById("cbSVList");
+
+            var opt = ls.options[ls.selectedIndex];
+            var svn = document.getElementById("eSelectedSV");
+            svn.value = opt.label;
+
+            var eid = document.getElementById("SelectedSV_id");
+            eid.value = opt.value;
+            //           alert(eid.value);
+        }
+
+        function btnOkClick() {
+            var err_msg = '';
+            var SelectedSV_id = document.getElementById("SelectedSV_id").value;
+            if (SelectedSV_id == '') { err_msg ='Выбирите супервизора';}
+            var dt_value = document.getElementById("deSVDate").value;
+            if (dt_value == '') {
+                if (err_msg == '') { err_msg ='Выбирите супервизора и укажите дату назначения'; }
+                else { err_msg ='Укажите дату назначения'; }
+            }
+            if (err_msg != '') {
+                alert(err_msg);
+                return;
+            }
+            elem = document.getElementById('cb_form');
+            elem.submit()
+        }
+
+    </script>
+
+
+
+</body>
+</html>

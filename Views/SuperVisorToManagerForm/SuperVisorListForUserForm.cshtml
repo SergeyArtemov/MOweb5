@@ -1,0 +1,254 @@
+﻿
+@model MOUserClasses.MOUser;
+@{
+     Layout = null;
+
+}
+
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="~/css/common.css" />
+
+
+    <meta name="viewport" content="width=device-width" />
+    <title>MOUserForm</title>
+
+    <style type="text/css">
+
+        .container-fluid {
+            overflow: auto;
+            white-space: nowrap;
+        }
+
+        .table.table-condensed tr th {
+            border-spacing: 0px;
+            border-collapse: collapse;
+            padding: 0;
+        }
+
+        .inline-block {
+            display: inline-block;
+        }
+
+
+        .table {
+            display: table;
+        }
+
+            .table > a {
+                display: table-row;
+            }
+
+                .table > a > div {
+                    display: table-cell;
+                }
+    </style>
+
+</head>
+<body>
+    <h1>@Model.Operator_caption</h1>
+
+
+    <div id="list" style="max-height:450px;overflow:auto" class="container-fluid">
+        @*<input type="hidden" name="str" value="@ViewBag.Text" />*@
+
+        <table id="tableUserList" border="1" class="table table-striped table-bordered table-hover table-condensed">
+            <thead>
+                <tr style="background-color:beige">
+                    <th>Супервизор</th>
+                    <th>Назначен с</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.SuperVisors.Count(); i++)
+                {
+                    var ASuperVisor = Model.SuperVisors[i];
+                    <tr ondblclick="location.href = '@Url.Action("MOUserForm", "MOUser" )'+ '?' + 'UserId=@ASuperVisor.Supervisor_id'">
+                        <td>@ASuperVisor.Supervisor</td>
+                        <td>@ASuperVisor.AssignDate</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <br />
+    <input type="button" value="Новый" onClick="document.location.href = '@Url.Action("AssignSuperVisorToUserForm", "SuperVisorToManagerForm" )' + '?' + 'UserId=@Model.AccountId'" />
+    <input type="button" value="Отменить" onClick="document.location.href = '@Url.Action("SuperVisorToManagerForm", "SuperVisorToManagerForm" )'" />
+    <!--input type="button" value="Новый(модально)" onClick="addPickUpDate()"/-->
+
+
+
+
+    <!-- >> MODAL WINDOW with CSS-->
+    <input class="lb_modal__check" type="checkbox" id="lb_modal" onchange="lb_modalChange()" />
+    <div class="lb_modal">
+        <label class="lb_modal__closetwo" for="lb_modal"></label>
+        <div class="lb_modal__info">
+            <div style="height: 16px; padding: 3px;" id="lb_modal_title">
+                <!--MODAL TITLE-->
+                <b>Назначение нового супервизора</b>
+                <label style="font-size: 24px;" class="lb_modal__close" for="lb_modal"> &times;</label>
+            </div>
+            <div id="modalBody" class="modalBody">
+                <!--MODAL BODY-->
+                <br />
+                <b>Достувпные суперввизоры</b>
+                <br />
+                <br />
+                <b>Фильтр</b><input id="UserId" name="UserId" type="text" value="@Model.AccountId" size="60" hidden />
+                <input id="eFilterText" type="text" value="" oninput="eFilterTextChange()" />
+                <br />
+                <select id="cbSVList" value="@Model.FullSuperVisorList" size="5" onchange="cbSVListChange()">
+                    @for (int i = 0; i < Model.FullSuperVisorList.Count; i++)
+                    {
+                        <option value="@Model.FullSuperVisorList[i].AccountId"> @Model.FullSuperVisorList[i].Operator_caption </option>
+                    }
+                    }
+                </select>
+                <br />
+                <br />
+                <label>Новый супервизор</label>
+                <br />
+                <input id="eSelectedSV" type="text" value="" size="60" />
+                <input id="eSelectedSV_id" type="text" value="" hidden />
+                <br />
+                <label>начиная с</label>
+                <br />
+                <input id="deSVDate" type="date" value="" />
+
+                <br />
+                <br />
+
+                <button onClick="Ok_Click()">Ok</button>
+                <button onClick="Cancel_Click()">Отменить</button>
+            </div>
+        </div>
+    </div>
+    <!-- << MODAL WINDOW with CSS-->
+
+
+
+    <script>
+        function AssignNewSuperVisor() {
+            alert('AssignNewSuperVisor');
+            //Ok_Click();
+
+        }
+
+        function addPickUpDate() {
+            alert('addPickUpDate');
+
+            var svn = document.getElementById("eSelectedSV");
+            var eid = document.getElementById("eSelectedSV_id");
+            var ls = document.getElementById("cbSVList");
+            var fld = document.getElementById("eFilterText");
+            var dt = document.getElementById("deSVDate");
+
+            fld.value = '';
+            eFilterTextChange();
+
+            svn.value = '';
+            eid.value = '';
+            dt.value = '';
+
+            ls.selectedIndex = -1;
+
+
+            document.getElementById("lb_modal").click();
+        }
+
+        function eFilterTextChange() {
+            var fld = document.getElementById("eFilterText");
+            sp = fld.value;
+            sp = sp.toUpperCase();
+
+            var ls = document.getElementById("cbSVList");
+            var cnt = ls.options.length;
+
+            var svn = document.getElementById("eSelectedSV");
+            var eid = document.getElementById("eSelectedSV_id");
+            var opt
+            var sel_idx = -1;
+            for (i = 0; i < cnt; i++) {
+                var opt = ls.options[i];
+                var opt_txt = opt.label;
+                opt_txt = opt_txt.toUpperCase()
+                if (opt_txt.includes(sp)) {
+                    opt.hidden = false;
+                    if (sel_idx < 0) { sel_idx = i; }
+                }
+                else { opt.hidden = true; }
+            }
+            ls.selectedIndex = sel_idx;
+            cbSVListChange();
+        }
+
+        function cbSVListChange() {
+
+            var ls = document.getElementById("cbSVList");
+            //alert(ls.selectedIndex);
+            var svn = document.getElementById("eSelectedSV");
+            var eid = document.getElementById("eSelectedSV_id");
+
+            if (ls.selectedIndex >= 0) {
+                var opt = ls.options[ls.selectedIndex];
+                svn.value = opt.label;
+                eid.value = opt.value;
+            }
+            else {
+                svn.value = '';
+                eid.value = '';
+            }
+        }
+
+        function Ok_Click() {
+             alert('Ok_Click');
+
+
+            //Проверка -----------
+            var err_msg = '';
+            var svn = document.getElementById("eSelectedSV");
+            var eid = document.getElementById("eSelectedSV_id");
+            var SelectedSV_id = document.getElementById("eSelectedSV_id").value;
+            if (SelectedSV_id == '') { err_msg = 'Выбирите супервизора'; }
+
+            var dt_value = document.getElementById("deSVDate").value;
+            if (dt_value == '') {
+                if (err_msg != '') { err_msg ='Выбирите супервизора и укажите дату назначения'; }
+                else { err_msg ='Укажите дату назначения'; }
+            }
+            if (err_msg != '') {
+                alert(err_msg);
+                return;
+            }
+            // Сохранение---------------
+            try {
+                $.ajax({
+                    url: '/MOUser/AssignSuperVisorFormOk',
+                    data: {
+                        UserId: @Model.AccountId,
+                        SuperVisorId: SelectedSV_id,
+                        AssignDate: dt_value
+                    },
+                    type: 'POST',
+                    success: function (html) {
+                    },
+                    error: function () {
+                        alert('Ошибка созранения данных о Супервизоре');
+                    }
+                });
+            }
+            catch (e) {
+                alert('Ошибка ' + e.name + ":" + e.message + "\n" + e.stack);
+            }
+        }
+
+        function Cancel_Click(){
+            document.getElementById("lb_modal").click();
+        }
+
+    </script>
+
+</body>
+</html>

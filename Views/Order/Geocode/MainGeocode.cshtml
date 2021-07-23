@@ -1,0 +1,117 @@
+﻿<html>
+<head>
+
+</head>
+<body style="font-size: 11.5px">
+    <style type="text/css">
+        .header {
+            clear: left;
+            overflow: auto;
+            width: 985px;
+            margin-bottom: 5px;
+        }
+
+        .findlist {
+            width: 400px;
+            min-height: 405px;
+            float: left;
+            overflow: auto;
+        }
+
+        .map {
+            width: 585px;
+            min-height: 405px;
+            float: right;
+            overflow: auto;
+        }
+
+    </style>
+    <div id="addressList" style="overflow:auto; padding:5px; display: inline-block;">
+        <div id="what" class="header">
+            <form asp-action="ShowFindAddr"
+                  data-ajax="true"
+                  data-ajax-method="POST"
+                  data-ajax-update="#addressList"
+                  data-ajax-mode="replace"
+                  data-ajax-loading="#loading"
+                  id="ShowFindAddr">
+                <input size="85" name="searchAddr" id="searchAddr" value="@ViewBag.searchAddr"/>
+                <label for="mapScale">Масштаб </label><input id="mapScale" type="range" min="0" max="17" value="16" style="width:320px" onchange="getMap()"/>
+            </form>
+        </div>
+        <div id="list" style="max-height:450px;overflow:auto" class="findlist">
+            @*<input type="hidden" name="str" value="@ViewBag.Text" />*@
+            <table id="tableAddrList" class="table-select" style="font-size:11px;">
+                @if (ViewBag.findedAddresses != null) {
+                <thead>
+                    <tr style="background-color:#c2e3ff;"><th>Индекс</th><th>КЛАДР</th><th>Адрес</th></tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < ViewBag.findedAddresses.Count; i++)
+                    {
+                        <tr>
+                            <td>@ViewBag.findedAddresses[@i].PostCode</td>
+                            <td>@ViewBag.findedAddresses[@i].KLADR</td>
+                            <td>@ViewBag.findedAddresses[@i].Address</td>
+                        </tr>
+                    }
+                </tbody>
+                }
+            </table>               
+        </div>
+        <div class="map">
+            <partial name="~/Views/Order/Geocode/Map.cshtml" />
+        </div>
+    </div>
+
+
+
+    <script>
+        
+        var table = document.getElementById('tableAddrList'),
+            rows = table.getElementsByTagName('tr');
+        for (var i = 1, len = rows.length; i < len; i++) {
+            rows[i].onclick = function () {
+                sendPost(this);
+            }
+        };
+
+        function sendPost(ths) {
+            code = ths.getElementsByTagName("td")[0].innerHTML,
+                name = ths.getElementsByTagName("td")[1].innerHTML,
+                review = ths.getElementsByTagName("td")[2].innerHTML;
+            var scaleMap = document.getElementById("mapScale").value;
+            //alert(code + "\n" + name + "\n" + review);
+            $.ajax({
+                url: '/Order/ShowMap',
+                data: { str: review, scale: scaleMap, currentUser: document.getElementById('order.CurrentUser').value },
+                type: 'POST',
+                success: function (html) { $("#map").replaceWith(html); },
+                error: function (xhr) { alert('error'); }
+            });
+            setSingleRowSelect(ths);
+        };
+
+        function getMap(){
+            if (document.getElementById("GeocodeMapResult.Address") &&
+                document.getElementById("GeocodeMapResult.Lat1") &&
+                document.getElementById("GeocodeMapResult.Lng1")) {
+                $.ajax({
+                    url: '/Order/GetMap',
+                    data: {
+                        author: 3, user: document.getElementById('order.CurrentUser').value,
+                        lat: document.getElementById("GeocodeMapResult.Lat1").innerText.replace(",", "."),
+                        lng: document.getElementById("GeocodeMapResult.Lng1").innerText.replace(",", "."), width: 650, heigth: 450, marker: 1,
+                        scale: document.getElementById("mapScale").value
+                    },
+                    type: 'POST',
+                    success: function (str) {
+                        document.getElementById("mapImage").innerHTML = '<image src="' + str + '" alt="" style="width:585px; height:405px;"/>'; 
+                    },
+                    error: function (xhr) { alert('error'); }
+                });
+            }
+        }
+    </script>
+</body>
+</html>

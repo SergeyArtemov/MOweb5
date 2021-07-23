@@ -1,0 +1,178 @@
+﻿@{
+    Layout = null;
+}
+<!--<meta http-equiv="REFRESH" content="60;" />-->
+
+<html>
+<head>
+    <script charset="utf-8" src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script charset="utf-8" src="~/lib/jquery/dist/jquery-ui.js"></script>
+    <script charset="utf-8" src="~/lib/jquery.unobtrusive-ajax/jquery.unobtrusive-ajax.min.js"></script>
+</head>
+<body>
+    <p>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <input type="button" onclick="history.back();" value="Назад" />
+        <input hidden id="t1" size="15" value="0,0,0,0,0,">
+    </p>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.min.js"></script>
+
+    <script type="text/javascript" src="js/stats_tab.js"></script>
+
+    <!-- Готовим контейнер для графика -->
+    <div id="content" align="left">
+        <canvas id="myChart" width="870" height="500"></canvas>
+    </div>
+
+    <script>
+
+        //Загрузка данных и построение графика
+        function load_data() {
+            try {
+            $.ajax({
+                url: '/CallCheck/GetDataForGraph',
+                type: 'POST',
+                success: function (data) {
+                    //document.getElementById("text1").value = data;
+                    var mass1 = data.split("|");
+                    var warr = [[], [], [], [], [], []];
+
+                    for (var i = 0; i < 6; i++) {
+                        var mass = mass1[i].split(",");
+                        for (var j = 0; j < mass.length; j++) {
+                            warr[i].push(mass[j]);
+                        }
+                    }
+
+                    Diagram(warr);
+
+                },
+                error: function () { alert('Не удалось получить данные'); }
+            });
+            }
+            catch (e) {
+                alert('Ошибка ' + e.name + ":" + e.message + "\n" + e.stack);
+            }
+            setTimeout(function() {load_data();}, 15000);  //Number(document.getElementById("iterval").value)*1000
+        }
+
+        //Готовим график
+        function Diagram(warr) {
+            var ctx = document.getElementById("myChart");
+            var myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: warr[0], //Подписи оси x
+                    datasets: [
+                        {
+                            label: 'Дл.звонка  ',
+                            data: warr[1], //Данные
+                            borderColor: 'DarkViolet', //Цвет
+                            borderWidth: 1, //Толщина линии
+                            pointBorderColor: 'transparent',
+                            pointBackgroundColor: 'transparent',
+                            fill: false,
+                        },
+                        {
+                            label: 'Дл.задачи  ',
+                            data: warr[2], //Данные
+                            borderColor: 'blue', //Цвет
+                            borderWidth: 1, //Толщина линии
+                            pointBorderColor: 'transparent',
+                            pointBackgroundColor: 'transparent',
+                            fill: false //Не заполнять под графиком
+                        },
+                        {
+                            label: '% выполнения  ',
+                            data: warr[3], //Данные
+                            borderColor: 'Green', //Цвет
+                            borderWidth: 1, //Толщина линии
+                            pointBorderColor: 'transparent',
+                            pointBackgroundColor: 'transparent',
+                            fill: false //Не заполнять под графиком
+                        },
+                        {
+                            label: 'Max Свободен  ',
+                            data: warr[4], //Данные
+                            borderColor: 'LightSalmon', //Цвет
+                            borderWidth: 1, //Толщина линии
+                            pointBorderColor: 'transparent',
+                            pointBackgroundColor: 'transparent',
+                            fill: false //Не заполнять под графиком
+                        },
+                        {
+                            label: 'Max Ожидание',
+                            data: warr[5], //Данные
+                            borderColor: 'Red', //Цвет
+                            borderWidth: 1, //Толщина линии
+                            pointBorderColor: 'transparent',
+                            pointBackgroundColor: 'transparent',
+                            fill: false //Не заполнять под графиком
+                        }
+                        //Можно добавить другие графики
+                    ]
+                },
+                options: {
+                    legend: {
+                        display: true,
+                        onClick :
+                            function(e, legendItem) {
+                                var index = legendItem.datasetIndex;
+                                var ci = this.chart;
+                                var meta = ci.getDatasetMeta(index);
+                                meta.hidden = meta.hidden === null ? 
+                                  !ci.data.datasets[index].hidden : null;
+                                ci.update();
+                                var str = "";
+                                for (var i = 0; i < myChart.data.datasets.length; i++) {
+                                    str = str + (!myChart.isDatasetVisible(i) * 1).toString() + ",";
+                                }
+                                document.getElementById("t1").value = str;
+                            }
+                    },
+                    title: {
+                       display: true,
+                        text: 'AutoCall Check - графика',
+                        fontSize: 20
+                    },
+                    animation: {
+                        duration: 0
+                    },
+                    //tooltips: {
+                    //    enabled: false
+                    //  },
+                    responsive: false, //Вписывать в размер canvas
+                    scales: {
+                        xAxes: [{
+                            display: true
+                        }],
+                        yAxes: [{
+                            display: true
+                        }]
+                    }
+                }
+            });
+            //myChart.data.datasets[2].hidden = true;
+            var str1 = document.getElementById("t1").value;
+            var arr1 = str1.split(",");
+            for (var i = 0; i < myChart.data.datasets.length; i++) {
+                if (arr1[i] == 1) myChart.data.datasets[i].hidden = true;
+                else myChart.data.datasets[i].hidden = false;
+            }
+            //Обновляем
+            myChart.update();
+
+        }
+
+        //Ставим загрузку диаграммы на событие загрузки страницы
+        window.addEventListener("load", load_data());
+    </script>
+    <noscript>
+        <div align="center">
+            Извините, для работы приложения нужен включённый Javascript
+        </div>
+    </noscript>
+</body>
+</html>
+

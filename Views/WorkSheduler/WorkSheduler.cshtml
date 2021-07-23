@@ -1,0 +1,979 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+
+    <script charset="utf-8" src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script charset="utf-8" src="~/lib/jquery/dist/jquery-ui.js"></script>
+    <script charset="utf-8" src="~/lib/jquery.unobtrusive-ajax/jquery.unobtrusive-ajax.min.js"></script>
+
+    <style>
+        TABLE {
+            border: 1px solid black;
+            border-collapse: collapse;
+            overflow: scroll;
+        }
+
+            table td, th {
+                border: 1px solid black;
+                border-collapse: collapse;
+                font-size: 12px;
+            }
+
+        caption {
+            font-size: 100%;
+        }
+
+
+        table.elem {
+            table-layout: fixed;
+            width: 280px;
+        }
+
+            table.elem td,
+            table.elem th {
+                overflow: hidden;
+                text-align: center;
+            }
+
+                table.elem td:nth-of-type(1),
+                table.elem th:nth-of-type(1) {
+                    width: 70px;
+                }
+
+                table.elem td:nth-of-type(2),
+                table.elem th:nth-of-type(2) {
+                    width: 30px;
+                }
+
+                table.elem td:nth-of-type(3),
+                table.elem th:nth-of-type(3) {
+                    width: 60px;
+                }
+
+                table.elem td:nth-of-type(4),
+                table.elem th:nth-of-type(4) {
+                    width: 60px;
+                }
+
+                table.elem td:nth-of-type(5),
+                table.elem th:nth-of-type(5) {
+                    width: 60px;
+                }
+
+        table.elem0 {
+            table-layout: fixed;
+            width: 280px;
+        }
+
+            table.elem0 td,
+            table.elem0 th {
+                overflow: hidden;
+                text-align: center;
+            }
+
+                table.elem0 td:nth-of-type(1),
+                table.elem0 th:nth-of-type(1) {
+                    width: 70px;
+                    text-align: center;
+                }
+
+                table.elem0 td:nth-of-type(2),
+                table.elem0 th:nth-of-type(2) {
+                    width: 30px;
+                }
+
+        table.elem td:nth-of-type(3),
+        table.elem th:nth-of-type(3) {
+            width: 60px;
+        }
+
+        table.elem0 td:nth-of-type(4),
+        table.elem0 th:nth-of-type(4) {
+            width: 60px;
+        }
+
+        table.elem0 td:nth-of-type(5),
+        table.elem0 th:nth-of-type(5) {
+            width: 60px;
+        }
+
+        table.elem1 {
+            table-layout: fixed;
+            width: 350px;
+        }
+
+            table.elem1 td,
+            table.elem1 th {
+                overflow: hidden;
+                text-align: center;
+            }
+
+                table.elem1 td:nth-of-type(1),
+                table.elem1 th:nth-of-type(1) {
+                    width: 30px;
+                }
+
+                table.elem1 td:nth-of-type(2),
+                table.elem1 th:nth-of-type(2) {
+                    width: 80px;
+                }
+
+                table.elem1 td:nth-of-type(3),
+                table.elem1 th:nth-of-type(3) {
+                    width: 70px;
+                }
+
+                table.elem1 td:nth-of-type(4),
+                table.elem1 th:nth-of-type(4) {
+                    width: 70px;
+                }
+
+                table.elem1 td:nth-of-type(5),
+                table.elem1 th:nth-of-type(5) {
+                    width: 70px;
+                }
+
+                table.elem1 td:nth-of-type(6),
+                table.elem1 th:nth-of-type(6) {
+                    width: 30px;
+                }
+
+        table.elem2 {
+            table-layout: fixed;
+            width: 350px;
+        }
+
+            table.elem2 td,
+            table.elem2 th {
+                overflow: hidden;
+            }
+
+                table.elem2 td:nth-of-type(1),
+                table.elem2 th:nth-of-type(1) {
+                    width: 70px;
+                }
+
+                table.elem2 td:nth-of-type(2),
+                table.elem2 th:nth-of-type(2) {
+                    width: 70px;
+                }
+
+                table.elem2 td:nth-of-type(3),
+                table.elem2 th:nth-of-type(3) {
+                    width: 60px;
+                }
+
+                table.elem2 td:nth-of-type(4),
+                table.elem2 th:nth-of-type(4) {
+                    width: 60px;
+                }
+
+                table.elem2 td:nth-of-type(5),
+                table.elem2 th:nth-of-type(5) {
+                    width: 60px;
+                }
+
+                table.elem2 td:nth-of-type(6),
+                table.elem2 th:nth-of-type(6) {
+                    width: 30px;
+                }
+
+        table.elem3 {
+            table-layout: fixed;
+            width: 615px;
+        }
+
+            table.elem3 td,
+            table.elem3 th {
+                overflow: hidden;
+                white-space: nowrap;
+            }
+
+                table.elem3 td:nth-of-type(1),
+                table.elem3 th:nth-of-type(1) {
+                    width: 115px;
+                    text-align: center;
+                }
+
+                table.elem3 td:nth-of-type(2),
+                table.elem3 th:nth-of-type(2) {
+                    width: 85px;
+                }
+
+                table.elem3 td:nth-of-type(3),
+                table.elem3 th:nth-of-type(3) {
+                    width: 55px;
+                }
+
+                table.elem3 td:nth-of-type(4),
+                table.elem3 th:nth-of-type(4) {
+                    width: 360px;
+                }
+    </style>
+</head>
+<body>
+
+    <div align=center style="width: 1335px; height: 60px; border: 1px solid black; background: Gainsboro;">
+        <h3>Настройка расписания работы БУТИКОВ </h3>
+    </div>
+
+    <div style="width: 861px; height: 60px; border: 1px solid black; background: White;">
+        <form name="form1">
+            <p font-size: 1.5em; style="text-indent: 25px;">
+                Бутик
+                <select id="list1" size="1"></select>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                Период
+                <select id="list2" size="1"></select>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <button style="background: Teal; color: White; height: 30px" id="updateButic" type="button" onclick="updateTable()">Обновить</button>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <input style="background: Teal; color: White; height: 30px" type="button" onclick="history.back();" value="Назад" />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <input id="text1" size="20" value="Вася" hidden>
+            </p>
+        </form>
+    </div>
+
+    <div id="men1" name="men1" align=center style="width: 1px; height: 60px; left: 670px; top: 70px;position: absolute; border: 1px solid black; background: White;"></div>
+
+
+    <div id="men2" name="men2" style="width: 673px; height: 60px; left: 670px; top: 70px;position: absolute; border: 1px solid black; background: White;">
+        <form name="form02">
+            <h5 align="center" style="height: 10px; margin-top: 5px; margin-bottom: 10px;">Изменение базового расписания</h5>
+            <p style="text-indent: 5px; margin-top: 0.2em; margin-bottom: 0.2em;">
+                <tt>Начало <select disabled id="list022" size="1"></select></tt>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <tt>Конец <select disabled id="list023" size="1"></select></tt>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <tt>Отсечка <select disabled id="list021" size="1"></select></tt>
+                <button disabled style=" margin-left: 20px; background: Teal; color: White; height: 25px" id="savecut" type="button" onclick="save_Cut()">Сохранить</button>
+            </p>
+        </form>
+    </div>
+
+
+
+    <div id="elem0" name="elem0" align=center style="width: 330px; height: 370px; border: 1px solid black; background: White; overflow: scroll;"></div>
+
+    <div id="elem" name="elem" align=center style="width: 330px; height: 370px; left: 339px; top: 132px;position: absolute; border: 1px solid black; background: White; overflow: scroll;"></div>
+
+    <div id="elem1" align=center style="width: 385px; height: 280px; border: 1px solid black; background: White; position: absolute; top: 132px; left: 670px;"></div>
+    <div id="elem11" style="width: 288px; height: 190px; border: 1px solid black; background: White; position: absolute; top: 132px; left: 1055px;">
+        <form name="form11">
+            <h5 align="center" style="height: 10px; margin-top: 5px; margin-bottom: 15px;">Изменение параметров дней недели </h5>
+            <p style="text-indent: 5px; margin-top: 0.4em; margin-bottom: 0.4em;"><tt>День недели... <select disabled id="list111" size="1"></select></tt></p>
+            <p style="text-indent: 5px; margin-top: 0.4em; margin-bottom: 0.4em;"><tt>Рабоч/нерабоч. <select disabled id="list112" size="1"></select></tt></p>
+            <p style="text-indent: 5px; margin-top: 0.4em; margin-bottom: 0.4em;"><tt>Начало работы. <select disabled id="list113" size="1"></select></tt></p>
+            <p style="text-indent: 5px; margin-top: 0.4em; margin-bottom: 0.4em;"><tt>Конец работы.. <select disabled id="list114" size="1"></select></tt></p>
+            <p style="text-indent: 5px; margin-top: 0.4em; margin-bottom: 0.4em;"><tt>Отсечка ...... <select disabled id="list115" size="1"></select></tt></p>
+            <button disabled style="margin-left: 105px; background: Teal; color: White; height: 25px" id="saveday" type="button" onclick="save_Day()">Сохранить</button>
+        </form>
+    </div>
+    <div id="elem12" style="width: 288px; height: 89px; border: 1px solid black; background: White; position: absolute; top: 323px; left: 1055px;">
+        <form name="form12">
+            <h5 align="center" style="height: 10px; margin-top: 5px; margin-bottom: 15px;">Удаление информации о дне недели </h5>
+            <p align="left" style="text-indent: 5px; margin-top: 0.4em; margin-bottom: 0.4em;"><tt>День недели... <select disabled id="list121" size="1"></select></tt></p>
+            <button disabled style="margin-left: 115px; background: Teal; color: White; height: 25px" id="deleteday" type="button" onclick="delete_Day()">Удалить</button>
+        </form>
+    </div>
+
+    <div id="elem2" align=center style="width: 385px; height: 290px; border: 1px solid black; background: White; position: absolute; top: 412px; left: 670px;"></div>
+    <div id="elem21" style=" width: 288px; height: 195px; border: 1px solid black; background: White; position: absolute; top: 412px; left: 1055px;">
+        <form name="form21">
+            <h5 align="center" style="height: 10px; margin-top: 5px; margin-bottom: 15px;">Изменение параметров спец. дней </h5>
+            <p style="text-indent: 5px; margin-top: 0.4em; margin-bottom: 0.4em;"><tt>Дата.спец. дня <input disabled type="date" id="dat1"></tt></p>
+            <p style="text-indent: 5px; margin-top: 0.4em; margin-bottom: 0.4em;"><tt>Рабоч/нерабоч. <select disabled id="list212" size="1"></select></tt></p>
+            <p style="text-indent: 5px; margin-top: 0.4em; margin-bottom: 0.4em;"><tt>Начало работы. <select disabled id="list213" size="1"></select></tt></p>
+            <p style="text-indent: 5px; margin-top: 0.4em; margin-bottom: 0.4em;"><tt>Конец работы.. <select disabled id="list214" size="1"></select></tt></p>
+            <p style="text-indent: 5px; margin-top: 0.4em; margin-bottom: 0.4em;"><tt>Отсечка ...... <select disabled id="list215" size="1"></select></tt></p>
+            <button disabled style="margin-left: 105px; background: Teal; color: White; height: 25px" id="savedate" type="button" onclick="save_Date()">Сохранить</button>
+        </form>
+    </div>
+    <div id="elem22" style="width: 288px; height: 95px; border: 1px solid black; background: White; position: absolute; top: 607px; left: 1055px;">
+        <form name="form12">
+            <h5 align="center" style=" height: 10px; margin-top: 5px; margin-bottom: 15px;">Удаление информации о спец. днях </h5>
+            <p align="left" style="text-indent: 5px; margin-top: 0.4em; margin-bottom: 0.4em;"><tt>Дата спец. дня <input disabled type="date" id="dat2"></tt></p>
+            <button disabled style="margin-left: 115px; background: Teal; color: White; height: 25px" id="deletedate" type="button" onclick="delete_Date()">Удалить</button>
+        </form>
+    </div>
+
+    <div id="elem3" align=center style="width: 661px; height: 199px; border: 1px solid black; background: White; position: absolute; top: 503px; left: 8px; overflow: scroll;"></div>
+
+    <script>
+    document.getElementById("text1").value = "@ViewBag.Login";
+    Get_user_login();
+    var JArr1 = "@ViewBag.Arr1"
+    var q1 = JArr1.split(",");
+    var JArr2 = "@ViewBag.Arr2"
+    var q2 = JArr2.split(",");
+
+    var days =["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"];
+    var daysl =["пн", "вт", "ср", "чт", "пт", "сб", "вс"];
+    var iswork =["рабочий", "нерабочий"];
+    var arr_time =["00:00", "06:00", "07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00", "24:00"];
+
+    var strl = "";
+    var strk = "00.00.00" + "," + "0" + "," + "00:00" + "," + "00:00" + "," + "00:00" + ",";
+    for (var i = 0; i < 31; i++) strl = strl + strk;
+    strl = strl + ",";
+    strl = strl.replace(',,','');
+    mas1 = strl.split(",");
+
+    var elem0 = document.querySelector('#elem0');
+    createTable(2,elem0, mas1, 5, 15);
+    var elem = document.querySelector('#elem');
+    createTable(1,elem, mas1, 5, 15);
+    var elem1 = document.querySelector('#elem1');
+
+    for (var i = 0; i < 7; i++){
+        mas1[i*5] = daysl[i];
+        mas1[i*5+1] = "";
+    }
+
+    createTable1(elem1, mas1, 5, 7);
+    createListButic();
+    createListPeriod();
+    createListArray('list111', days);
+    createListArray('list112', iswork);
+    createListArray('list113', arr_time);
+    createListArray('list114', arr_time);
+    createListArray('list115', arr_time);
+    createListArray('list022', arr_time);
+    createListArray('list023', arr_time);
+    createListArray('list021', arr_time);
+    createListArray('list121', days);
+
+    for (var i = 0; i < 7; i++){
+        mas1[i*5] = "00.00.00";
+    }
+
+    var elem2 = document.querySelector('#elem2');
+    createTable2(elem2, mas1, 5, 7);
+    createListArray('list212', iswork);
+    createListArray('list213', arr_time);
+    createListArray('list214', arr_time);
+    createListArray('list215', arr_time);
+
+    for (var i = 0; i < 5; i++){
+        mas1[i*5]   = "00.00.00 00:00:00.000";
+        mas1[i*5+1] = "xxx";
+        mas1[i*5+2] = "xxx";
+        mas1[i*5+3] = "xxxxxxxxxxxxxxxxxxxxx";
+    }
+    var elem3 = document.querySelector('#elem3');
+    createTable3(elem3, mas1, 5, 5);
+
+    function Get_user_login() {
+        try {
+            $.ajax({
+                url: '/WorkSheduler/Get_user_login',
+                data: {
+                    id_for_log: document.getElementById("text1").value,
+                },
+                type: 'POST',
+                success: function (data) {
+                    document.getElementById("text1").value = data;
+                    return;
+                },
+                error: function () { alert('Не удалось получить логин'); }
+            });
+        }
+        catch (e) {
+            alert('Ошибка ' + e.name + ":" + e.message + "\n" + e.stack);
+        }
+    }
+
+    function createTable(tip,parent, arr, cols, rows) {
+        var table = document.createElement('table');
+        var caption = document.createElement('caption');
+
+        var str = "";
+        if (list2.options.length > 0) {
+            var n1 = document.getElementById("list2").options.selectedIndex;
+            str = " " + document.getElementById("list2").options[n1].text.toString();
+        }
+
+	    if (tip == 1)
+            caption.innerHTML = "Рабочее расписание" + str;
+	    else
+	        caption.innerHTML = "Базовое расписание";
+        table.appendChild(caption);
+	table.classList.add("elem");
+        var tr = document.createElement('tr');
+        for (var i = 0; i < cols; i++) {
+            var th = document.createElement('th');
+            if (i == 0) th.innerHTML = "Дата";
+            if (i == 1) th.innerHTML = "Day";
+            if (i == 2) th.innerHTML = "Нач.раб.";
+            if (i == 3) th.innerHTML = "Кон.раб.";
+            if (i == 4) th.innerHTML = "Отсечка";
+            tr.appendChild(th);
+        }
+        table.appendChild(tr);
+        if (arr.length >= 5) {
+            for (var i = 0; i < rows; i++) {
+                var tr = document.createElement('tr');
+                for (var j = 0; j < cols; j++) {
+                    var td = document.createElement('td');
+                    td.innerHTML = arr[i * 5 + j];
+                    tr.appendChild(td);
+                }
+                table.appendChild(tr);
+            }
+        }
+        parent.appendChild(table);
+    }
+
+    function createTable1(parent, arr, cols, rows) {
+        var table = document.createElement('table');
+        var caption = document.createElement('caption');
+        caption.innerHTML = "Дни недели";
+        table.appendChild(caption);
+	table.classList.add("elem1");
+        var tr = document.createElement('tr');
+        for (var i = 0; i < cols+1; i++) {
+            var th = document.createElement('th');
+            if (i == 0) th.innerHTML = "Day";
+            if (i == 1) th.innerHTML = "Вид";
+            if (i == 2) th.innerHTML = "Нач.раб.";
+            if (i == 3) th.innerHTML = "Кон.раб.";
+            if (i == 4) th.innerHTML = "Отсечка";
+            if (i == 5) th.innerHTML = "Copy";
+            tr.appendChild(th);
+        }
+        table.appendChild(tr);
+        for (var i = 0; i < rows; i++) {
+            var tr = document.createElement('tr');
+            for (var j = 0; j < cols; j++) {
+                var td = document.createElement('td');
+                td.innerHTML = arr[i*5+j];
+                tr.appendChild(td);
+            }
+            var td = document.createElement('td');
+            if (arr[i * 5 + 4] == "") td.innerHTML = ""
+              else td.innerHTML = "<button id=copydata type='button' onclick='copy_Data1()'>-></button>";
+            tr.appendChild(td);
+            table.appendChild(tr);
+        }
+        parent.appendChild(table);
+    }
+
+    function createTable2(parent, arr, cols, rows) {
+        var table = document.createElement('table');
+        var caption = document.createElement('caption');
+        caption.innerHTML = "Спец. дни";
+        table.appendChild(caption);
+	table.classList.add("elem2");
+        var tr = document.createElement('tr');
+        for (var i = 0; i < cols+1; i++) {
+            var th = document.createElement('th');
+            if (i == 5) th.innerHTML = "Copy";
+            if (i == 0) th.innerHTML = "Дата";
+            if (i == 1) th.innerHTML = "Вид";
+            if (i == 2) th.innerHTML = "Нач.раб.";
+            if (i == 3) th.innerHTML = "Кон.раб.";
+            if (i == 4) th.innerHTML = "Отсечка";
+            tr.appendChild(th);
+        }
+        table.appendChild(tr);
+        if (arr.length >= 5) {
+            for (var i = 0; i < rows; i++) {
+                var tr = document.createElement('tr');
+                for (var j = 0; j < cols; j++) {
+                    var td = document.createElement('td');
+                    td.innerHTML = arr[i * 5 + j];
+                    tr.appendChild(td);
+                }
+                var td = document.createElement('td');
+                td.innerHTML = "<button id=copydata type='button' onclick='copy_Data2()'>-></button>";
+                tr.appendChild(td);
+                table.appendChild(tr);
+            }
+        }
+        parent.appendChild(table);
+        }
+
+    function createTable3(parent, arr, cols, rows) {
+        var table = document.createElement('table');
+        var caption = document.createElement('caption');
+        caption.innerHTML = "История операций";
+        table.appendChild(caption);
+	table.classList.add("elem3");
+        var tr = document.createElement('tr');
+        for (var i = 0; i < cols-1; i++) {
+            var th = document.createElement('th');
+            if (i == 0) th.innerHTML = "Дата";
+            if (i == 1) th.innerHTML = "Оператор";
+            if (i == 2) th.innerHTML = "Действие";
+            if (i == 3) th.innerHTML = "Содержание операции";
+            tr.appendChild(th);
+        }
+        table.appendChild(tr);
+        if (arr.length >= 4) {
+            for (var i = 0; i < rows; i++) {
+                var tr = document.createElement('tr');
+                for (var j = 0; j < cols-1; j++) {
+                    var td = document.createElement('td');
+                    td.innerHTML = arr[i * 5 + j];
+                    tr.appendChild(td);
+                }
+                table.appendChild(tr);
+            }
+        }
+        parent.appendChild(table);
+    }
+
+    function createListButic() {
+	var list = document.getElementById('list1');
+	var item = document.createElement('option');
+	for (var i = 0; i <= @ViewBag.Countrow; i++) {
+	    item.value = q1[i-1];
+	    if (i == 0) item.text = ""
+	    else item.text = q2[i-1];
+	    list.appendChild(item.cloneNode(true));
+	    }
+    }
+
+    function createListPeriod() {
+	var months = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
+	var dat = new Date();
+	var god = Number(dat.getFullYear());
+	var mes = Number(dat.getMonth());
+
+	if (mes > 1) mes = mes - 2
+	else {
+	    god = god - 1;
+	    mes = mes + 10;
+	}
+
+	var list = document.getElementById('list2');
+	var item = document.createElement('option');
+	for (var i = 0; i < 7; i++) {
+        if (i == 0) {
+            item.text = ""
+            item.value = "0"
+        }
+	    else {
+            item.text = god.toString() + " " + months[mes].toString();
+            item.value = (mes+1).toString();
+	        mes = mes + 1;
+	        if (mes == 12) {
+	            mes = 0;
+	            god = god + 1;
+	        }
+	    }
+            list.appendChild(item.cloneNode(true));
+	}
+    }
+
+    function createListArray(parent, arr) {
+	var list = document.getElementById(parent);
+	var item = document.createElement('option');
+	for (var i = 0; i < arr.length+1; i++) {
+	    item.value = i.toString();
+	    if (i ==0) item.text = ""
+	    else item.text = arr[i-1].toString();
+
+            list.appendChild(item.cloneNode(true));
+    	}
+    }
+
+    function updateTable() {
+        var n = document.getElementById("list1").options.selectedIndex;
+	    var n1 = document.getElementById("list2").options.selectedIndex;
+	    if ((n == 0) || (n1 == 0)) {
+	        alert("Не все данные введены");
+	        return;
+	    }
+
+        try {
+            $.ajax({
+                url: '/WorkSheduler/DataForTable',
+                data: {
+                    mrpid: document.getElementById("list1").options[n].value.toString(),
+                    mes: document.getElementById("list2").options[n1].value.toString(),
+                    god: document.getElementById("list2").options[n1].text.toString(),
+                },
+                type: 'POST',
+                success: function (data) {
+                    var mass1 = data.split("|");
+                    var mass2 = mass1[0].split("~");
+                    document.getElementById("elem0").innerHTML = "";
+                    var elemn = document.querySelector('#elem0');
+                    createTable(2, elemn, mass2, 5, mass2.length / 5);
+
+                    mass2 = mass1[1].split("~");
+                    document.getElementById("elem").innerHTML = "";
+                    elemn = document.querySelector('#elem');
+                    createTable(1, elemn, mass2, 5, mass2.length/5);
+
+                    mass2 = mass1[2].split("~");
+                    document.getElementById("elem1").innerHTML = "";
+                    elemn = document.querySelector('#elem1');
+                    createTable1(elemn, mass2, 5, mass2.length / 5);
+
+                    mass2 = mass1[3].split("~");
+                    document.getElementById("elem2").innerHTML = "";
+                    elemn = document.querySelector('#elem2');
+                    createTable2(elemn, mass2, 5, mass2.length / 5);
+
+                    mass2 = mass1[4].split("~");
+                    document.getElementById("elem3").innerHTML = "";
+                    elemn = document.querySelector('#elem3');
+                    createTable3(elemn, mass2, 5, mass2.length / 5);
+
+                    var sdis = ["saveday", "deleteday", "savedate", "deletedate", "list111", "list112", "list113", "list114", "list115",
+                        "dat1", "list121", "list212", "list213", "list214", "list215", "list021", "list022", "list023", "savecut", "dat2"];
+                    for (var i = 0; i < sdis.length; i++) {
+                        document.getElementById(sdis[i]).disabled = false;;
+                    }
+                    var swid = ["list111", "list112", "list113", "list114", "list115", "list212", "list213", "list214", "list215", "list021", "list022", "list023"];
+                    for (var i = 0; i < swid.length; i++) {
+                        var sobj = document.getElementById(swid[i]);
+                        sobj.selectedIndex = 0;
+                    }
+                    document.getElementById("dat1").value = "";
+                    document.getElementById("dat2").value = "";
+                },
+                error: function () { alert('Не удалось получить информацию о расписании'); }
+            });
+        }
+        catch (e) {
+            alert('Ошибка ' + e.name + ":" + e.message + "\n" + e.stack);
+        }
+    }
+
+    function save_Cut() {
+        var n = document.getElementById("list1").options.selectedIndex;
+        var n1 = document.getElementById("list021").options.selectedIndex;
+        var n2 = document.getElementById("list022").options.selectedIndex;
+        var n3 = document.getElementById("list023").options.selectedIndex;
+
+        if ((n1 == 0) && (n2 == 0) && (n3 == 0)) {
+	        alert("Не все данные введены");
+	        return;
+        }
+
+        if (confirm('Подтвердите массовое изменение отсечки') == false) return;
+
+        try {
+            $.ajax({
+                url: '/WorkSheduler/UpdateCutAll',
+                data: {
+                    mrpid: document.getElementById("list1").options[n].value.toString(),
+                    tbeg: document.getElementById("list022").options[n2].text.toString(),
+                    tend: document.getElementById("list023").options[n3].text.toString(),
+                    tcut: document.getElementById("list021").options[n1].text.toString(),
+                    loglog: document.getElementById("text1").value,
+                },
+                type: 'POST',
+                success: function (data) {
+                    if (data == 'done') {
+                        updateTable();
+                        document.getElementById("list022").options.selectedIndex = 0;
+                        document.getElementById("list023").options.selectedIndex = 0;
+                        document.getElementById("list021").options.selectedIndex = 0;
+                        alert('Выполнено');
+                        return;
+                    }
+                    alert(data.toString());
+                },
+                error: function () { alert('Не удалось сохранить данные'); }
+            });
+        }
+        catch (e) {
+            alert('Ошибка ' + e.name + ":" + e.message + "\n" + e.stack);
+        }
+    }
+
+    function save_Day() {
+        var n = document.getElementById("list1").options.selectedIndex;
+        var n1 = document.getElementById("list111").options.selectedIndex;
+        var n2 = document.getElementById("list112").options.selectedIndex;
+        var n3 = document.getElementById("list113").options.selectedIndex;
+        var n4 = document.getElementById("list114").options.selectedIndex;
+        var n5 = document.getElementById("list115").options.selectedIndex;
+
+        if (n2 == 2) {
+            if (n1 == 0) {
+                alert("Не все данные введены");
+                return;
+            }
+        }
+        else if ((n1 == 0) || (n2 == 0) || (n3 == 0) || (n4 == 0) || (n5 == 0)) {
+	        alert("Не все данные введены");
+	        return;
+        }
+
+        if (confirm('Подтвердите сохранение информации о дне недели') == false) return;
+
+        try {
+            $.ajax({
+                url: '/WorkSheduler/SaveWeekDay',
+                data: {
+                    mrpid: document.getElementById("list1").options[n].value.toString(),
+                    day: document.getElementById("list111").options[n1].value.toString(),
+                    wid: document.getElementById("list112").options[n2].value.toString(),
+                    tbeg: document.getElementById("list113").options[n3].text.toString(),
+                    tend: document.getElementById("list114").options[n4].text.toString(),
+                    tcut: document.getElementById("list115").options[n5].text.toString(),
+                    loglog: document.getElementById("text1").value,
+                },
+                type: 'POST',
+                success: function (data) {
+                    if (data == 'done') {
+                        updateTable();
+                        document.getElementById("list111").options.selectedIndex = 0;
+                        document.getElementById("list112").options.selectedIndex = 0;
+                        document.getElementById("list113").options.selectedIndex = 0;
+                        document.getElementById("list114").options.selectedIndex = 0;
+                        document.getElementById("list115").options.selectedIndex = 0;
+                        alert('Выполнено');
+                        return;
+                    }
+                    alert(data.toString());
+                },
+                error: function () { alert('Не удалось сохранить данные'); }
+            });
+        }
+        catch (e) {
+            alert('Ошибка ' + e.name + ":" + e.message + "\n" + e.stack);
+        }
+    }
+
+    function delete_Day() {
+        var n = document.getElementById("list1").options.selectedIndex;
+        var n1 = document.getElementById("list121").options.selectedIndex;
+        if ( n1== 0) {
+	        alert("Не выбран день");
+	        return;
+        }
+
+        if (confirm('Подтвердите удаление информации о дне недели') == false) return;
+
+        try {
+            $.ajax({
+                url: '/WorkSheduler/DeleteWeekDay',
+                data: {
+                    mrpid: document.getElementById("list1").options[n].value.toString(),
+                    day: document.getElementById("list121").options[n1].value.toString(),
+                    loglog: document.getElementById("text1").value,
+                },
+                type: 'POST',
+                success: function (data) {
+                    if (data == 'done') {
+                        updateTable();
+                        document.getElementById("list121").options.selectedIndex = 0;
+                        alert('Выполнено');
+                        return;
+                    }
+                    alert(data.toString());
+                },
+                error: function () { alert('Не удалось удалить данные'); }
+            });
+        }
+        catch (e) {
+            alert('Ошибка ' + e.name + ":" + e.message + "\n" + e.stack);
+        }
+    }
+
+    function save_Date() {
+        var dat = document.getElementById("dat1").value;
+        var n = document.getElementById("list1").options.selectedIndex;
+        var n2 = document.getElementById("list212").options.selectedIndex;
+        var n3 = document.getElementById("list213").options.selectedIndex;
+        var n4 = document.getElementById("list214").options.selectedIndex;
+        var n5 = document.getElementById("list215").options.selectedIndex;
+
+        if (n2 == 2) {
+            if (dat == '') {
+                alert("Не все данные введены");
+                return;
+            }
+        }
+        else if ((dat == '') || (n2 == 0) || (n3 == 0) || (n4 == 0) || (n5 == 0)) {
+	        alert("Не все данные введены");
+	        return;
+        }
+
+        if (confirm('Подтвердите сохранение информации о спец. дате') == false) return;
+
+        try {
+            $.ajax({
+                url: '/WorkSheduler/SaveSpecDatе',
+                data: {
+                    mrpid: document.getElementById("list1").options[n].value.toString(),
+                    dat: document.getElementById("dat1").value.toString(),
+                    wid: document.getElementById("list212").options[n2].value.toString(),
+                    tbeg: document.getElementById("list213").options[n3].text.toString(),
+                    tend: document.getElementById("list214").options[n4].text.toString(),
+                    tcut: document.getElementById("list215").options[n5].text.toString(),
+                    loglog: document.getElementById("text1").value,
+                },
+                type: 'POST',
+                success: function (data) {
+                    if (data == 'done') {
+                        updateTable();
+                        document.getElementById("dat1").value = '';
+                        document.getElementById("list212").options.selectedIndex = 0;
+                        document.getElementById("list213").options.selectedIndex = 0;
+                        document.getElementById("list214").options.selectedIndex = 0;
+                        document.getElementById("list215").options.selectedIndex = 0;
+                        alert('Выполнено');
+                        return;
+                    }
+                    alert(data.toString());
+                },
+                error: function () { alert('Не удалось сохранить данные'); }
+            });
+        }
+        catch (e) {
+            alert('Ошибка ' + e.name + ":" + e.message + "\n" + e.stack);
+        }
+    }
+
+    function delete_Date() {
+        var n = document.getElementById("list1").options.selectedIndex;
+        var dat = document.getElementById("dat2").value;
+        if ( dat== '') {
+	        alert("Не выбрана дата");
+	        return;
+        }
+
+        if (confirm('Подтвердите удаление информации о дате') == false) return;
+
+        try {
+            $.ajax({
+                url: '/WorkSheduler/DeleteSpecDate',
+                data: {
+                    mrpid: document.getElementById("list1").options[n].value.toString(),
+                    dat: document.getElementById("dat2").value.toString(),
+                    loglog: document.getElementById("text1").value,
+                },
+                type: 'POST',
+                success: function (data) {
+                    if (data == 'done') {
+                        updateTable();
+                        document.getElementById("dat2").value = '';
+                        alert('Выполнено');
+                        return;
+                    }
+
+                    alert(data.toString());
+                },
+                error: function () { alert('Не удалось удалить данные'); }
+            });
+        }
+        catch (e) {
+            alert('Ошибка ' + e.name + ":" + e.message + "\n" + e.stack);
+        }
+    }
+
+    function new_sched() {
+        document.getElementById("text2").value = '';
+        /*now = new Date()
+        let date1 = new Date(now.getFullYear(), 00, 01);
+        let date2 = new Date(now.getFullYear(),00,01);
+        //var date1 = new Date('01.01.' + getFullYear());
+        //alert(date1.toString());
+        for (let dat = date1; dat <= date2; dat.setDate(dat.getDate() + 1)) {
+
+            let s1 = dat.getFullYear().toString();
+            let s2 = (dat.getMonth()+1).toString();
+            let s3 = dat.getDate().toString();
+            if (s2.length == 1) s2 = '0' + s2;
+            if (s3.length == 1) s3 = '0' + s3;
+            s1 = s1 + s2 + s3;
+            //alert(s1);
+            get_day_value(s1);
+        }
+
+        alert('Выполнено');*/
+
+    }
+
+        function get_day_value(s) {
+            let ss = 'https://isdayoff.ru/' + s;
+            return;
+            /*
+        try {
+            $.ajax({
+                url: 'https://api.sm.su/v1/calendar/business/?day=2020-05-12&key=rqledv58nsgl6ok4ekhi&sid=123',
+                data: {},
+                type: 'POST',
+                success: function (data) {
+                    //var ss1 = document.getElementById("text2").value;
+                    //ss1 = ss1 + data.toString();
+                    //document.getElementById("text2").value = ss1.toString();
+                    //alert(s.toString() + ' - ' + data.toString());
+                    document.getElementById("text2").value = document.getElementById("text2").value + s.toString() +',' + data.toString() + ',';
+                },
+                error: function (data) { alert('error:' + data); }
+            });
+        }
+        catch (e) {
+            alert('Ошибка ' + e.name + ":" + e.message + "\n" + e.stack);
+        }
+    */
+    }
+
+
+    function copy_Data2() {
+        var n = document.getElementById("list1").options.selectedIndex;
+        if (n == 0) return;
+
+        var tr = window.event.srcElement.parentElement;
+        while ('TR' != tr.tagName) tr = tr.parentElement;
+        for (var row = 0; tr != null; tr = tr.previousSibling, row++);
+        if (confirm('Копировать информацию из строки ' + (row - 2).toString() + ' ?') == false) return;
+
+        var table = document.getElementById('elem2'),
+        cells = table.getElementsByTagName('td');
+
+        var str = cells[(row - 3) * 6].innerHTML.toString();
+        document.getElementById("dat1").value = str.substr(6,4)+'-'+str.substr(3,2)+'-'+str.substr(0,2);
+
+        var swid =["list212", "list213", "list214", "list215"];
+        for (var i = 1; i < 5; i++) {
+            var str = cells[(row - 3) * 6 + i].innerHTML.toString();
+            var sobj = document.getElementById(swid[i - 1]);
+            for (var j = 0; j < sobj.length; j++) {
+                if (sobj.options[j].text == str) sobj.selectedIndex = j;
+            }
+        }
+    }
+
+    function copy_Data1() {
+        var n = document.getElementById("list1").options.selectedIndex;
+        if (n == 0) return;
+
+        var tr = window.event.srcElement.parentElement;
+        while ('TR' != tr.tagName) tr = tr.parentElement;
+        for (var row = 0; tr != null; tr = tr.previousSibling, row++);
+        if (confirm('Копировать информацию из строки ' + (row - 2).toString() + ' ?') == false) return;
+
+        var table = document.getElementById('elem1'),
+        cells = table.getElementsByTagName('td');
+
+        var swid =["list111", "list112", "list113", "list114", "list115"];
+        for (var i = 0; i < 5; i++) {
+            var str = cells[(row - 3) * 6 + i].innerHTML.toString();
+            var sobj = document.getElementById(swid[i]);
+            for (var j = 0; j < sobj.length; j++) {
+                if (sobj.options[j].text == str) sobj.selectedIndex = j;
+            }
+            if (i == 0) sobj.selectedIndex = row - 2;
+        }
+    }
+
+    </script>
+
+</body>
+</html>
+

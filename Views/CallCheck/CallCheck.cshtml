@@ -1,0 +1,365 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+
+    <script charset="utf-8" src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script charset="utf-8" src="~/lib/jquery/dist/jquery-ui.js"></script>
+    <script charset="utf-8" src="~/lib/jquery.unobtrusive-ajax/jquery.unobtrusive-ajax.min.js"></script>
+
+    <style>
+        TABLE {
+            border: 1px solid black;
+            border-collapse: collapse;
+            overflow: scroll;
+        }
+
+            table td, th {
+                border: 1px solid black;
+                border-collapse: collapse;
+                font-size: 12px;
+            }
+
+            table.elem1 {
+                table-layout: fixed;
+                width: 960px;
+            }
+
+                table.elem1 td {
+                    overflow: hidden;
+                }
+
+                    table.elem1 td:nth-of-type(1), table.elem1 th:nth-of-type(1) {
+                        width: 28px;
+                    }
+
+                    table.elem1 td:nth-of-type(2), table.elem1 th:nth-of-type(2) {
+                        width: 210px;
+                    }
+
+                    table.elem1 td:nth-of-type(3), table.elem1 th:nth-of-type(3) {
+                        width: 42px;
+                    }
+
+                    table.elem1 td:nth-of-type(4), table.elem1 th:nth-of-type(4) {
+                        width: 70px;
+                    }
+
+                    table.elem1 td:nth-of-type(5), table.elem1 th:nth-of-type(5) {
+                        width: 130px;
+                        text-align: center;
+                    }
+
+                    table.elem1 td:nth-of-type(6), table.elem1 th:nth-of-type(6) {
+                        width: 88px;
+                        text-align: center;
+                    }
+
+                    table.elem1 td:nth-of-type(7), table.elem1 th:nth-of-type(7) {
+                        width: 56px;
+                        text-align: center;
+                    }
+
+                    table.elem1 td:nth-of-type(8), table.elem1 th:nth-of-type(8) {
+                        width: 50px;
+                        text-align: center;
+                    }
+
+                    table.elem1 td:nth-of-type(9), table.elem1 th:nth-of-type(9) {
+                        width: 69px;
+                        text-align: center;
+                    }
+
+                    table.elem1 td:nth-of-type(10), table.elem1 th:nth-of-type(10) {
+                        width: 52px;
+                        text-align: center;
+                    }
+
+                    table.elem1 td:nth-of-type(11), table.elem1 th:nth-of-type(11) {
+                        width: 45px;
+                        text-align: center;
+                    }
+
+                    table.elem1 td:nth-of-type(12), table.elem1 th:nth-of-type(12) {
+                        width: 104px;
+                    }
+
+            table.elem2 {
+                table-layout: fixed;
+                width: 960px;
+            }
+
+                table.elem2 td {
+                    overflow: hidden;
+                }
+
+                    table.elem2 td:nth-of-type(1), table.elem2 th:nth-of-type(1) {
+                        width: 72px;
+                    }
+
+                    table.elem2 td:nth-of-type(2), table.elem2 th:nth-of-type(2) {
+                        width: 200px;
+                    }
+
+                    table.elem2 td:nth-of-type(3), table.elem2 th:nth-of-type(3) {
+                        width: 81px;
+                        text-align: center;
+                    }
+
+                    table.elem2 td:nth-of-type(4), table.elem2 th:nth-of-type(4) {
+                        width: 120px;
+                        text-align: center;
+                    }
+
+                    table.elem2 td:nth-of-type(5), table.elem2 th:nth-of-type(5) {
+                        width: 250px;
+                    }
+
+                    table.elem2 td:nth-of-type(6), table.elem2 th:nth-of-type(6) {
+                        width: 78px;
+                        text-align: center;
+                    }
+
+                    table.elem2 td:nth-of-type(7), table.elem2 th:nth-of-type(7) {
+                        width: 45px;
+                        text-align: center;
+                    }
+
+                    table.elem2 td:nth-of-type(8), table.elem2 th:nth-of-type(8) {
+                        width: 110px;
+                    }
+
+        td.col1 {
+            background: red;
+            color: white;
+        }
+
+        td.col2 {
+            background: orange;
+            color: black;
+        }
+
+        td.col3 {
+            background: yellow;
+            color: black;
+        }
+
+        td.col4 {
+            background: white;
+            color: black;
+        }
+
+        td.col5 {
+            background: Green;
+            color: white;
+        }
+
+        td.col6 {
+            background: LightSalmon;
+            color: white;
+        }
+
+        td.col7 {
+            background: RoyalBlue;
+            color: white;
+        }
+    </style>
+
+</head>
+<body>
+
+    <div align=center style="width: 1000px; height: 30px;
+        background: Gainsboro;
+">
+        <h3 align="center" style="height: 15px; margin-top: 0px; ">AutoCall Check</h3>
+    </div>
+
+
+    <div style="width: 1000px; height: 70px; background: White;">
+        <div>
+            <form name="form1">
+                <p style="margin-top: 15px; text-indent: 50px;">
+                    <button style="background: Teal; color: White; height: 23px" asp-controller="CallCheck" asp-action="CallCheckGraph">Графика</button>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <input style="background: Teal; color: White; height: 23px" type="button" onclick="history.back();" value="Назад" />
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <input id="text1" size="40" value="Вася" hidden>
+                    Интервал
+                    <input type="number" name="iterval" id="iterval" value="5" min="1" max="60" step="1" size="5" required>
+                    сек
+                </p>
+            </form>
+        </div>
+        <div>
+            <p style="margin-top: 5px;">
+                <input id="text2" size="120" value="Длительность звонка (мин:сек.мсек): 00:01:59.000; Длительность задачи (мин:сек.мсек): 00:02:24.488; Процент дозвонов 86%" style="border: 0;" disabled>
+            </p>
+        </div>
+    </div>
+
+    <div align=center style="width: 1000px; height: 20px;">
+        <h4 align="center" style="height: 15px; margin-top: 0px; margin-bottom: 0px;">Список операторов</h4>
+    </div>
+
+    <div id="elem1" name="elem1" style="width: 1000px; height: 270px; border: 1px solid black; background: White; overflow: scroll;"></div>
+
+    <div align=center style="width: 1000px; height: 20px;">
+        <h4 align="center" style="height: 15px;  margin-bottom: 0px;">Список звонков</h4>
+    </div>
+
+    <div id="elem2" name="elem2" style="width: 1000px; height: 270px; border: 1px solid black; background: White; overflow: scroll;"></div>
+
+    <script>
+        function load_data() {
+            try {
+            $.ajax({
+                url: '/CallCheck/GetDataAutoCall',
+
+                type: 'POST',
+                success: function (data) {
+                    //document.getElementById("text1").value = data;
+                    var mass1 = data.split("|");
+                    var mass2 = mass1[0].split(",");
+                    document.getElementById("elem1").innerHTML = "";
+                    create_table1(mass2, 12, mass2.length / 12);
+
+                    var mass2 = mass1[1].split(",");
+                    document.getElementById("elem2").innerHTML = "";
+                    create_table2(mass2, 8, mass2.length / 9);
+
+                    var mass2 = mass1[2].split(",");
+                    document.getElementById("text2").value = 'Длительность звонка (мин:сек.мсек): ' + mass2[0] + '; Длительность задачи (мин:сек.мсек): ' + mass2[1] + '; Процент дозвонов ' + mass2[2] + '%';
+
+                },
+                error: function () { alert('Не удалось получить данные'); }
+            });
+            }
+            catch (e) {
+                alert('Ошибка ' + e.name + ":" + e.message + "\n" + e.stack);
+            }
+            let rez = Number(document.getElementById("iterval").value) * 1000;
+            let rez1 = 5000;
+            if (rez >= 1000) rez1 = rez;
+            else document.getElementById("iterval").value = "5";
+            setTimeout(function() {load_data();}, rez1);
+        }
+
+        function create_table1(arr, cols, rows) {
+            var pelem1 = document.querySelector('#elem1');
+            var table = document.createElement('table');
+            table.classList.add("elem1");
+            var tr = document.createElement('tr');
+            for (var i = 0; i < cols; i++) {
+                var th = document.createElement('th');
+                if (i == 0) th.innerHTML = "Id";
+                if (i == 1) th.innerHTML = "Оператор";
+                if (i == 2) th.innerHTML = "Сервис";
+                if (i == 3) th.innerHTML = "Статус";
+                if (i == 4) th.innerHTML = "Изменено";
+                if (i == 5) th.innerHTML = "Ожидание";
+                if (i == 6) th.innerHTML = "CallId";
+                if (i == 7) th.innerHTML = "CallType";
+                if (i == 8) th.innerHTML = "Phone";
+                if (i == 9) th.innerHTML = "LongCall";
+                if (i == 10) th.innerHTML = "ForTask";
+                if (i == 11) th.innerHTML = "PauseDesk";
+                tr.appendChild(th);
+            }
+            table.appendChild(tr);
+            for (var i = 0; i < rows; i++) {
+                var tr = document.createElement('tr');
+
+                var st1 = arr[i * cols + 5];
+                var st3 = arr[i * cols + 3];
+                var st7 = arr[i * cols + 7];
+                var st9 = arr[i * cols + 9];
+                var st10 = arr[i * cols + 10];
+                var n = Number(st1.substr(6, 2));
+                var n1 = Number(st1.substr(3, 2));
+                n = n + n1 * 60;
+
+                var tclass = "col4";
+                if (st3 == "Пауза") tclass = "col4";
+                if (st3 == "Вышел") tclass = "col7";
+                if ((st3 == "Звонок") && (st7 == "OUT") && (n <= 40)) tclass = "col2";
+                if ((st3 == "Звонок") && (st7 == "OUT") && (n > 40)) tclass = "col1";
+                if ((st3 == "Звонок") && (st7 == "NTF") && (n <= 10)) tclass = "col4";
+                if ((st3 == "Звонок") && (st7 == "NTF") && (n > 10)) tclass = "col7";
+                if ((st3 == "Звонок") && (st7 == "NTF") && (n > 10)) tclass = "col7";
+                if ((st3 == "Звонок") && (st7 == "NTF") && (st9 == "1") && (st10 == "1")) tclass = "col5";
+                if ((st3 == "Свободен") && (n <= 10)) tclass = "col4";
+                if ((st3 == "Свободен") && (n > 10)) tclass = "col3";
+
+                if (arr.length >= 12) {
+                    for (var j = 0; j < cols; j++) {
+                        var td = document.createElement('td');
+                        td.classList.add(tclass);
+                        if (((j == 9) && (arr[i * cols + j] == "1")) || ((j == 10) && (arr[i * cols + j] == "1")))
+                        {
+                        td.innerHTML = "<input type='checkbox' checked>";
+                        }
+                        else if (((j == 9) && (arr[i * cols + j] != "1")) || ((j == 10) && (arr[i * cols + j] != "1")))
+                        {
+                        td.innerHTML = "<input type='checkbox'>";
+                        }
+                        else td.innerHTML = arr[i * cols + j];
+                    tr.appendChild(td);
+                    }
+                }
+                table.appendChild(tr);
+            }
+            pelem1.appendChild(table);
+        }
+
+        function create_table2(arr, cols, rows) {
+            var pelem1 = document.querySelector('#elem2');
+            var table = document.createElement('table');
+            table.classList.add("elem2");
+            var tr = document.createElement('tr');
+            for (var i = 0; i < cols; i++) {
+                var th = document.createElement('th');
+                if (i == 0) th.innerHTML = "CallId";
+                if (i == 1) th.innerHTML = "Статус";
+                if (i == 2) th.innerHTML = "Phone";
+                if (i == 3) th.innerHTML = "Изменено";
+                if (i == 4) th.innerHTML = "Оператор";
+                if (i == 5) th.innerHTML = "Ожидание";
+                if (i == 6) th.innerHTML = "Long";
+                if (i == 7) th.innerHTML = "Группа";
+                tr.appendChild(th);
+            }
+            table.appendChild(tr);
+            for (var i = 0; i < rows; i++) {
+                var tr = document.createElement('tr');
+
+                var tclass = "col4";
+                if (arr[i * (cols+1) + 8] == "clYellow") tclass = "col3";
+                if (arr[i * (cols+1) + 8] == "clRed") tclass = "col1";
+                if (arr[i * (cols+1) + 8] == "clWindow") tclass = "col4";
+                if (arr[i * (cols + 1) + 8] == "clGreen") tclass = "col5";
+
+                if (arr.length >= 8) {
+                    for (var j = 0; j < cols; j++) {
+                        var td = document.createElement('td');
+                        td.classList.add(tclass);
+                        if ((j == 6) && (arr[i * cols + j] == "1")) { td.innerHTML = "<input type='checkbox' checked>"; }
+                        else if ((j == 6) && (arr[i * cols + j] != "1")) { td.innerHTML = "<input type='checkbox'>"; }
+                        else td.innerHTML = arr[i * (cols + 1) + j].toString();
+                    tr.appendChild(td);
+                    }
+                }
+                table.appendChild(tr);
+            }
+            pelem1.appendChild(table);
+        }
+
+        window.addEventListener("load", load_data());
+    </script>
+</body>
+</html>
+
+

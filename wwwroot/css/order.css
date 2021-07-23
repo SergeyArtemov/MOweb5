@@ -1,0 +1,417 @@
+﻿body {
+    background-color: #c2e3ff;
+    padding: 0;
+    margin: 0;
+    font-family: Tahoma, Geneva, sans-serif;
+}
+
+.page-layout {
+    display: -ms-grid;
+    display: grid;
+    grid-gap: 1px;
+    margin: 2px 3px;
+    -ms-grid-columns: 1.2fr 1px 3.8fr 1px 1.5fr;
+    -ms-grid-rows: 2px 1px 30vh 1px 25vh 1px calc(45vh - 58px) 1px 48px ;
+    grid-template-columns: 1.2fr 3.8fr 1.5fr;
+    grid-template-rows: 2px 30vh 25vh calc(45vh - 58px) 48px;
+}
+
+.box {
+    overflow: auto;
+    white-space: nowrap;
+    background-color: ghostwhite; /*#f7feff;*/
+    border-radius: 4px;
+    display: inline-block;
+    justify-content: left;
+    align-items: top;
+    border: 1px solid rgb(100, 200, 255);
+    padding: 1px;
+}
+
+.row-head {
+    grid-row: 1;
+    -ms-grid-row: 1;
+    -ms-grid-column-span: 5;
+    grid-column: span 3;
+    /*padding: 5px;*/
+    padding: 0;
+    margin: 0;
+    display: inline-flex;
+}
+
+.left {
+    -ms-grid-column: 1;
+    -ms-grid-row: 3;
+    -ms-grid-row-span: 3;
+    grid-column: 1;
+    grid-row: span 2;
+    min-width: 150px;
+    display: inline-block;
+}
+
+.main {
+    -ms-grid-column: 3;
+    -ms-grid-row: 3;
+    -ms-grid-row-span: 3;
+    grid-column: 2;
+    grid-row: span 2;
+}
+
+.right {
+    -ms-grid-column: 5;
+    -ms-grid-row: 3;
+    -ms-grid-row-span: 3;
+    grid-column: 3;
+    grid-row: span 2;
+}
+
+.col-center {
+    -ms-grid-column: 1;
+    -ms-grid-row: 7;
+    -ms-grid-column-span: 5;
+    grid-row: 4;
+    grid-column: span 3;    
+}
+
+.col-footer {
+    -ms-grid-column: 1;
+    -ms-grid-row: 9;
+    -ms-grid-column-span: 5;
+    grid-row: 5;
+    grid-column: span 3;
+    display: flex;
+    flex-wrap: wrap;
+    position: relative;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table td {
+    margin: 0;
+    padding: 0 1px;
+}
+
+th {
+    border: 1px solid rgb(100, 100, 100);
+    text-align: left;
+}
+
+#itemsTable td {
+    border: 1px solid lightblue;
+}
+
+#itemsTable th {
+    padding: 0 2px;
+    text-align: left;
+}
+/*
+tr:nth-child(2n) {
+    background: rgba(232, 237, 255, 0.1);
+}*/
+
+#deliveryTable td:nth-child(2n - 1) {
+    width: 0;
+    white-space: nowrap;
+    font-size: 11px;
+}
+
+#deliveryTable td:nth-child(2n) {
+    width: 50%;
+}
+
+.customerTable td:nth-child(2n - 1) {
+    width: 0;
+    white-space: nowrap;
+}
+
+.customerTable td:nth-child(2n) {
+    width: 100%;
+}
+
+.customerTable input, .customerTable select {
+    width: calc(100% - 4px);
+}
+
+.customerTable select, .customerTable td {
+    font-size: 11px;
+}
+
+.customerTable tr, .customerTable td {
+    border: none;
+    margin: 0;
+    padding: 0;
+}
+
+.customerTable {
+    border: none;
+    margin: 0;
+    padding: 0;
+}
+
+.selected-ship-cell {
+    background-color: #00b9ff!important;
+    border: 1px solid #00e8ff!important;
+}
+
+input, select {
+    background-color: rgba(255, 255, 255, 0.66);
+    font-family: Tahoma, Geneva, sans-serif;
+    font-size: 12px;
+    margin: 0;
+    padding: 0px;
+    border-radius: 3px;
+    box-shadow: none;
+    outline: none;
+    border: 1px solid rgba(0, 150, 255, 0.3);
+}
+
+input:hover, input:focus, select:hover, select:focus {
+    padding: 0px;
+    border: 1px solid blue;
+}
+
+.actionsMenu {
+    background-color: #f0f8ff;
+    margin: 5px;
+    padding: 10px 65px;
+    border-radius: 5px;
+    border: 1px solid #dddfff;
+}
+
+.actionsMenu li {    
+    background-color: rgba(100, 200, 255, 0.2);
+    border: 1px solid rgba(100, 200, 255, 0.6);
+    border-radius: 5px;
+    width: 320px;
+    padding: 2px 20px;
+    margin: 1px;
+    font-weight: bold;
+}
+
+.actionsMenu li:hover {
+    background-color: rgba(100, 200, 255, 0.4);
+    border: 1px solid rgba(100, 200, 255, 0.9);
+    cursor:pointer;
+}
+
+
+
+#modalBody > .personalDiscount {
+    font-size: 16px;
+}
+
+#modalBody > .personalDiscount table {
+    font-size: 14px;
+}
+
+#modalBody > .personalDiscount table th {
+    background-color: rgb(230, 230, 255);
+}
+
+    #modalBody > .personalDiscount table td, #modalBody > .personalDiscount table th {
+        border: 1px solid lightblue;
+    }
+
+.orderButton {
+    /*display: inline-block;*/
+    border-radius: 3px;
+    border: 2px solid rgba(100, 200, 255, 0.6);
+    padding: 1px;
+    background-color: rgba(100, 200, 255, 0.25);
+    margin: 2px 0;
+    font-weight: bold;
+    box-shadow: 0 0 2px rgba(0, 0, 64, 0.75);
+    outline: none;
+}
+
+    .orderButton:hover {
+        border: 2px solid rgb(100, 200, 255);
+        background-color: rgba(100, 200, 255, 0.5);
+        /*padding: 1px;*/
+        color: rgb(96, 96, 96);
+    }
+
+.orderButtonPushed {
+    border: 2px solid blue;
+    background-color: rgba(100, 200, 255, 0.6);
+    /*padding: 1px;*/
+    font-weight: bold;
+    color: blue;
+}
+
+.filterButtonPushed {
+    border: 2px solid blue;
+    background-color: rgba(100, 200, 255, 0.6);
+    font-weight: bold;
+    color: blue;
+}
+
+#history label:hover {
+    background-color: rgba(200, 255, 200, 0.66);
+}
+
+#history {
+    font-size: 11px;
+}
+
+.blinkText {
+    -webkit-animation: blink 5s linear infinite;
+    animation: blink 5s linear infinite;
+}
+@-webkit-keyframes blink{
+    75% { color: lightblue; }
+    100% { color: blue; }
+}
+
+@keyframes blink {
+    75% { color: lightblue; }
+    100% { color: blue; }
+}
+
+
+/* >> input [range]*/
+input[type=range] {
+    -webkit-appearance: none;
+    padding: 3px 0px;
+}
+
+
+input[type=range]:focus {
+    outline: none;
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+    height: 8px;
+    cursor: pointer;
+    box-shadow: 0px 0px 0px #000000, 0px 0px 0px #0d0d0d;
+    background: lightblue;
+    border-radius: 8px;
+    border: 0px solid #000101;
+}
+
+input[type=range]::-webkit-slider-thumb {
+    box-shadow: 0px 0px 0px #000000, 0px 0px 0px #0d0d0d;
+    border: 0px solid #000000;
+    height: 16px;
+    width: 8px;
+    border-radius: 4px;
+    background: blue;
+    cursor: pointer;
+    -webkit-appearance: none;
+    margin-top: -4px;
+}
+
+input[type=range]:focus::-webkit-slider-runnable-track {
+    background: lightblue;
+}
+
+input[type=range]::-moz-range-track {
+    height: 8px;
+    cursor: pointer;
+    box-shadow: 0px 0px 0px #000000, 0px 0px 0px #0d0d0d;
+    background: lightblue;
+    border-radius: 8px;
+    border: 0px solid #000101;
+}
+
+input[type=range]::-moz-range-thumb {
+    box-shadow: 0px 0px 0px #000000, 0px 0px 0px #0d0d0d;
+    border: 0px solid #000000;
+    height: 16px;
+    width: 8px;
+    border-radius: 8px;
+    background: blue;
+    cursor: pointer;
+}
+
+input[type=range]::-ms-track {
+    height: 8px;
+    cursor: pointer;
+    background: transparent;
+    border-color: transparent;
+    color: transparent;
+}
+
+input[type=range]::-ms-fill-lower {
+    background: lightblue;
+    border: 0px solid #000101;
+    border-radius: 8px;
+    box-shadow: 0px 0px 0px #000000, 0px 0px 0px #0d0d0d;
+}
+
+input[type=range]::-ms-fill-upper {
+    background: lightblue;
+    border: 0px solid #000101;
+    border-radius: 8px;
+    box-shadow: 0px 0px 0px #000000, 0px 0px 0px #0d0d0d;
+}
+
+input[type=range]::-ms-thumb {
+    box-shadow: 0px 0px 0px #000000, 0px 0px 0px #0d0d0d;
+    border: 0px solid #000000;
+    height: 16px;
+    width: 8px;
+    border-radius: 8px;
+    background: blue;
+    cursor: pointer;
+}
+
+input[type=range]:focus::-ms-fill-lower {
+    background: lightblue;
+}
+
+input[type=range]:focus::-ms-fill-upper {
+    background: lightblue;
+}
+
+#itemPartialCancelReasonsList {
+    list-style: none;
+}
+
+#itemPartialCancelReasonsList li {
+    margin: 1px;
+    padding: 2px;
+    border: 2px solid lightblue;
+    border-radius: 3px;
+}
+
+    #itemPartialCancelReasonsList li:hover {
+        background: rgba(200, 255, 200, 0.50) !important;
+    }
+/* << input [range]*/
+
+/*
+.menu ul {
+    padding: 1px;
+    list-style: none;
+    margin: 0;
+    display: inline-flex;
+}
+
+.menu li {
+    border-radius: 3px;
+    transition: .5s ease-in;
+    padding: 2px;    
+    background: rgba(100, 200, 255, 0.25);
+    border: 2px solid rgb(100, 200, 255);
+    box-shadow: 0 0 1px rgba(0, 0, 64, 0.75), 1px 1px 3px rgba(0, 0, 128, 0.5);
+    font-weight: bold;
+}
+
+.menu li:hover {
+    background: rgba(100, 200, 255, 0.5);
+    border: 2px solid rgb(100, 200, 255);
+}
+*/
+
+
+
+
+
+
+
+
+

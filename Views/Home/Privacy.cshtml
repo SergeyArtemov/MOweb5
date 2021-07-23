@@ -1,0 +1,108 @@
+﻿@{
+
+    <!--Layout = null;-->
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>   
+
+</head>
+<body>
+    <style type="text/css">
+
+body{
+    background-color: deepskyblue;
+    padding: 0px;
+    margin: 0px;
+}
+
+.first-row {
+    display: -ms-grid;
+    display: grid;
+    grid-gap: 1px;
+    margin: 1px 1px;
+    -ms-grid-columns: 1fr 1px 2fr 1px 1fr;
+    -ms-grid-rows: 10vh 1px 35vh 1px 35vh 1px calc(20vh - 5px);
+    grid-template-columns: 1fr 2fr 1fr;  
+    grid-template-rows: 10vh 35vh 35vh calc(20vh - 5px);
+}
+
+.box {
+    overflow: auto; 
+    white-space: nowrap;
+    background-color: aliceblue;
+    border-radius: 1px;
+    display: flex;
+    justify-content: left;
+    align-items: top;
+}
+
+.col-head {
+    grid-row: 1;
+    -ms-grid-row: 1;
+    -ms-grid-column-span: 5;
+    grid-column: span 3;
+
+}
+
+.left {
+    -ms-grid-column: 1;
+    -ms-grid-row: 3;
+    -ms-grid-row-span: 3;
+    grid-column: 1;
+    grid-row: span 2;
+}
+
+.main {
+    -ms-grid-column: 3;
+    -ms-grid-row: 3;
+    -ms-grid-row-span: 3;
+    grid-column: 2;  
+    grid-row: span 2;
+}
+
+.right {
+    -ms-grid-column: 5;
+    -ms-grid-row: 3;
+    -ms-grid-row-span: 3;
+    grid-column: 3;
+    grid-row: span 2;
+}
+
+.col-footer {
+    -ms-grid-column: 1;
+    -ms-grid-row: 7;
+    -ms-grid-column-span: 5;
+    grid-row: 4;
+    grid-column: span 3;
+  
+}
+    </style>
+
+    <section>
+        <div class="first-row">
+            <div class="box col-head">
+                0000000000000000000000000000000000000000000
+            </div>
+            
+            <div class="box left">
+                100000000000000000000000000000000000000000
+            </div>
+            
+            <div class="box main">
+                200000000000000000000000000000000000000000
+            </div>
+            
+            <div class="box right">
+                400000000000000000000000000000000000000000
+            </div>
+
+            <div class="box col-footer">
+                999000000000000000000000000000000000000000
+            </div>
+        </div>
+    </section>
+</body>
+</html>

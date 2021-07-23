@@ -1,0 +1,261 @@
+﻿
+
+@model ARMClasses.ARM_Manager;
+
+@{
+    ViewData["Title"] = "Полный список АРМов";
+}
+
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <script charset="utf-8" src="~/js/commonScript.min.js"></script>
+    <!--
+            <meta name="viewport" content="width=device-width" />
+            <title>DebugData</title>
+    -->
+</head>
+<body>
+    <br />
+    <br />
+    <h1>Полный список АРМов </h1>
+    <h1 hidden>@Model.CurARMTypeId  </h1>
+    <br />
+
+    <form id="cb_form" asp-action="ARMForm_cb_change" method="post" name="cb_form">
+
+        <select id="cbARMTypeList" value="@Model.CurARMTypeId" asp-for="CurARMTypeId" onchange="cbARMTypeListChange()">
+            @for (int i = 0; i < Model.ARMTypeList.Count; i++)
+            {
+                @if (Model.CurARMTypeId == @Model.ARMTypeList[i].id)
+                {
+                    <option value="@Model.ARMTypeList[i].id" selected> @Model.ARMTypeList[i].Name </option>
+                }
+                else
+                {
+                    <option value="@Model.ARMTypeList[i].id"> @Model.ARMTypeList[i].Name </option>
+                }
+            }
+        </select>
+        <button class="tablinks" id="AddARMbutton" onclick="btnAddARMClick()">Добавить тип АРМ</button>
+        <button class="tablinks" id="EditARMbutton" onclick="btnEditARMClick()">Изменить название типа АРМ</button>
+        <button class="tablinks" id="SaveChangeInARMbutton" onclick="btnSaveARMClick()">Сохранить измененитя в типе АРМ </button>
+
+
+        <input id="PageNum" asp-for="PageForShow" value="@Model.PageForShow" hidden />
+        <input id="NewARMName" type="text" asp-for="NewARMName" value="" hidden />
+        <input id="EditingARMName" type="text" asp-for="EditingARMName" value="" hidden />
+
+        <input id="TaskStateChange" type="text" asp-for="TaskStateChange" value="@Model.TaskStateChange" hidden />
+        <input id="refRepStateChange" type="text" asp-for="refRepStateChange" value="@Model.refRepStateChange" hidden />
+        <input id="FRRepStateChange" type="text" asp-for="FRRepStateChange" value="@Model.FRRepStateChange" hidden />
+
+        <input id="ChBoxSave" type="checkbox" checked="@Model.ChBoxSave" asp-for="ChBoxSave" value="@Model.ChBoxSave" hidden />
+
+        <br />
+        <br />
+
+        <div class="tab">
+            @if (Model.PageForShow == 1)
+            {<button class="tablinks" id="ItemsRage" style="background: #fdeaa8;" value="1" onclick="btnPageClick(1)">Задачи АРМов</button> }
+            else
+            { <button class="tablinks" id="ItemsRage" value="1" onclick="btnPageClick(1)">Задачи АРМов</button>}
+
+            @if (Model.PageForShow == 2)
+            {
+                <button class="tablinks" id="RefReportRage" style="background: #fdeaa8;" value="2" onclick="btnPageClick(2)">Отчеты Ref</button>
+            }
+            else
+            { <button class="tablinks" id="RefReportRage" value="2" onclick="btnPageClick(2)">Отчеты Ref</button>}
+
+            @if (Model.PageForShow == 3)
+            {
+                <button class="tablinks" id="FRReportRage" style="background: #fdeaa8;" value="3" onclick="btnPageClick(3)">Отчеты FR</button>
+            }
+            else
+            { <button class="tablinks" id="FRReportRage" value="3" onclick="btnPageClick(3)">Отчеты FR</button>}
+        </div>
+
+        <div>
+            <Br>
+
+            @if (Model.PageForShow == 1)
+            {
+                @for (int i = 0; i < Model.CurARMType.TaskList.Count; i++)
+                {
+                    var ATask = Model.CurARMType.TaskList[i];
+                    var check_id = "task" + ATask.Item.id;
+
+                    @if (Model.ItemChecked(ATask))
+                    {<input id="check_id" type="checkbox" checked onclick="chbClick(1,@ATask.Item.id)">@ATask.Item.Name<Br>}
+                    else
+                    {<input id = "@check_id" type = "checkbox" onclick = "chbClick(1,@ATask.Item.id)" > @ATask.Item.Name<Br>}
+                }
+            }
+
+                @if (Model.PageForShow == 2)
+                {
+                    for (int i = 0; i < Model.CurARMType.RefReportList.Count; i++)
+                    {
+                        var ARep = Model.CurARMType.RefReportList[i];
+                        var check_id = "refrep" + ARep.Item.id;
+
+                        @if (Model.ItemChecked(ARep))
+                        {<input id="@check_id" type="checkbox" checked onclick="chbClick(2,@ARep.Item.id)"> @ARep.Item.Name<Br> }
+                    else
+                    {<input id="@check_id" type="checkbox" onclick="chbClick(2,@ARep.Item.id)"> @ARep.Item.Name<Br>}
+
+                    }
+                }
+
+                @if (Model.PageForShow == 3)
+                {
+                    @for (int i = 0; i < Model.CurARMType.FRReportList.Count; i++)
+                    {
+                        var ARep = Model.CurARMType.FRReportList[i];
+                        var check_id = "frrep" + ARep.Item.id;
+
+                        @if (Model.ItemChecked(ARep))
+                        {<input id="@check_id" type="checkbox" checked onclick="chbClick(3,@ARep.Item.id)"> @ARep.Item.Name<Br> }
+                    else
+                    { <input id="@check_id" type="checkbox" onclick="chbClick(3,@ARep.Item.id)"> @ARep.Item.Name<Br>}
+                    }
+                }
+            </div>
+    </form>
+
+    <script type="text/javascript">
+        function cbARMTypeListChange() {
+            elem = document.getElementById('cb_form');
+            cb = document.getElementById('cbARMTypeList');
+            elem.submit()
+        }
+    </script> 
+
+    <script type="text/javascript">
+        //style="background: #fdeaa8; width: 80px; height: 40px; border-radius: 5px; box-shadow: 0px 1px 3px; font-size: 20px;
+        function btnPageClick(page_no) {
+            fld = document.getElementById("PageNum");
+            if (fld.value != page_no) {
+                fld.value = page_no;
+                elem = document.getElementById('cb_form');
+                elem.submit()
+            }
+        }
+    </script>
+
+    <script type="text/javascript">
+        function btnAddARMClick() {
+            fld = document.getElementById("NewARMName");
+            fld.value = prompt('Введите название нового АРМа', '');
+            if (fld.value == '') {
+                alert('АРМ без названия не будет создан.');
+                fld.value = null
+            }
+            else {
+                if (NotExists(fld.value)) {
+                    elem = document.getElementById('cb_form');
+                    elem.submit()
+                }
+                else{
+                    alert('Название ' + fld.value + ' уже существует.');
+                    fld.value = null
+                }
+            }
+        }
+
+        function btnEditARMClick() {
+            fld = document.getElementById("EditingARMName");
+            fld.value = prompt('Введите новоe название', '');
+            if (fld.value == '') {
+                alert('Название АРМ не может быть пустая строка.');
+                fld.value = null
+            }
+            else {
+                if (NotExists(fld.value)){
+                    elem = document.getElementById('cb_form');
+                    elem.submit()
+                }
+                else {
+                    alert('Название ' + fld.value + ' уже существует.');
+                    fld.value = null
+                }
+            }
+        }
+
+        function NotExists(LnCaption) {
+            cb = document.getElementById("cbARMTypeList");
+            cnt = cb.length;
+            for (i = 0; i < cnt; i++){
+                if (cb.options[i].Text == LnCaption) {
+                    return false;
+                }
+            }
+            return  true;
+        }
+
+    </script>
+
+    <script type="text/javascript">
+        function chbClick(item_type, item_id) {
+
+            if (item_type == 1) {
+                iid = 'task' + item_id;
+                FieldId = "TaskStateChange"
+            }
+            else if (item_type == 2) {
+                iid = 'refrep' + item_id
+                FieldId = "refRepStateChange"
+            }
+            else if (item_type == 3) {
+                iid = 'frrep' + item_id
+                FieldId = "FRRepStateChange"
+            }
+
+            chk = document.getElementById(iid);
+            if (chk.checked) { res = 1 } else { res = 0 };
+
+            InsertValueToStateChangeField(FieldId, item_id, res);
+        } //chbClick
+
+        function InsertValueToStateChangeField(FieldId, item_id, res) {
+            fld = document.getElementById(FieldId);
+            s = fld.value;
+
+            new_item = '[' + item_id + ']' + res + ';'
+            find_res = (res == 1) ? 0 : 1;
+            find_item = '[' + item_id + ']' + find_res + ';'
+
+            pos = s.indexOf(find_item);
+
+            if (pos < 0) {   //не было
+                s = s + new_item;
+            }
+            else if (pos == 0) {  //первая позиция
+                s = s.substring(find_item.length, s.length);
+            }
+            else {  //не первая позиция
+                s = s.substring(0, pos) + s.substring(pos + find_item.length, s.length);
+            }
+            fld.value = s;
+        }
+
+        function btnSaveARMClick() {
+
+            fld = document.getElementById("ChBoxSave");
+            fld.checked = true;
+            fld.value = fld.checked;
+            //            alert(fld.checked)
+
+            elem = document.getElementById('cb_form');
+            elem.submit()
+
+
+        }
+
+    </script>
+</body>
+
+    </html>

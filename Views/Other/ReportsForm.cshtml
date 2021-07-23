@@ -1,0 +1,309 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="~/css/common.css" />
+    <script charset="utf-8" src="~/js/commonScript.js"></script>
+    <script charset="utf-8" src="~/js/commonScript.min.js"></script>
+    <script charset="utf-8" src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script charset="utf-8" src="~/lib/jquery/dist/jquery-ui.js"></script>
+    <script charset="utf-8" src="~/lib/jquery.unobtrusive-ajax/jquery.unobtrusive-ajax.min.js"></script>
+    <title>Отчёты</title>
+    <style>
+        body {
+            background-color: deepskyblue;
+            padding: 0px;
+            margin: 0px;
+            font-family: Tahoma, Geneva, sans-serif;
+            font-size: 12px;
+        }
+
+        .layout {
+            display: grid;
+            grid-gap: 1px;
+            margin: 1px 1px;
+            grid-template-rows: 61px calc(100vh - 64px);
+        }
+
+        .box {
+            overflow: hidden;
+            white-space: nowrap;
+            background-color: aliceblue;
+            border-radius: 1px;
+            display: flex;
+            justify-content: left;
+        }
+
+        .col-head {
+            grid-row: 1;
+            grid-column: 1;
+            display: block;
+            padding: 3px;
+        }
+
+        .col-main {
+            grid-row: 2;
+            grid-column: 1;
+        }
+
+        .col-head select{
+            width: 200px;
+        }
+
+        .col-head input{
+            width: 130px;
+        }
+
+        #reportData table td{
+            margin: 1px;
+            white-space: pre-wrap;
+        }
+
+        #reportData table thead th{
+            position: sticky;
+            top: -1px;
+            background-color: blue;
+            color: ghostwhite;
+        }
+
+        #reportData table td{
+            background-color: ghostwhite;
+        }
+    </style>
+</head>
+<body>
+    <div class="layout">
+        <div class="box col-head">
+            <fieldset style="margin: 0; padding: 1px; border: 1px solid lightblue;">
+                <legend>Параметры отчёта</legend>
+                <label>
+                    Блок
+                    <select id="sel_repGroup" onchange="fillReportsFromGroup(this.value);"></select>
+                </label>
+                <label>
+                    Отчёт
+                    <select id="sel_repName"></select>
+                </label>
+                <label>
+                    Тип заказов
+                    <select id="sel_orderTypes" style="width: 80px;"></select>
+                </label>
+                <label>
+                    Период с
+                    <input type ="date" id="inp_dateFrom"/>
+                    по
+                    <input type="date" id="inp_dateTo"/>
+                </label>
+                <button type="button" onclick="refreshReport(event)">Сформировать<img hidden src="~/images/loading5.gif" width="12" height="12" /></button>
+                <button type="button" onclick="exportToExcel(event)">В Excel<img hidden src="~/images/loading5.gif" width="12" height="12" /></button>
+            </fieldset>
+        </div>
+        <div class="box col-main" id="reportData" style="padding: 3px;">
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        var repArray;
+        reportGetList();
+
+        function reportGetList() {
+            document.getElementById("inp_dateFrom").value = dateFormat(new Date(), 'yyyy-mm-dd');
+            document.getElementById("inp_dateTo").value = dateFormat(new Date(), 'yyyy-mm-dd');
+            try {
+                $.ajax({
+                    url: '/Reports/ReportGetList',
+                    data: {},
+                    type: 'POST',
+                    success: function (data) {
+                        let json = JSON.parse(data);
+                        if (!json) alert(data);
+                        else {
+                            repParams = data;
+                            let item = document.createElement('option');
+                            let ordTypes = document.getElementById("sel_orderTypes");
+                            item.value = '';
+                            ordTypes.appendChild(item.cloneNode(true));
+                            if (json.RepParams.length > 0) {
+                                for (let i = 0; i < json.RepParams.length; i++) {
+                                    item.value = json.RepParams[i].FullName;
+                                    item.text = json.RepParams[i].FullName;
+                                    ordTypes.appendChild(item.cloneNode(true));
+                                }
+                            }
+                            let repGroup = document.getElementById("sel_repGroup");
+                            if (json.RepParams1.length > 0) {
+                                let groupName = null;
+                                repArray = new Array();
+                                for (let i = 0; i < json.RepParams1.length; i++) {
+                                    let report = {
+                                        group: json.RepParams1[i].GroupName,
+                                        sp: json.RepParams1[i].Script,
+                                        descr: json.RepParams1[i].ReportName
+                                    };
+                                    repArray.push(report);
+                                    if (groupName != json.RepParams1[i].GroupName) {
+                                        groupName = json.RepParams1[i].GroupName
+                                        item.value = groupName;
+                                        item.text = groupName;
+                                        repGroup.appendChild(item.cloneNode(true));
+                                
+                                    }
+                                }
+                                repGroup.value = 'Другое';
+                                fillReportsFromGroup(repGroup.value);
+                            }
+                        }
+                    },
+                    error: function () { alert('Не удалось получить список отчётов'); }
+                });
+            }
+            catch (e) { alert('Ошибка ' + e.name + ":" + e.message + "\n" + e.stack); }
+        }
+
+        function refreshReport(e) {
+            /* щелчёк на кнопке сформировать*/
+            let batch = getBatch();
+            let repGroup = document.getElementById("sel_repGroup").options[document.getElementById("sel_repGroup").options.selectedIndex].text;
+            let repName = document.getElementById("sel_repName").options[document.getElementById("sel_repName").options.selectedIndex].text;
+            if (batch != '') {
+                let src = e.srcElement;
+                src.children[0].hidden = false;
+                src.disabled = true;
+                try {
+                    $.ajax({
+                        url: '/Reports/ReportGetData',
+                        data: { batch: batch },
+                        type: 'POST',
+                        success: function (data) {
+                            //alert(data);
+                            document.title = repGroup + " | " + repName;
+                            document.getElementById("reportData").innerHTML = data;
+                            //getHtmlFromJson(data);
+                            src.children[0].hidden = true;
+                            src.disabled = false;
+                        },
+                        error: function () {
+                            alert('Не удалось получить данные отчёта');
+                            src.children[0].hidden = true;
+                            src.disabled = false;
+                        }
+                    });
+                }
+                catch (e) {
+                    alert('Ошибка ' + e.name + ":" + e.message + "\n" + e.stack);
+                    src.children[0].hidden = true;
+                    src.disabled = false;
+                }
+            }
+            else alert("Не все параметры отчёта заполнены правильно");
+        }
+
+        function getBatch() {
+            /* получение sql команды на основании выбранных параметров */
+            let sp = document.getElementById("sel_repName").value;
+            let ot = document.getElementById("sel_orderTypes").value
+            let val = document.getElementById("inp_dateFrom").value;
+            let dat1 = (Date.parse(val) > 0) ? dateFormat(val, 'yyyymmdd') : '';
+            val = document.getElementById("inp_dateTo").value;
+            let dat2 = '';
+            if (Date.parse(val) > 0) {
+                let dt = new Date(val);
+                dt.setDate(dt.getDate() + 1);
+                dat2 = dateFormat(dt, 'yyyymmdd');
+            }
+            if (sp == '' || dat1 == '' || dat2 == '')
+                return '';
+            else return "exec MO..[" + sp + "] @@dat1='" + dat1 + "'," + "@@dat2='" + dat2 + "'," + "@@OrderType='" + ot + "'," + "@@Author=3";
+        }
+
+        function fillReportsFromGroup(group) {
+            /* выбор другой группы отчётов */
+            if (repArray.length > 0) {
+                let repName = document.getElementById("sel_repName");
+                let item = document.createElement('option');
+                while (repName.firstChild) {
+                    repName.removeChild(repName.firstChild);
+                }
+                repArray.forEach(function (el) {
+                    if (group == el.group) {
+                        item.value = el.sp;
+                        item.text = el.descr;
+                        repName.appendChild(item.cloneNode(true));
+                    }
+                });
+            }
+        }
+
+        function getHtmlFromJson(json) {
+            let tbl = JSON.parse(json).DataSet;
+            let inHTML = '';
+            if (tbl.length > 0) {
+                let keys = [];
+                inHTML = '<div style="overflow: auto;"><table border = "1" style = "border-collapse: collapse;">'
+                    + '<thead><tr>';
+                Object.keys(tbl[0]).forEach(function (el) {
+                    keys.push(el);
+                    let colHead = el.split(" - ");
+                    inHTML += '<th>' + ((colHead.length > 1) ? colHead[1] : colHead[0]) + '</th>';
+                });
+                inHTML += '</tr></thead><tbody>';
+                tbl.forEach(function (tel) {
+                    inHTML += '<tr>';
+                    for (let a = 0; a < keys.length; a++) {
+                        inHTML += '<td>' + (tel[keys[a]] == null ? '' : tel[keys[a]]) + '</td>';
+                    }
+                    inHTML += '</tr>';
+                });
+                inHTML += '</tbody></table></div>';                
+            }
+            document.getElementById("reportData").innerHTML = inHTML;
+        }
+
+        function exportToExcel(e) {
+            /* щелчёк на кнопке экспорт в Excel*/
+            let batch = getBatch();
+            if (batch != '') {
+                let src = e.srcElement;
+                let repGroup = document.getElementById("sel_repGroup").options[document.getElementById("sel_repGroup").options.selectedIndex].text;
+                let repName = document.getElementById("sel_repName").options[document.getElementById("sel_repName").options.selectedIndex].text;
+                src.children[0].hidden = false;
+                src.disabled = true;
+                try {
+                    $.ajax({
+                        url: '/Reports/ExportToExcel',
+                        data: { batch: batch },
+                        type: 'POST',
+                        dataType: 'binary',
+                        xhrFields: { 'responseType': 'blob' },
+                        success: function (data) {
+                            let link = document.createElement('a');
+                            let filename = repGroup + "_-_" + repName + "_" + dateFormat(new Date(), 'yyyymmdd_HHMMss') + '.xlsx';
+                            link.href = URL.createObjectURL(data);
+                            link.download = filename;
+                            link.click();
+                            src.children[0].hidden = true;
+                            src.disabled = false;
+                        },
+                        error: function () {
+                            alert('Не удалось получить данные отчёта');
+                            src.children[0].hidden = true;
+                            src.disabled = false;
+                        }
+                    });
+                }
+                catch (e) {
+                    alert('Ошибка ' + e.name + ":" + e.message + "\n" + e.stack);
+                    src.children[0].hidden = true;
+                    src.disabled = false;
+                }
+            }
+            else alert("Не все параметры отчёта заполнены правильно");
+        }
+    </script>
+</body>
+</html>

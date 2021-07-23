@@ -1,0 +1,105 @@
+﻿
+@{
+    Layout = null;
+}
+
+@model MOweb.Models.Cust2.Customer
+
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>CustomerSummary</title>
+
+
+</head>
+<body>
+    <!-- asa -->
+    <form asp-controller="Customer" asp-action="RsvpForm" method="post" id="Customer">
+        <table style="width:100%; font-size: 11px;">
+            <tr>
+                <td><label asp-for="Email">Email:</label></td>
+                <td><input asp-for="Email" id="EmailId" name="EmailId" value=@Model.Email /></td>
+            </tr>
+            <tr>
+                <td><label asp-for="FirstName">Имя:</label></td>
+                <td><input asp-for="FirstName" id="FirstNameId" name="FirstNameId" value=@Model.FirstName /></td>
+            </tr>
+            <tr>
+                <td><label asp-for="LastName">Фамилия:</label></td>
+                <td><input asp-for="LastName" id="LastNameId" name="LastNameId" value=@Model.LastName /></td>
+            </tr>
+            <tr>
+                <td><label asp-for="Mobile">Мобильный:</label></td>
+                <td><input asp-for="Mobile" id="MobileId" name="MobileId" value=@Model.Mobile /></td>
+            </tr>
+            <tr>
+                <td><label asp-for="Birthday">Дата рождения:</label></td>
+                <td><input asp-for="Birthday" id="BirthdayId" name="BirthdayId" value=@Model.Birthday /></td>
+            </tr>
+            <tr>
+                <td><label asp-for="Sex">Пол:</label></td>
+                <td><input asp-for="Sex" id="SexId" name="SexId" value=@Model.Sex /></td>
+            </tr>
+            <tr>
+                <td><label asp-for="FirstOrder">Первый заказ:</label></td>
+                <td><input asp-for="FirstOrder" id="FirstOrderId" name="FirstOrderId" value=@Model.FirstOrder /></td>
+            </tr>
+            <tr>
+                <td><label asp-for="Region">Регион:</label></td>
+                <td><input asp-for="Region" id="RegionId" name="RegionId" value=@Model.Region /></td>
+            </tr>
+            <tr>
+                <td><label asp-for="PrefContact">Способ связи:</label></td>
+                <td><input asp-for="PrefContact" id="PrefContactId" name="PrefContactId" value=@Model.PrefContact /></td>
+            </tr>
+            <tr>
+                <td><label asp-for="NewSegment">Новая сегментация:</label></td>
+                <td><input asp-for="NewSegment" id="NewSegmentId" name="NewSegmentId" value=@Model.NewSegment /></td>
+            </tr>
+            <tr>
+                <td><label asp-for="NewSegment">Старая сегментация:</label></td>
+                <td><input asp-for="NewSegment" id="NewSegmentId" name="NewSegmentId" value=@Model.NewSegment /></td>
+            </tr>
+            <tr>
+                <td><label>Не доставлять партнерами:</label></td>
+                <td><input id="caseIdd" type="checkbox" name="caseIdd" value='' /></td>
+            </tr>
+            <tr>
+                <td><label>Автосогласование доставки:</label></td>
+                <td><input id="caseIdd" type="checkbox" name="caseIdd" value='' checked /></td>
+            </tr>
+            <tr>
+                <td><label>Участие в опросах:</label></td>
+                <td><input id="caseIdd" type="checkbox" name="caseIdd" value='' /></td>
+            </tr>
+            <tr>
+                <td><label>Предлагать товары upsell:</label></td>
+                <td><input id="caseIdd" type="checkbox" name="caseIdd" value='' checked /></td>
+            </tr>
+            <tr>
+                <td><label>Не звонить роботом:</label></td>
+                <td><input id="caseIdd" type="checkbox" name="caseIdd" value='' /></td>
+            </tr>
+
+            <tr>
+                <td><button id="caseIdd" name="caseIdd">Открыть звонки по заказу</button></td>
+                <td><button id="caseIdd" name="caseIdd">Действия</button></td>
+            </tr>
+            <tr>
+                <td><button id="caseIdd" name="caseIdd">Удалить из очер. мошенников</button></td>
+                <td><button id="caseIdd" name="caseIdd">Обновить</button></td>
+            </tr>
+            <tr>
+                <td><button id="caseIdd" name="caseIdd">Сменить стоимость доставки</button></td>
+            </tr>
+            <tr>
+                <td><button id="caseIdd" name="caseIdd">Открыть список отзывов</button></td>
+            </tr>
+        </table>
+        <button type="submit">OK</button>
+    </form>
+
+
+</body>
+</html>

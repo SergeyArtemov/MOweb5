@@ -1,0 +1,988 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE HTML>
+<html xmlns:vml="urn:schemas-microsoft-com:vml">
+<head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" type="text/css" href="~/css/common.css" />
+    <script charset="utf-8" src="~/js/commonScript.js"></script>
+    <script charset="utf-8" src="~/js/commonScript.min.js"></script>
+    <script charset="utf-8" src="~/js/areaEditor.js"></script>
+    <script charset="utf-8" src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script charset="utf-8" src="~/lib/jquery/dist/jquery-ui.js"></script>
+    <script charset="utf-8" src="~/lib/jquery.unobtrusive-ajax/jquery.unobtrusive-ajax.min.js"></script>
+
+    <!--source file is Yandex_20181207.html, key for [developer.vulgaris@yandex.ru] created at 07.12.2018 -->
+    <script src="https://api-maps.yandex.ru/1.1/index.xml?key=AF9nClwBAAAA7wIWegIAi8ta87V2ij9qjk9J-4U1ZfQx2roAAAAAAAAAAACcKppvtncPlbTULMdLtMRqAdTlOg==&modules=traffic~pmap~router-editor" type="text/javascript"></script>
+    <!-- не удалять!!! это необходимо для расчета точек при создании зоны -->
+    <!--<script src="http://api-maps.yandex.ru/2.0/?load=package.standard&lang=ru-RU" type="text/javascript"></script>-->
+    <script src="https://api-maps.yandex.ru/2.1.78/?lang=ru_RU" type="text/javascript"></script>
+
+    <style type="text/css">
+        tr.intervalT td {
+            background: lightblue;
+        }
+
+        .table-select tr.active {
+            background: rgb(101, 152, 199);
+            outline: 2px solid blue;
+        }
+
+        .tabs {
+            position: relative; /* Относительное позиционирование */
+            margin-top: 2px;
+        }
+
+        .tab, .tab-title {
+            display: inline-block; /* Выстраиваем по горизонтали */
+        }
+
+            .tab input[type="radio"] {
+                display: none;
+            }
+
+        .tab-title {
+            background: lightblue; /* Цвет фона */
+            padding: 3px 3px; /* Поля вокруг текста */
+            border: 1px solid blue; /* Параметры рамки */
+            border-bottom: none; /* Снизу линию убираем */
+            border-top-left-radius: 8px;
+            border-top-right-radius: 4px;
+        }
+
+        .tab-content {
+            position: absolute; /* Абсолютное позиционирование */
+            border: 1px solid blue; /* Параметры рамки */
+            padding: 1px; /* Поля вокруг текста */
+            left: 0; /* Размещаем у левого края */
+            width: calc(100% - 4px); /* Ширина содержимого */
+            display: none; /* Прячем вкладку */
+            height: calc(100% - 24px);
+            overflow: hidden;
+            border-bottom-left-radius: 5px;
+            border-bottom-right-radius: 5px;
+        }
+
+        .tab :checked + .tab-title {
+            position: relative; /* Относительное позиционирование */
+            background: #f0ffff; /* Цвет фона */
+            top: 1px; /* Сдвигаем вниз */
+            z-index: 1; /* Отображаем поверх содержимого */
+        }
+
+        .tab :checked ~ .tab-content {
+            display: block; /* Показываем активную вкладку */
+        }
+
+        .treeHTML div {
+            position: relative;
+            padding: 0 0 1px .9em;
+        }
+
+            .treeHTML div:not(:last-child), div:last-child:before {
+                border-left: 1px dotted blue;
+            }
+
+            .treeHTML div:before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: .8em;
+                height: .5em;
+                border-bottom: 1px dotted blue;
+            }
+
+        .treeHTML summary {
+            position: absolute;
+            top: 0;
+            left: -1px;
+            cursor: pointer;
+            color: blue;
+            margin: 0;
+            padding: 0;
+        }
+
+        .treeHTML details summary {
+            outline: none;
+        }
+
+        .treeHTML input {
+            margin: 0;
+            padding: 0;
+        }
+
+        .colorRectangle {
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            border: 1px solid black;
+            margin: 1px;
+            vertical-align: bottom;
+        }
+
+        .fi80 {
+            font-size: 80%;
+            font-family: Verdana, Arial, Helvetica, sans-serif;
+            color: #333366;
+            font-style: italic;
+        }
+
+        .fi80red {
+            font-size: 80%;
+            font-family: Verdana, Arial, Helvetica, sans-serif;
+            color: #FF0000;
+            font-style: italic
+        }
+
+        .fn80 {
+            font-size: 80%;
+            font-family: Verdana, Arial, Helvetica, sans-serif;
+            color: #333366;
+            font-style: normal
+        }
+
+        .fi60 {
+            font-size: 60%;
+            font-family: Verdana, Arial, Helvetica, sans-serif;
+            color: #333366;
+            font-style: italic
+        }
+
+        .fn70 {
+            font-size: 70%;
+            font-family: Verdana, Arial, Helvetica, sans-serif;
+            color: #333366;
+            font-style: normal
+        }
+
+        .imageButton {
+            margin: 0 1px;
+            padding: 0;
+        }
+
+            .imageButton img {
+                vertical-align: middle;
+            }
+    </style>
+    <style>
+        html, body, input, select {
+            font-size: 11px;
+            font-family: Tahoma, Geneva, sans-serif;
+        }
+
+        html, body, #map {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+
+        #areaMainProperties * {
+            margin: 0 2px;
+            padding: 0;
+        }
+
+        #areaMainProperties > input {
+            width: calc(100% - 8px);
+        }
+
+        #areaMainProperties > select {
+            width: calc(100% - 4px);
+        }
+
+        .colorSelection {
+            width: 2.4em;
+            height: 1.2em;
+            outline: none;
+        }
+
+            .colorSelection::-webkit-color-swatch-wrapper {
+                padding: 0;
+            }
+
+            .colorSelection::-webkit-color-swatch {
+                border: none;
+            }
+
+        table td {
+            margin: 1px;
+            white-space: pre-wrap;
+        }
+
+        table thead th {
+            position: sticky;
+            top: -1px;
+            background-color: blue;
+            color: ghostwhite;
+        }
+
+        table td {
+            background-color: ghostwhite;
+        }
+    </style>
+
+    <script type="text/javascript">
+
+        //FieldsDelimiter  = '†';
+        //RecordsDelimiter = '•';
+        GroupDelimiter = '†';
+        //ItemDelimiter = '•';
+        AreaDelimiter = '&';
+        //crlf = '\n';
+        MapMode = 0; //  : 0- yandex
+        CanAreaEdit = 1;
+        var gpMoscowCenter = { lat: 55.755833, lng: 37.617778 };
+        var gpSPBCenter = { lat: 59.95, lng: 30.316667 };
+        var gpRNDCenter = { lat: 47.23132, lng: 39.72326 };
+        var map = null;
+        var PolygonList = [];
+        var DeletedPolygonList = [];
+        var MarkerList = [];
+        var route = null;
+        var InfoWindow = null;
+        var placemark = null;
+        var GreenMarkerIcon = "data:image/gif;base64,R0lGODlhCgAKAHcAACH5BAUAABgALAAAAAAKAAoAhwD3AAiUCAicCAitCAjWCBj/GCGcISG9ISHWISnvKTk5OUqcSkr/SlpaWlreWnNzc3t7e4yMjJTWlJycnKWlxq2tra3Orb3evcb//9bn1v///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////whUADFgsGAggEELAjEYcCABwYCHAgYu0JBBAoGLBA4EOCDhggMCAAAUQBBgAAIEIUUySFDyokoGK1u+hJnAwgACBWDqPKAQQQKdDBAkNOAzAQKeGAICADs=";
+        var YellowMarkerIcon = "data:image/gif;base64,R0lGODlhCgAKAHcAACH5BAUAAA4ALAAAAAAKAAoAhzk5OVpaWnNzc3t7e4yMjJSECJyMCJyMIZyUSpycnKWlxq2cCK2trb2lIcb//87Orda1CNa9IdbOlN7OWt7evefn1u/WKffWAP/nGP/vSv///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////whUAB04eHCggMEHAh0cmCAhwoKHBgYi0FBBAoSLEBoUaCCBwgQIFy5giFBgQYQIIUVmsFDyosoMK1u+hGnhwQIIGGDqbKAwggWdGSIkPODTQgSeDgICADs=";
+        var RedMarkerIcon = "data:image/gif;base64,R0lGODlhCgAKAHcAACH5BAUAANEALAAAAAAKAAoAhwAAAAAAMwAAZgAAmQAAzAAA/wArAAArMwArZgArmQArzAAr/wBVAABVMwBVZgBVmQBVzABV/wCAAACAMwCAZgCAmQCAzACA/wCqAACqMwCqZgCqmQCqzACq/wDVAADVMwDVZgDVmQDVzADV/wD/AAD/MwD/ZgD/mQD/zAD//zMAADMAMzMAZjMAmTMAzDMA/zMrADMrMzMrZjMrmTMrzDMr/zNVADNVMzNVZjNVmTNVzDNV/zOAADOAMzOAZjOAmTOAzDOA/zOqADOqMzOqZjOqmTOqzDOq/zPVADPVMzPVZjPVmTPVzDPV/zP/ADP/MzP/ZjP/mTP/zDP//2YAAGYAM2YAZmYAmWYAzGYA/2YrAGYrM2YrZmYrmWYrzGYr/2ZVAGZVM2ZVZmZVmWZVzGZV/2aAAGaAM2aAZmaAmWaAzGaA/2aqAGaqM2aqZmaqmWaqzGaq/2bVAGbVM2bVZmbVmWbVzGbV/2b/AGb/M2b/Zmb/mWb/zGb//5kAAJkAM5kAZpkAmZkAzJkA/5krAJkrM5krZpkrmZkrzJkr/5lVAJlVM5lVZplVmZlVzJlV/5mAAJmAM5mAZpmAmZmAzJmA/5mqAJmqM5mqZpmqmZmqzJmq/5nVAJnVM5nVZpnVmZnVzJnV/5n/AJn/M5n/Zpn/mZn/zJn//8wAAMwAM8wAZswAmcwAzMwA/8wrAMwrM8wrZswrmcwrzMwr/8xVAMxVM8xVZsxVmcxVzMxV/8yAAMyAM8yAZsyAmcyAzMyA/8yqAMyqM8yqZsyqmcyqzMyq/8zVAMzVM8zVZszVmczVzMzV/8z/AMz/M8z/Zsz/mcz/zMz///8AAP8AM/8AZv8Amf8AzP8A//8rAP8rM/8rZv8rmf8rzP8r//9VAP9VM/9VZv9Vmf9VzP9V//+AAP+AM/+AZv+Amf+AzP+A//+qAP+qM/+qZv+qmf+qzP+q///VAP/VM//VZv/Vmf/VzP/V////AP//M///Zv//mf//zP///wAAAAAAAAAAAAAAAAhWAKNFG/bHj8FhAqP9ATds2h9UBQca2jdvWCpUF1P5STVsmLZU00JqxAgylbRp2qb5+XMxpDZw2rJtROVSm81pwzZOg2nzY7RCIHv6FPjn1bRsqV4JDAgAOw==";
+        var BlueMarkerIcon = "data:image/gif;base64,R0lGODlhCgAKAHcAACH5BAUAABgALAAAAAAKAAoAhwAA9wgIlAgInAgIrQgI1hgY/yEhnCEhvSEh1ikp7zk5OUpKnEpK/1paWlpa3nNzc3t7e4yMjJSU1pycnKWlxq2tra2tzr293sb//9bW5////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////whUADFgsGAggEELAjEYcCABwYCHAgYu0JBBAoGLBA4EOCDhggMCAAAUQBBgAAIEIUUySFDyokoGK1u+hJnAwgACBWDqPKAQQQKdDBAkNOAzAQKeGAICADs="
+        var VioletMarkerIcon = "data:image/gif;base64,R0lGODlhCgAKAHcAACH5BAUAAAAALAAAAAAKAAoAhwAAAJkAAMwAAP8AAJkAmcwAmf8AmZkAzP8AzMwrzP+AzP///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAhNAAEASEAggMEEAgEQQJDAAAEBBQceWKAgQQEBFwsEKJAgAYICBkJqxAiywAADCAwEIHAxJIKXKluifJkywcaZNAsoBEnzY0KWInUCCAgAOw==";
+        ipID = 0;
+        ipParentID = 1;
+        ipName = 2;
+        ipLevel = 3;
+        ipLineColor = 4;
+        ipFillColor = 5;
+        ipRoute = 6;
+        ipSessionID = 7;
+        comZOrder = 0;
+        var searchControl = null;
+
+        /* >> исправленные функции */
+        function yandex_initialize() {
+            ymaps.ready(function () {
+                map = new ymaps.Map("map",
+                    {
+                        center: [gpMoscowCenter.lat, gpMoscowCenter.lng]
+                        , zoom: 10
+                        , behaviors: ["drag", "scrollZoom"]
+                        , controls: []
+                    },
+                    {
+                        autoFitToViewport: "none"//"always"
+                        , minZoom: 3
+                        , maxZoom: 19
+                        , suppressMapOpenBlock: true
+                    }
+                );
+                map.controls.add("typeSelector", { position: { right: 5, top: 5 } });
+                map.controls.add("zoomControl", { position: { left: 5, top: 40 } });
+                map.events.add(["click"], yandex_MapClick);
+            })
+        }
+
+        function yandex_MapClick(event) {
+            var coords = event.get('coords');
+            var str = coords[0] + "," + coords[1];
+            SetValueOf("ClickCoord", str);
+        }
+
+        function SetArrayOfPolygonNew(aPolygons) {
+            ClearPolygonList();
+            try {
+                //var nm ;
+                var obj;
+                var sid;
+                for (var ind = 0; ind < aPolygons.length; ind++) {
+                    //nm ="\u0420\u0435\u0433\u0438\u043E\u043D №"+ind;
+                    obj = aPolygons[ind];
+                    var points = [];
+                    for (var m = 0; m < obj.latlngarr.length; m++) {
+                        var point = [];
+                        point.push(obj.latlngarr[m].lat);
+                        point.push(obj.latlngarr[m].lng);
+                        points.push(point);
+                    }
+                    yandex_CreatePolygonNew(points, obj.rgbline, obj.rgbfill, obj.name, obj.name, obj.id, 0, obj.parentid, "", obj.level, obj.routenum, obj.sessionid);
+                }
+            }
+            catch (e) { SendMessage('ERROR|' + getFnName(arguments.callee) + ': ' + e.message) }
+            finally { }
+        }
+
+        function ClearPolygonList() {
+            for (var i = PolygonList.length - 1; i >= 0; i--) { map.geoObjects.remove(PolygonList[i]); }
+            PolygonList = [];
+        }
+
+        function ClearMarkerList() {
+            for (var i = MarkerList.length - 1; i >= 0; i--) { map.geoObjects.remove(MarkerList[i]); }
+            MarkerList = [];
+        }
+
+        function ClearRouteList() {
+            map.geoObjects.remove(route);
+            route = null;
+        }
+
+        function yandex_PolygonClick(event) {
+            yandex_MapClick(event);
+            yandex_PolygonInfo(event.get("target"));
+        }
+
+        function yandex_PolygonInfo(polygon) {
+            var Result = yandex_PolygonAbout(polygon);
+            SetValueOf("AreaXML", Result);
+        }
+
+        function yandex_PolygonAbout(polygon) {
+            var ArrPoints = polygon.geometry.getCoordinates()[0];
+            var Points = "";
+            if (ArrPoints[0] == ArrPoints[ArrPoints.length - 1]) ArrPoints.splice(ArrPoints.length - 1, 1);
+            ArrPoints.forEach(function (el) {
+                Points += '<LATLNG><LAT>' + el[0] + '</LAT><LNG>' + el[1] + '</LNG></LATLNG>\n';
+            });
+            let intersected = findInetrsection(ArrPoints);
+            if (intersected) document.getElementById("inp_areaName").style.backgroundColor = "lightsalmon";
+            else document.getElementById("inp_areaName").style.backgroundColor = "white";
+            document.getElementById("inp_areaName").value = polygon.metaDataProperty.Name;
+            document.getElementById("areaIntersectsIndicator").hidden = !intersected;
+            document.getElementById("sel_areaLevel").value = polygon.metaDataProperty.Level;
+            document.getElementById("inp_parentArea").value = polygon.metaDataProperty.ParentID;
+            fillParentAreaSelect(polygon.metaDataProperty.Level - 1, polygon.metaDataProperty.ParentID);
+            document.getElementById("inp_fillColor").value = "#" + polygon.options.get("fillColor").toUpperCase();
+            document.getElementById("inp_lineColor").value = "#" + polygon.options.get("strokeColor").toUpperCase();
+            getAreaIntervals(polygon.metaDataProperty.ID);
+            selectedAreaSessionId = polygon.metaDataProperty.SessionID;
+            var Result =
+                '<AREA>' + '\n' +
+                '<_MODE>YANDEX</_MODE>\n' +
+                '<_INDEX>' + polygon.metaDataProperty._index + '</_INDEX>\n' +
+                '<_POINTS>' + ArrPoints.length + '</_POINTS>\n' +
+                '<SESSIONID>' + polygon.metaDataProperty.SessionID + '</SESSIONID>\n' +
+                '<RECORDSTATE>' + polygon.metaDataProperty.RecordState + '</RECORDSTATE>\n' +
+                '<ID>' + polygon.metaDataProperty.ID + '</ID>' + '\n' +
+                '<PARENTID>' + polygon.metaDataProperty.ParentID + '</PARENTID>\n' +
+                '<NAME>' + polygon.metaDataProperty.Name + '</NAME>\n' +
+                '<LEVEL>' + polygon.metaDataProperty.Level + '</LEVEL>\n' +
+                '<RGBLINE>' + polygon.options.get("strokeColor").toUpperCase() + '</RGBLINE>\n' +
+                '<RGBFILL>' + polygon.options.get("fillColor").toUpperCase() + '</RGBFILL>\n' +
+                '<ROUTENUM>' + polygon.metaDataProperty.RouteNum + '</ROUTENUM>\n' +
+                Points +
+                '</AREA>';
+            return Result;
+        }
+
+        function SetBoundsForPoints(aPoints) {
+            try {
+                if (aPoints.length == 0) { return; }
+                var minLat = aPoints[0].lat;
+                var maxLat = aPoints[0].lat;
+                var minLon = aPoints[0].lng;
+                var maxLon = aPoints[0].lng;
+                var lat = 0;
+                var lng = 0;
+                for (var i = 0; i < aPoints.length; i++) {
+                    lat = aPoints[i].lat;
+                    lng = aPoints[i].lng;
+                    if (lat > maxLat) { maxLat = lat };
+                    if (lat < minLat) { minLat = lat };
+                    if (lng > maxLon) { maxLon = lng };
+                    if (lng < minLon) { minLon = lng };
+                }
+                map.setBounds([[minLat, minLon], [maxLat, maxLon]]);
+            }
+            catch (e) { SendMessage('ERROR|' + getFnName(arguments.callee) + ': ' + e.message); }
+            finally { }
+        }
+
+        function yandex_SetCenter(aLat, aLng) {
+            map.setCenter([aLat, aLng]);
+        };
+
+        function SendToBack(aSessionID) {
+            PolygonList.forEach(function (el) {
+                if (el.metaDataProperty.SessionID == aSessionID || el.metaDataProperty.ID == aSessionID)
+                    el.options.set("zIndex", el.options.get("zIndex") - 1);
+            });
+        }
+
+        function yandex_PolygonStartEditing(aIndex) {
+            polygon = PolygonList[aIndex];
+            if (polygon && !polygon.editor.state.get("editing")) { polygon.editor.startEditing(); }
+            polygon.metaDataProperty.RecordState = 1;
+            yandex_PolygonInfo(polygon);
+        }
+
+        function yandex_PolygonStopEditing(aIndex, aAreaID) {
+            polygon = PolygonList[aIndex];
+            if (polygon && polygon.editor.state.get("editing")) { polygon.editor.stopEditing(); }
+            polygon.metaDataProperty.ID = aAreaID;
+            polygon.metaDataProperty.RecordState = 0
+            yandex_PolygonInfo(polygon);
+        }
+
+        function CreateNewArea(lat, lng, num, dist, clrBord, clrFill, Descr, SessionID) {
+            if (!CanAreaEdit) { return };
+            yandex2_CreateNewArea(lat, lng, num, dist, clrBord, clrFill, Descr, SessionID);
+        }
+
+        function ChangeProps_BySessionID(aSessionID, aProp, aValue) {
+            var ind = -1;
+            for (var i = 0; i < PolygonList.length; i++) {
+                if (PolygonList[i].metaDataProperty.SessionID == aSessionID) {
+                    ind = i;
+                    break;
+                }
+            }
+            if (ind != -1) { yandex_ChangeProps_Value(ind, aProp, aValue); }
+        }
+
+        function yandex_ChangeProps_Value(aIndex, aProp, aValue) {
+            var polygon = PolygonList[aIndex];
+            switch (aProp) {
+                case ipID:
+                    polygon.metaDataProperty.ID = aValue;
+                    break;
+                case ipParentID:
+                    polygon.metaDataProperty.ParentID = aValue;
+                    break;
+                case ipName:
+                    polygon.metaDataProperty.Name = aValue;
+                    polygon.name = aValue;
+                    polygon.description = aValue;
+                    polygon.properties.set("hintContent", aValue);
+                    break;
+                case ipLevel:
+                    polygon.metaDataProperty.Level = aValue;
+                    break;
+                case ipLineColor:
+                    polygon.metaDataProperty.LineColor = aValue;
+                    yandex_ChangeProps_Colors(aIndex, polygon.metaDataProperty.LineColor, polygon.metaDataProperty.FillColor);
+                    break;
+                case ipFillColor:
+                    polygon.metaDataProperty.FillColor = aValue;
+                    yandex_ChangeProps_Colors(aIndex, polygon.metaDataProperty.LineColor, polygon.metaDataProperty.FillColor);
+                    break;
+                case ipRoute:
+                    polygon.metaDataProperty.RouteNum = aValue;
+                    break;
+                case ipSessionID:
+                    polygon.metaDataProperty.SessionID = aValue; // -- !! в крайнем случае
+                    break;
+                default:
+                    break;
+            }
+            yandex_PolygonInfo(polygon);
+        }
+
+        function yandex_ChangeProps_Colors(aIndex, lineColor, fillColor) {
+            var polygon = PolygonList[aIndex];
+            polygon.metaDataProperty.LineColor = lineColor;
+            polygon.metaDataProperty.FillColor = fillColor;
+            polygon.options.set("strokeColor", polygon.metaDataProperty.LineColor);
+            polygon.options.set("fillColor", polygon.metaDataProperty.FillColor);
+        }
+
+        function yandex2_CreateNewArea(lat, lng, num, dist, clrBord, clrFill, Descr, SessionID) {
+            var ind = -1;
+            var pts = [];
+            var minLat = lat;
+            var maxLat = lat;
+            var minLon = lng;
+            var maxLon = lng;
+            var llat = 0;
+            var llng = 0;
+            for (i = 0; i < num; i++) {
+                angle = (360 / num) * i * Math.PI / 180;
+                delta = [Math.cos(angle), Math.sin(angle)];
+                pt = ymaps.coordSystem.geo.solveDirectProblem([lat, lng], delta, dist).endPoint;
+                llat = pt[0];
+                llng = pt[1];
+                if (llat > maxLat) { maxLat = llat };
+                if (llat < minLat) { minLat = llat };
+                if (llng > maxLon) { maxLon = llng };
+                if (llng < minLon) { minLon = llng };
+                pts.push(pt);
+            }
+            ind = yandex_CreatePolygonNew(pts, clrBord, clrFill, Descr, Descr, "0", "1", "0", Descr, "3", "0", "1111111", SessionID);
+            if (ind > -1) {
+                var xml = yandex_PolygonAbout(PolygonList[ind]);
+                SetValueOf("AreaXML", xml);
+                map.setBounds([[minLat, minLon], [maxLat, maxLon]]);
+                PolygonList[ind].editor.startEditing();
+            }
+        }
+
+        function yandex_CreatePolygonNew(aPts, aBorderColor, aFillColor, aShortDescr, aFullDescr, aID, aRecordState, aParentID, aName, aLevel, aRouteNum, aSessionID) {
+            try {
+                var res = -1;
+                if (aPts.length == 0) return res
+                var polygon = new ymaps.Polygon([aPts],
+                    { hintContent: aShortDescr },
+                    {
+                        fill: true,
+                        stroke: true,
+                        strokeWidth: 1,
+                        strokeColor: aBorderColor,
+                        fillColor: aFillColor,
+                        zIndex: 100,
+                        opacity: 0.33
+                    });
+
+                var ind = PolygonList.length;
+                var md =
+                {
+                    _index: ind ? ind : 0
+                    , ID: aID ? aID : 0
+                    , RecordState: aRecordState ? aRecordState : 0
+                    , ParentID: aParentID ? aParentID : 0
+                    , Name: aName ? aName : aFullDescr
+                    , Level: aLevel ? aLevel : 3
+                    , RouteNum: aRouteNum ? aRouteNum : aID ? aID : 0
+                    , LineColor: aBorderColor ? aBorderColor : "FF0000"
+                    , FillColor: aFillColor ? aFillColor : "FFFF00"
+                    , SessionID: aSessionID ? aSessionID : "index_" + PolygonList.length
+                };
+                polygon.id = md.ID;
+                polygon.name = aShortDescr;
+                polygon.description = aFullDescr;
+                polygon.metaDataProperty = md;
+
+                if (map && polygon) {
+                    map.geoObjects.add(polygon);
+                    polygon.events.add("click", yandex_PolygonClick);
+                }
+                if (polygon) {
+                    PolygonList.push(polygon);
+                    polygon.metaDataProperty._index = PolygonList.length - 1;
+                    res = polygon.metaDataProperty._index;
+                }
+            }
+            catch (e) { SendMessage('ERROR|' + getFnName(arguments.callee) + ': ' + e.message) }
+            finally { return res; }
+        }
+
+        /* << исправленные функции */
+
+        //https://msdn.microsoft.com/en-us/library/ms536951%28v=vs.85%29.aspx
+        //https://msdn.microsoft.com/en-us/library/aa703876%28v=vs.85%29.aspx
+
+        function yandex_GetGeoPointList(aGMPointArray, GeoPoints) {
+            var points = [];
+            var LatLon = [];
+            points = aGMPointArray.split(';');
+            for (var pt = 0; pt < points.length; pt++) {
+                LatLon = points[pt].split(',');
+                GeoPoints.push(new YMaps.GeoPoint(LatLon[1], LatLon[0]));
+            }
+        }
+
+        function yandex_GetPolygonStyle(aID, aBorderColor, aFillColor) {
+            var StyleName = "polygon#" + aID;
+            var style = new YMaps.Style("default#greenSmallPoint");
+            style.polygonStyle = new YMaps.PolygonStyle();
+            style.polygonStyle.fill = 1;
+            style.polygonStyle.outline = 1;
+            style.polygonStyle.strokeWidth = 1;
+            style.polygonStyle.strokeColor = aBorderColor + "FF";
+            style.polygonStyle.fillColor = aFillColor + "40";
+            YMaps.Styles.add(StyleName, style);
+            return StyleName;
+        }
+
+        // ----
+        function yandex_CreatePolygon(aPath, aBorderColor, aFillColor, aShortDescr, aFullDescr, aID, aRecordState, aParentID, aName, aLevel, aRouteNum, aSessionID) {
+            var res = -1;
+            var GeoPoints = [];
+            var area_DblClick = null;
+            var ind = PolygonList.length;
+            var id = aID;
+            var md = {
+                _index: ind ? ind : 0
+                , ID: aID ? aID : 0
+                , RecordState: aRecordState ? aRecordState : 0
+                , ParentID: aParentID ? aParentID : 0
+                , Name: aName ? aName : aFullDescr
+                , Level: aLevel ? aLevel : 3
+                , RouteNum: aRouteNum ? aRouteNum : aID ? aID : 0
+                , LineColor: aBorderColor ? aBorderColor : "FF0000"
+                , FillColor: aFillColor ? aFillColor : "FFFF00"
+                , SessionID: aSessionID ? aSessionID : "index_" + PolygonList.length
+            };
+            var interact;
+            interact = YMaps.Interactivity.INTERACTIVE;
+            yandex_GetGeoPointList(aPath, GeoPoints);
+            if (GeoPoints.length != 0) {
+                var polygon = new YMaps.Polygon(GeoPoints,
+                    { style: yandex_GetPolygonStyle(id, aBorderColor, aFillColor), hasHint: 1, hasBalloon: 0, interactive: interact, zIndex: 0 });
+                polygon.id = md.ID;
+                polygon.name = aShortDescr;
+                polygon.description = aFullDescr;
+                polygon.metaDataProperty = md;
+
+                YMaps.Events.observe(polygon, polygon.Events.Click, yandex_PolygonClick);
+                YMaps.Events.observe(polygon, polygon.Events.PositionChange, yandex_PolygonInfo);
+                if ((map) && (polygon)) { map.addOverlay(polygon) };
+            }
+            if (polygon) {
+                PolygonList.push(polygon);
+                polygon.metaDataProperty._index = PolygonList.length - 1;
+                res = polygon.metaDataProperty._index;
+            }
+            return res;
+        }
+
+        function yandex_CreateMarker(aLatitude, aLongitude, aDescription, aCorner) {
+            var aCurStyle = GreenMarkerIcon;
+            if (aDescription.lastIndexOf(")*") != -1) { aCurStyle = RedMarkerIcon; }
+            if (aCorner) { aCurStyle = BlueMarkerIcon; }
+
+            var marker = new YMaps.Placemark(new YMaps.GeoPoint(aLongitude, aLatitude),
+                {
+                    draggable: 0,
+                    hideIcon: false,
+                    interactive: YMaps.Interactivity.INTERACTIVE,
+                    hintOptions: { maxWidth: 250, showTimeout: 200, offset: new YMaps.Point(5, 5) },
+                    balloonOptions: { maxWidth: 250, hasCloseButton: true, mapAutoPan: 1 }
+                });
+            marker.description = aDescription;
+            var MarkerStyle = new YMaps.Style();
+            MarkerStyle.iconStyle = new YMaps.IconStyle();
+            MarkerStyle.iconStyle.size = new YMaps.Point(10, 10); // -data-
+            MarkerStyle.iconStyle.offset = new YMaps.Point(-5, -5);
+            MarkerStyle.iconStyle.href = aCurStyle;
+            marker.setStyle(MarkerStyle);
+            map.addOverlay(marker);
+            MarkerList.push(marker);
+        }
+
+        function yandex_RoutePack(aObj, aIndex, aWPArray) {
+            var pt = new YMaps.GeoPoint(aObj.lng, aObj.lat);
+            var wp = null;
+            for (var i = 0; i < aWPArray.length; i++) {
+                if (aWPArray[i].getGeoPoint().toString() == pt.toString()) {
+                    aWPArray[i].metaDataProperty.Caption = aWPArray[i].metaDataProperty.Caption + "," + (aIndex + 1);
+                    aWPArray[i].description = aWPArray[i].description +/*'<tr><td>'+*/"<div class='fi80red'>\u0422\u043E\u0447\u043A\u0430\u0020\u2116" + (aIndex + 1) + "</div>" + aObj.descr/*+'</td></tr>'*/;
+                    return;
+                }
+            }
+            wp = new YMaps.WayPoint(pt);
+            wp.metaDataProperty.Caption = "" + (aIndex + 1);
+            wp.description = "<div class='fi80red'>\u0422\u043E\u0447\u043A\u0430\u0020\u2116" + (aIndex + 1) + "</div>" + aObj.descr;
+            aWPArray.push(wp);
+        }
+
+        function yandex_Route(aPoints) {
+            try {
+                if (route) { map.removeOverlay(route); route = null };
+                rs = new YMaps.Style();
+                rs.lineStyle = new YMaps.LineStyle();
+                rs.lineStyle.strokeColor = "000000";
+                rs.lineStyle.strokeWidth = 2;
+                rs.hideIcon = false;
+                YMaps.Styles.add("router#RouteLine", rs);
+                var points = []
+                var waypoints = []
+                var params = [];
+                var wp = null;
+                for (var i = 0; i < aPoints.length; i++) { yandex_RoutePack(aPoints[i], i, waypoints); }
+                for (var i = 0; i < waypoints.length; i++) { points.push(waypoints[i].getGeoPoint()) }
+                route = new YMaps.Router(points, [], { viewAutoApply: true });
+                route.setStyle(rs);
+                route.metaDataProperty.Source = aPoints;
+                route.metaDataProperty.WayPoints = waypoints;
+                YMaps.Events.observe(route, route.Events.Load, function () {
+                    for (var pt = 0; pt < points.length; pt++) {
+                        wp = route.getWayPoint(pt);
+                        wp.setStyle("default#nightSmallPoint");
+                        wp.setIconContent(waypoints[pt].metaDataProperty.Caption);
+                        wp.setOptions({ hideIcon: false });
+                        //var descr='<table>'+waypoints[pt].description+'</table>';
+                        wp.setBalloonContent(waypoints[pt].description);
+                        wp.setBalloonOptions({ maxWidth: 200, hasCloseButton: true, mapAutoPan: 1 });
+                    }
+                });
+                map.addOverlay(route);
+            } catch (e) { SendMessage('ERROR|' + getFnName(arguments.callee) + ': ' + e.message); }
+        }
+
+
+
+
+        function yandex_DeleteArea(aIndex) {
+            var polygon = PolygonList[aIndex];
+            var del = PolygonList.splice(aIndex, 1);
+            for (var i = 0; i < del.length; i++) {
+                del[i].metaDataProperty.ID = Math.abs(del[i].metaDataProperty.ID) * -1;
+                DeletedPolygonList.push(del[i]);
+            };
+            map.removeOverlay(polygon);
+            var Result = yandex_PolygonAbout(DeletedPolygonList[DeletedPolygonList.length - 1]);
+            SetValueOf("AreaXML", Result);
+        }
+
+        // ----------------------------------------------------------------------------------
+
+
+        function SetArrayOfPolygon(aPolygons) {
+            ClearPolygonList();
+            var StrPolygons = aPolygons.split(AreaDelimiter);
+            var Params = []
+            var ind = 0;
+            var nm = "";
+            var desc = "";
+            for (var i = 0; i < StrPolygons.length; i++) {
+                Params = StrPolygons[i].split(GroupDelimiter);
+                ind = i + 1;
+                nm = "\u0420\u0435\u0433\u0438\u043E\u043D №" + ind;
+                if (Params[3]) nm = Params[3];
+                desc = nm;
+                if (Params[4]) desc = Params[4];
+                yandex_CreatePolygon(Params[0], Params[1].substring(1, 10), Params[2].substring(1, 10), nm, desc, Params[5], Params[6], Params[7], Params[8], Params[9], Params[10], Params[11]);
+            }
+        }
+
+        function SetArrayOfMarker(aPoints) {
+            ClearMarkerList();
+            for (var i = 0; i < aPoints.length; i++) {
+                yandex_CreateMarker(aPoints[i].lat, aPoints[i].lng, aPoints[i].descr);
+            }
+            SetBoundsForPoints(aPoints);
+        }
+
+        function CreateRoute(aMarkers) {
+            yandex_Route(aMarkers);
+            SetBoundsForPoints(aMarkers);
+        }
+
+        function ChangeProps_Value(aIndex, aProp, aValue) {
+            yandex_ChangeProps_Value(aIndex, aProp, aValue)
+        }
+
+
+        function DeleteAreaByIndex(aIndex) {
+            yandex_DeleteArea(aIndex)
+        }
+
+        function DeleteAreaBySessionID(aSessionID) {
+            var ind = -1;
+            for (var i = 0; i < PolygonList.length; i++) {
+                if (PolygonList[i].metaDataProperty.SessionID == aSessionID) {
+                    ind = i;
+                    break;
+                }
+            }
+            if (ind != -1) { DeleteAreaByIndex(ind); }
+        }
+
+        function EditAreaBySessionID(aSessionID) {
+            var ind = -1;
+            for (var i = 0; i < PolygonList.length; i++) {
+                if (PolygonList[i].metaDataProperty.SessionID == aSessionID) {
+                    ind = i;
+                    break;
+                }
+            }
+            if (ind != -1) { yandex_PolygonStartEditing(ind); }
+        }
+
+        function SaveAreaBySessionID(aSessionID, AreaID) {
+            var ind = -1;
+            for (var i = 0; i < PolygonList.length; i++) {
+                if (PolygonList[i].metaDataProperty.SessionID == aSessionID) {
+                    ind = i;
+                    break;
+                }
+            }
+            if (ind != -1) { yandex_PolygonStopEditing(ind, AreaID); }
+        }
+
+        function PolygonAboutBySessionID(aSessionID) {
+            var ind = -1;
+            for (var i = 0; i < PolygonList.length; i++) {
+                if (PolygonList[i].metaDataProperty.SessionID == aSessionID) {
+                    yandex_PolygonAbout(PolygonList[i]);
+                    return;
+                }
+            }
+        }
+
+
+        // --- common utils functions ---------------------------------------------------------------------
+        function GetObjectProps(aObj, Level) {
+            var Result = ""; for (var key in aObj) { Result = Result + key + ":" + aObj[key] + '\n' } return Result;
+        }
+        function SetValueOf(aName, aValue) {
+            if (typeof this[aName] != "undefined") { this[aName].value = aValue; if (this[aName].id != "forDebug") SendMessage(aName); } else { }
+        }
+        function SendMessage(aText) {
+            try { window.navigate("#" + aText); } catch (e) { var url = "#" + aText; location.href = url; }/*finally{alert(aText);}*/
+        }
+        function getFnName(fn) {
+            return fn.toString().match(/function ([^(]*)\(/)[1];
+        } //http://javascript.ru/forum/misc/4895-uznat-imya-funkcii.html
+        // ------------------------------------------------------------------------
+    </script>
+</head>
+<body onload="yandex_initialize()">
+    <div id="topPanel" style="margin: 0; padding: 0; height: 28px; position: relative; border: 1px solid lightblue;">
+        <div style="position: absolute; top: 50%; transform: translate(0, -50%); display: flex;">
+            <div style="margin: 0 10px;">
+                <button id="btn_showAreaWidget" class="imageButton" title="Просмотр/редактирование областей" onclick="showAreaWidget()"><img src="~/images/AreaEditor/area_open.png" /></button>
+            </div>
+            <div style="width: 40%;" id="areaActionsButton1">dddddddd</div>
+        </div>
+    </div>
+    <div id="map" style="height: calc(100% - 28px - 2px);"></div>
+    <input hidden id="AreaXML" value="" />
+    <input hidden id="ClickCoord" value="" />
+    <input hidden id="forDebug" value="" style="width: 98%;" />
+    <!-- >> dragWidgets-->
+    <nav id="areaProperties" style=" top: 15%; left: calc(100% - 330px); width: 320px; min-height: 50px;" class="dragElement dragWidget">
+        <ul class="dragWidgetHead">
+            Просмотр / Редактирование описания области
+            <h class="dragWidgetClose" onclick="showAreaWidget()">x</h>
+        </ul>
+        <div id="areaPropertiesContent">
+            <div style="height: 22px; border: 1px solid blue; position: relative;">
+                <div style="position: absolute; top: 50%; transform: translate(0, -50%); display: flex;">
+                    <button class="imageButton" title="Обновить описание областей и отобразить соответсвенно установленному фильтру" onclick=""><img src="~/images/AreaEditor/refresh.png" /></button>
+                    <button id="btn_showFilterWidget" class="imageButton" title="Фильтр областей" onclick="showAreaFilterWidget()"><img src="~/images/AreaEditor/filter_off.png" /></button>
+                    <button class="imageButton" title="Отобразить отфильтрованные области (все доступные при пустом фильтре)" onclick="showSelectedAreas()"><img src="~/images/AreaEditor/icon_eye.png" /></button>
+                    <button class="imageButton" title="Меню действий" id="areaActionsButton"><img src="~/images/AreaEditor/area_tools.png" /></button>
+                    <div hidden id="areaIntersectsIndicator" title="В области персекаются границы" style="margin: 1px 2px; vertical-align: middle;">
+                        <img src="~/images/AreaEditor/red_indicator.png" />В области персекаются границы
+                    </div>
+                </div>
+            </div>
+            <div id="areaMainProperties" style="height: 110px;">
+                <p>Наименование</p>
+                <input id="inp_areaName" style="border: 1px solid black; border-radius: 3px; padding: 1px;" />
+                <p>Уровень</p>
+                <select id="sel_areaLevel">
+                    <option value="0">Область (край)</option>
+                    <option value="1">Район</option>
+                    <option value="2">Населённый пункт</option>
+                    <option value="3">Зона доставки курьера (маршрутная)</option>
+                    <option value="4">Зона назначения времени доставки</option>
+                </select>
+                <p>Владелец</p>
+                <select id="sel_areaParent">
+                </select>
+                <div style="text-align: center; display: flex; margin: 1px auto">
+                    <label>Цвет линии</label><input id="inp_lineColor" type="color" class="colorSelection" />
+                    <label>Цвет заливки</label><input id="inp_fillColor" type="color" class="colorSelection" />
+                    <input id="inp_parentArea" class="colorSelection" />
+                </div>
+            </div>
+            <div style="overflow: hidden;">
+                <fieldset style="padding: 0; margin: 0;">
+                    <legend>Интервалы доставки</legend>
+                    <div style="height: 22px;">
+                        <button class="imageButton" title="Интервалы доставки"><img src="~/images/AreaEditor/interval_tool.png" /></button>
+                    </div>
+                    <div id="areaIntervals" style="overflow: auto; border: 1px solid blue; height: calc(80vh - 172px);">
+                        <table class="table-select">
+                            <thead>
+                                <tr><th colspan="2">Начало</th><th colspan="2">Окончание</th></tr>
+                            </thead>
+                            <tbody id="areaIntervalsBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+    </nav>
+    <!---->
+    <nav id="areasFilter" style="top: 15%; left: 3%; min-width: 300px;" class="dragElement dragWidget">
+        <ul class="dragWidgetHead">
+            Выбор областей для отображения
+            <h class="dragWidgetClose" onclick="showAreaFilterWidget()">x</h>
+        </ul>
+        <div id="areasFilterContent">
+            <div style="height: 4em; border: 1px solid blue; position: relative;">
+                <div style="position: absolute; top: 50%; transform: translate(0, -50%)">
+                    <label style="margin: 0 3px;">Поиск</label><input id="areasFilterSearch" style="width: 120px;" />
+                    <button class="imageButton" title="Отметить все" onclick="selectAllAreas()"><img src="~/images/AreaEditor/checkbox_all.png" /></button>
+                    <button class="imageButton" title="'Сбросить' отметки у всех" onclick="unselectAllAreas()"><img src="~/images/AreaEditor/checkbox_none.png" /></button>
+                    <button class="imageButton" title="Инвертировать отметки у всех" onclick="invertSelectAreas()"><img src="~/images/AreaEditor/invert_selection.png" /></button>
+                    <button class="imageButton" title="Отобразить отфильтрованные области (все доступные при пустом фильтре)" onclick="showSelectedAreas()"><img src="~/images/AreaEditor/icon_eye.png" /></button>
+                    <button class="imageButton" title="Области с пересечениями периметра" onclick="findAllIntersections()"><img src="~/images/AreaEditor/engine.png" /></button>
+                    <div style="margin: 0 3px;" id="cnt_areas_selected"></div>
+                </div>
+            </div>
+            <div class="tabs" style="height: calc(80vh - 2px - 4em); overflow: hidden;">
+                <div class="tab">
+                    <input type="radio" id="areasFilterTab1" name="tab-group" checked onchange="changeAreasFilterTab(1)">
+                    <label for="areasFilterTab1" class="tab-title">По наименованию</label>
+                    <section id="areasFilterTab1Content" class="tab-content">
+                        <div id="af_t1_tree" class="treeHTML" style="height: 100%; overflow: auto;"></div>
+                    </section>
+                </div>
+                <div class="tab">
+                    <input type="radio" id="areasFilterTab2" name="tab-group" onchange="changeAreasFilterTab(2)">
+                    <label for="areasFilterTab2" class="tab-title">По подчинённости</label>
+                    <section id="areasFilterTab2Content" class="tab-content">
+                        <div style="height: 1.8em; border-bottom: 1px solid blue">
+                            <input id="af_t2_inp1" type="checkbox" checked /><label for="af_t2_inp1">Отмечать подчинённые</label>
+                        </div>
+                        <div id="af_t2_tree" class="treeHTML" style="height: calc(100% - 1.8em); overflow: auto;"></div>
+                    </section>
+                </div>
+                <div class="tab">
+                    <input type="radio" id="areasFilterTab3" name="tab-group" onchange="changeAreasFilterTab(3)">
+                    <label for="areasFilterTab3" class="tab-title">По уровню</label>
+                    <section id="areasFilterTab3Content" class="tab-content">
+                        <div style="height: 1.8em; border-bottom: 1px solid blue">
+                            <input id="af_t3_inp1" type="checkbox" checked /><label for="af_t3_inp1">Отмечать подчинённые</label>
+                        </div>
+                        <div id="af_t3_tree" class="treeHTML" style="height: calc(100% - 1.8em); overflow: auto;">
+                            <div id="af_t3_level0"><input type="checkbox" value="lvl0" onchange="changeAreasFilter(this, 3)" />Область (край)</div>
+                            <div id="af_t3_level1"><input type="checkbox" value="lvl1" onchange="changeAreasFilter(this, 3)" />Район</div>
+                            <div id="af_t3_level2"><input type="checkbox" value="lvl2" onchange="changeAreasFilter(this, 3)" />Населённый пункт</div>
+                            <div id="af_t3_level3"><input type="checkbox" value="lvl3" onchange="changeAreasFilter(this, 3)" />Зона доставки курьера (маршрутная)</div>
+                            <div id="af_t3_level4"><input type="checkbox" value="lvl4" onchange="changeAreasFilter(this, 3)" />Зона назначения времени доставки</div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <!-- << dragWidgets-->
+    <!-- >> Меню нажатия на кнопку Меню действий-->
+    <nav id="areaActionsMenu" class="event-menu dragElement">
+        <ul class="menuHead"><a class="menuClose">x</a></ul>
+        <ul class="event-menu__items">
+            <li class="event-menu__item" id="areaAction01"><img src="~/images/AreaEditor/area_add.png" />Добавить</li>
+            <li class="event-menu__item" id="areaAction02"><img src="~/images/AreaEditor/area_edit.png" />Редактировать</li>
+            <li class="event-menu__delimiter"></li>
+            <li class="event-menu__item" id="areaAction04"><img src="~/images/AreaEditor/area_cancel.png" />Отменить</li>
+            <li class="event-menu__item" id="areaAction03"><img src="~/images/AreaEditor/area_save.png" />Сохранить</li>            
+            <li class="event-menu__delimiter"></li>
+            <li class="event-menu__item" id="areaAction05" onclick="SendToBack(selectedAreaSessionId)"><img src="~/images/AreaEditor/area_down.png" />На задний план</li>
+        </ul>
+    </nav>
+    <!-- << Меню нажатия на кнопку Меню действий-->
+    <div id="hiddenAreasHTMLList"></div>
+    <script>
+        let jsonAreaList;
+        let arrayAreaList = [];
+        let arraySelectedAreaList = [];
+        let areasFilterTab1Content = document.getElementById('areasFilterTab1Content');
+        let areasFilterTab2Content = document.getElementById('areasFilterTab2Content');
+        let areasFilterTab3Content = document.getElementById('areasFilterTab3Content');
+        let selectedAreaSessionId = null;
+        LoadAreaListFromDB();
+        addEventMenu("areaActionsButton", "areaActionsMenu", "click");
+
+        $(function () {
+            $('.dragElement').draggable({ containment: "#map", cancel: ".modal-body,.event-menu__items,.notMove, input, select", cursor: "move" });
+        });
+    </script>
+</body>
+</html>

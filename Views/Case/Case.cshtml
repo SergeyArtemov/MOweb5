@@ -1,0 +1,897 @@
+﻿@model MOweb.Models.ViewModels.CaseView;
+
+@{
+    Layout = "~/Views/Shared/_LayoutCustomerAsync.cshtml";
+    //Layout = null;
+
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <link rel="stylesheet" type="text/css" href="~/css/common.css" />
+    <script charset="utf-8" src="~/js/commonScript.js"></script>
+    <script charset="utf-8" src="~/js/commonScript.min.js"></script>
+    <script charset="utf-8" src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script charset="utf-8" src="~/lib/jquery/dist/jquery-ui.js"></script>
+    <script charset="utf-8" src="~/lib/jquery.unobtrusive-ajax/jquery.unobtrusive-ajax.min.js"></script>
+
+
+    <title>Case</title>
+
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 5px;
+            text-align: left;
+        }
+    </style>
+
+    <style>
+        /*
+        body {
+            background-color: deepskyblue;
+            padding: 0px;
+            margin: 0px;
+            font-family: Tahoma, Geneva, sans-serif;
+            font-size: 12px;
+        }*/
+
+        .layout {
+            display: grid;
+            grid-gap: 5px;
+            margin: 1px 1px;
+            grid-template-rows: 52px 100vh;
+            grid-template-columns: 1fr 3fr;
+        }
+
+        .box {
+            overflow: auto;
+            white-space: nowrap;
+            background-color: aliceblue;
+            border-radius: 1px;
+            display: flex;
+            justify-content: left;
+            align-items: top;
+        }
+
+        .col-head {
+            grid-row: 1;
+            grid-column: span 2;
+            display: inline-flex;
+        }
+
+        .main-left {
+            grid-row: 2;
+            grid-column: 1;
+        }
+
+        .col-footer {
+            grid-row: 3;
+            grid-column: 1;
+        }
+
+        .right {
+            grid-row: span 2;
+            grid-column: 2;
+        }
+
+        .infoLabel {
+            padding: 3px;
+            font-weight: bold;
+            height: 0px;
+            display: table-cell;
+            vertical-align: middle;
+        }
+
+        #dddddd {
+        }
+    </style>
+
+</head>
+<body>
+    <form asp-action="Case" method="post" id="Case">
+        <table style="width:100%;  font-size: 11px;">
+            <tr>
+                <td style="width:15%"><label asp-for="Id">Номер заявки:</label></td>
+                @if (Model.Id == 0)
+                {
+                    <td><input style="width:90%" asp-for="Id" id="caseId" name="caseId" value=@Model.Id /></td>
+                }
+
+                @if (Model.Id != 0)
+                {
+                    <td><input style="width:90%" asp-for="Id" id="caseId" name="caseId" value=@Model.Id disabled /></td>
+                }
+
+            </tr>
+            <tr>
+                <td style="width:15%"><label asp-for="OrderNo">Номер заказа:</label></td>
+                @if (Model.Id == 0)
+                {
+                    <td><input style="width:90%" asp-for="OrderNo" id="OrderNo" name="OrderNo" value=@Model.OrderNo /></td>
+                }
+
+                @if (Model.Id != 0)
+                {
+                    <td><input style="width:90%" asp-for="OrderNo" id="OrderNo" name="OrderNo" value=@Model.OrderNo disabled /></td>
+                }
+
+
+            </tr>
+            <tr>
+                <td style="width:15%"><label asp-for="OrderTypeFullName">Тип:</label></td>
+                @if (Model.Id == 0)
+                {
+                    <td><input style="width:90%" asp-for="OrderTypeFullName" id="OrderTypeFullName" name="OrderTypeFullName" value="KupiVip" /></td> <!--@Model.OrderTypeFullName-->
+                }
+
+                @if (Model.Id != 0)
+                {
+                    <td><input style="width:90%" asp-for="OrderTypeFullName" id="OrderTypeFullName" name="OrderTypeFullName" value="KupiVip" disabled /></td>
+                }
+
+            </tr>
+            <tr>
+                <td style="width:15%"><label asp-for="Source">Источник:</label></td>
+                <td>
+                    @if (Model.Id != 0)
+                    {
+                        <input style="width:44%" asp-for="Source" id="Source" name="Source" value=@Model.Source disabled />
+                    }
+                    else
+                    { <input style="width:90%" asp-for="Source" id="Source" name="Source" value=@Model.Source hidden />
+                        <input id="Case_Source" list="Case_Source_list" onchange="get_Case_TematikaOnSource_list();" />
+                        <datalist id="Case_Source_list"></datalist>
+                    }
+
+                </td>
+            </tr>
+            <tr>
+                <td style="width:15%"><label>Тематика/Суть:</label>  </td>
+                <td>
+
+                    @if (Model.Id != 0)
+                    {
+                        <input style="width:44%" asp-for="ReasonName1" id="Case_TematikaOnSource" name="Case_TematikaOnSource" value=@Model.ReasonName1 disabled />
+
+                    }
+                    else
+                    {
+                        <input style="width:44%" id="Case_TematikaOnSource" name="Case_TematikaOnSource" list="Case_TematikaOnSource_list" onchange="get_Case_SutOnSourceTematika_list();" />
+                        <datalist id="Case_TematikaOnSource_list"></datalist>
+                    }
+
+
+                    @if (Model.Id != 0)
+                    {
+                        <input style="width:44%" asp-for="ReasonName3" id="Case_SutOnSourceTematika" name="Case_SutOnSourceTematika" value=@Model.ReasonName3 disabled />
+                    }
+                    else
+                    {
+                        <input style="width:44%" id="Case_SutOnSourceTematika" name="Case_SutOnSourceTematika" list="Case_SutOnSourceTematika_list" onchange="get_Case_ReasonQueueOnSourceTematikaSut_list();" />
+                        <datalist id="Case_SutOnSourceTematika_list"></datalist>
+                    }
+
+                    <!-- <input style="width:44%" asp-for="ReasonName1" id="ReasonName1" name="ReasonName1" value=@Model.ReasonName1 /> -->
+                    <!-- <input style="width:44%" asp-for="ReasonName3" id="ReasonName3" name="ReasonName3" value=@Model.ReasonName3 /> -->
+
+
+                </td>
+            </tr>
+            <tr>
+                <td style="width:25%">
+                    <button id="btnAll" name="btnAll">...</button>
+                    <label>Очередь:</label>
+                </td>
+                <td>
+
+                    @if (Model.Id != 0)
+                    {
+                        <input style="width:44%" asp-for="ReasonName2" id="Case_ReasonQueueOnSourceTematikaSut" name="Case_ReasonQueueOnSourceTematikaSut" value=@Model.ReasonName2 disabled />
+                    }
+                    else
+                    {
+                        <input style="width:44%" id="Case_ReasonQueueOnSourceTematikaSut" name="Case_ReasonQueueOnSourceTematikaSut" list="Case_ReasonQueueOnSourceTematikaSut_list" ondblclick="get_Case_ReasonQueueOnSourceTematikaSut_list();" />
+                        <input style="width:30%" id="Case_ReasonQueueOnSourceTematikaSut_selected" name="Case_ReasonQueueOnSourceTematikaSut_selected" list="Case_ReasonQueueOnSourceTematikaSut_selected_list" hidden />
+                        <datalist id="Case_ReasonQueueOnSourceTematikaSut_list"></datalist>
+                    }
+
+                    <!--<input style="width:44%" asp-for="ReasonName2" id="caseId" name="caseId" value=@Model.ReasonName2 /> -->
+
+                </td>
+            </tr>
+            <tr>
+                <td style="width:25%">
+                    <p><b>Как отвечать:</b></p>
+                    <p>
+                        @if (Model.HowToResponse == 0)
+                        {
+                            <input type="radio" name="send_option" id="option" value="0" checked disabled>
+                            <input type="radio" name="send_option" id="option" value="1" disabled>
+                        }
+
+                        @if (Model.HowToResponse == 1)
+                        {
+                            <input type="radio" name="send_option" id="option" value="0" disabled>
+                            <input type="radio" name="send_option" id="option" value="1" checked disabled>
+                        }
+
+                        @if (Model.HowToResponse != 0 && Model.HowToResponse != 1)
+                        {
+                            <input type="radio" name="send_option" id="option" value="0">
+                            <input type="radio" name="send_option" id="option" value="1">
+                        }
+
+                    </p>
+                </td>
+                <td>
+                    <p><b>Заявка отложена до ...</b></p>
+                </td>
+            </tr>
+            <tr>
+                <td style="width:25%">
+                    <button id="btnCall" name="btnCall" onclick="GetLinkObjects();">Позвонить</button>
+                    <input id="innn" name="innn" ondblclick="GetLinkObjects();" />
+                </td>
+
+                <td>
+                    <table>
+                        <tr>
+                            <td style="width:25%">
+                                <input type="file" id="selectedfile1" name="selectedfile1" onchange="FileSend(this);" />
+                            </td>
+                            <td name="tdfiles" id="tdfiles">
+                                <div style="overflow: auto; width: auto;" id="modalBodyTdfiles" class="modalBody">
+                                    <label>Проба1;</label>
+                                    <label>Проба2;</label>
+                                    <label>Проба3;</label>
+                                </div>
+                            </td>
+                        </tr>
+                       </table>
+                </td>
+            </tr>
+            <!--<tr>
+            <td style="width:25%">asdasdasdas11</td>
+            <td>asdasdasdas22</td>
+        </tr>
+        <tr>
+            <td>asdasdasdas</td>
+        </tr> -->
+        </table>                    
+        @if (Model.Id == 0)
+        {
+            <table style="width:100%;  font-size: 11px;">
+
+                <tr>
+                    <td>
+
+                        <textarea style="width:90%" rows="3" name="text1" id="text1"></textarea>
+                        
+                    </td>
+                </tr>
+
+            </table>
+        }
+            <table style="width:100%;  font-size: 11px;">
+
+                <tr>
+                    <td>
+                        <p>
+
+                            <div style="overflow: auto; height: 10vH;">
+                                <table style="border-collapse: collapse; width: 100%;" border="1" class="tableleftcolor">
+                                    <thead>
+                                        <tr style="font-weight: bold; background-color:aquamarine">
+                                            <th>Оператор</th>
+                                            <th>Супервайзер</th>
+                                            <th>Дата назначения</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (Model.dtable != null)
+                                        {
+                                            @for (int i = 0; i < Model.dtable.Rows.Count; i++)
+
+                                            {
+                                                <tr>
+                                                    <td>@Model.dtable.Rows[i][0].ToString()</td>
+                                                    <td>@Model.dtable.Rows[i][1]</td>
+                                                    <td>@Model.dtable.Rows[i][2]</td>
+                                                </tr>
+
+                                            }
+                                        }
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </p>
+                    </td>
+                </tr>
+            </table>
+
+
+
+            <div>
+                <button type="button" id="addItemBtn" name="addItemBtn" onclick="GetLinkObjects();">Обновить</button>
+                <button type="button" id="delItem" name="delItem" onclick="DelLinkObjects();">Удалить</button>
+                <button type="button" id="addItemBtn" name="addItemBtn" onclick="Case_InsertLink();">Добавить</button>
+                <input style="width:44%" id="addItem" name="addItem" list="addItem_list" ondblclick="get_Case_GetItemsOnOrder_list();" />
+                <datalist id="addItem_list"></datalist>
+            </div>
+            <p>
+                <div style="overflow: auto; width: 150vH;" id="modalBody" class="modalBody">
+                    <!--MODAL BODY-->
+                </div>
+            </p>
+            <pre>
+        </pre>
+
+
+
+
+
+
+
+            <!-- >> MODAL WINDOW with CSS-->
+            <!-- << MODAL WINDOW with CSS-->
+            <!--
+        <tr>
+            <input style="width:44%" id="Elem1" name="Elem1" list="Elem1_list" ondblclick="get_Case_SutOnSourceTematika_list();" />
+            <datalist id="Elem1"></datalist>
+        </tr>
+        <tr>
+            <input style="width:44%" id="Elem2" name="Elem2" list="Elem2_list" ondblclick="get_Case_SutOnSourceTematika_list();" />
+            <datalist id="Elem2_list"></datalist>
+        </tr>
+        <tr>
+            <input style="width:44%" id="Elem3" name="Elem3" list="Elem3_list" ondblclick="get_Case_SutOnSourceTematika_list();" />
+            <datalist id="Elem3_list"></datalist>
+        </tr>
+        <tr>
+            <input style="width:44%" id="Elem4" name="Elem4" list="Elem4_list" ondblclick="get_Case_SutOnSourceTematika_list();" />
+            <datalist id="Elem4_list"></datalist>
+        </tr>
+        -->
+
+        </form>
+</body>
+</html>
+
+<script>
+
+   // alert('START ALL SCRIPTS!');
+    if (@Model.Id != 0) { GetLinkObjects(); }
+        //alert(@Model.ReasonName1);
+    if (@Model.Id == 0) { get_Case_Source_list(); }
+        //alert('get_Case_Source_list  success!');
+
+    if (@Model.Id == 0) {get_Case_GetItemsOnOrder_list(); }
+    //alert('get_Case_GetItemsOnOrder_list  success!');
+
+    function DelLinkObjects() {
+            var tab = document.getElementById("tab1");
+            var rows = tab.getElementsByTagName("tr");
+            var str = "";
+            // alert(rows.length);
+
+        var i = 1;
+        while (i < rows.length) {
+            //var val = rows[i].childNodes[1].nodeValue;
+            var tds = rows[i].getElementsByTagName("td");
+            var chk = tds[0].getElementsByTagName("input");
+            //alert(chk.length);
+            if (chk[0].checked) {
+
+                str = str + tds[1].childNodes[0].nodeValue + ";"
+                alert(str);
+            }
+            i++;
+        }
+
+        alert(str);
+
+        // Удаляем из БД
+                    try {
+                    $.ajax({
+                        url: '/Case/Case_DeleteLink',
+                        /*data: {}, */
+                        data: {str: str},
+                        type: 'POST',
+                        //async: false,
+                        success:  alert('Всё хорошо!')
+                       /* dataType: 'binary', */
+                        });
+                    }
+                    catch (e) {
+                    alert('Ошибка ' + e.name + ":" + e.message + "\n" + e.stack);
+                    }
+        // Отрисовываем заново таблицу
+       // alert('Всё хорошо!');
+
+    }
+
+
+
+function get_Case_Source_list() {
+        /*Получение списка для поля Источник*/
+            let list = document.getElementById("Case_Source_list");
+            let item = document.createElement('option');
+            while (list.children.length) list.removeChild(list.children[0]);
+
+            try {
+                    $.ajax({
+                    url: '/Case/Get_Case_Source_list',
+                    data: {},
+                    type: 'POST',
+                        success: function (data) {
+                        let json = JSON.parse(data);
+                        let param1 = json.Case_Source_list;
+                            if (param1.length > 0) {
+                                for (let i = 0; i < param1.length; i++) {
+                                    item.value = param1[i].Name;
+                                    list.appendChild(item.cloneNode(true));
+                                }
+                            }
+
+                    }
+                    });
+            }
+            catch (e) {
+                    alert('Ошибка ' + e.name + ":" + e.message + "\n" + e.stack);
+            }
+
+        }
+
+
+    function get_Case_TematikaOnSource_list(source = "") {
+         /* Получение списка Тематик на основе значения поля Источник */
+            let list = document.getElementById("Case_TematikaOnSource_list");
+            let item = document.createElement('option');
+
+
+            while (list.children.length) list.removeChild(list.children[0]);
+
+            try {
+                    $.ajax({
+                        url: '/Case/get_Case_TematikaOnSource_list',
+                        /*data: {}, */
+                        data: {source: source},
+                        type: 'POST',
+                       /* dataType: 'binary', */
+                        success: function (data) {
+                        let json = JSON.parse(data);
+                        let param1 = json.Case_TematikaOnSource_list;
+                            if (param1.length > 0) {
+                                for (let i = 0; i < param1.length; i++) {
+                                    item.value = param1[i].Name;
+                                    list.appendChild(item.cloneNode(true));
+                                }
+                            }
+
+                    }
+                    });
+            }
+            catch (e) {
+                    alert('Ошибка ' + e.name + ":" + e.message + "\n" + e.stack);
+             }
+            }
+
+
+    function get_Case_SutOnSourceTematika_list() {/*(source = "Входящий звонок", tematika = "SPEC Возвраты. Запрос в казначейство") {*/
+        /* Получение списка Сутей на основе значения поля Источник и Тематика */
+        let list = document.getElementById("Case_SutOnSourceTematika_list");
+
+        //alert("hjgjgj");
+
+        let item = document.createElement('option');
+        source1 = document.getElementById("Case_Source").value;
+        tematika1 = document.getElementById("Case_TematikaOnSource").value;
+
+        while (list.children.length) list.removeChild(list.children[0]);
+
+        try {
+            $.ajax({
+                url: '/Case/get_Case_SutOnSourceTematika_list',
+                /*data: {}, */
+                data: {source: source1, tematika: tematika1},  //
+                type: 'POST',
+                /* dataType: 'binary', */
+                success: function (data) {
+                    let json = JSON.parse(data);
+                    let param1 = json.Case_SutOnSourceTematika_list;
+                    if (param1.length > 0) {
+                        for (let i = 0; i < param1.length; i++) {
+                            //alert(param1[i].Name3);
+                            item.value = param1[i].Name3;
+                            //item.value = 'Tematik'+param1[i].NameQueue;
+                            //item.name = 'Tematik'+param1[i].Reason;
+                            list.appendChild(item.cloneNode(true));
+                        }
+                    }
+
+
+                }
+            });
+        }
+        catch (e) {
+            alert('Ошибка ' + e.name + ":" + e.message + "\n" + e.stack);
+        }
+    }
+
+
+    function get_Case_ReasonQueueOnSourceTematikaSut_list() {
+
+        GetLinkObjects();
+
+        /* Получение списка Очередей на основе значения поля Источник, Тематика, Суть */
+        let list = document.getElementById("Case_ReasonQueueOnSourceTematikaSut_list");
+        let item = document.createElement('option');
+
+        let reason_selected =  document.getElementById("Case_ReasonQueueOnSourceTematikaSut_selected");
+
+        source3 = document.getElementById("Case_Source").value;
+        tematika3 = document.getElementById("Case_TematikaOnSource").value;
+        sut3 = document.getElementById("Case_SutOnSourceTematika").value;
+
+        while (list.children.length) list.removeChild(list.children[0]);
+
+        try {
+            $.ajax({
+                url: '/Case/get_Case_ReasonQueueOnSourceTematikaSut',
+                /*data: {},*/
+                data: {source: source3, tematika: tematika3, sut: sut3},
+                type: 'POST',
+                /* dataType: 'binary', */
+                success: function (data) {
+                    let json = JSON.parse(data);
+                    let param1 = json.Case_ReasonQueueOnSourceTematikaSut_list;
+
+                    if (param1.length > 0) {
+                        for (let i = 0; i < param1.length; i++) {
+                            item.value = param1[i].NameQueue+"_Reason="+ param1[i].Reason;
+
+
+                            //reason_selected.value =  param1[i].Reason;
+                            list.appendChild(item.cloneNode(true));
+                        }
+                    }
+
+                }
+            });
+        }
+        catch (e) {
+            alert('Ошибка ' + e.name + ":" + e.message + "\n" + e.stack);
+        }
+    }
+
+       function GetLinkObjects() {
+
+          // alert('Вход GetLinkObjects');
+           //source4 = document.getElementById("Case_Source").value;
+           source4 = document.getElementById("Source").value;
+          // alert(source4);
+        tematika4 = document.getElementById("Case_TematikaOnSource").value;
+          // alert(tematika4);
+        reason4 = document.getElementById("Case_SutOnSourceTematika").value;
+          // alert(reason4);
+
+
+
+        try {
+            $.ajax({
+                url: '/Case/GetLinkObjects',
+
+                data: {CaseID1 : @Model.Id, deleted : 0, Reason : reason4},
+                          //data: {source: source4, tematika: tematika4},
+                type: 'POST',
+                /* dataType: 'binary', */
+                success: function (data) {
+                    let tbl = JSON.parse(data).GetLinkObjects;
+                    if (tbl.length > 0) {
+                        let keys = [];
+                        let inHTML = '<table id = "tab1" name = "tab1" border = "1"  style = "border-collapse: collapse; font-size: 12px;">'
+                            + '<tr style = "background-color: antiquewhite;">';
+                        var modalBody = document.getElementById("modalBody");
+
+                        inHTML += '<td></td>'
+                        Object.keys(tbl[0]).forEach(function (el) {
+                                                                    keys.push(el);
+                                                                    inHTML += '<th>' + el + '</th>';
+                                                                    }
+                                                    );
+
+                        inHTML += '</tr>';
+
+                        tbl.forEach(function (tel) {
+                                                    inHTML += '<tr>';
+                                                    inHTML += '<td><input type="checkbox">к удалению</input></td>'
+                                                    for (let a = 0; a < keys.length; a++) {
+                                                                                            inHTML += '<td>' + (tel[keys[a]] == null ? '' : tel[keys[a]]) + '</td>';
+                                                                                          }
+                                                    inHTML += '</tr>';
+                                                    }
+                                    );
+
+                        inHTML += '</table>';
+
+                        modalBody.innerHTML = inHTML;
+                    }
+                //    let json = JSON.parse(data);
+                //    let param1 = json.Case_GetLinkObjects_list;
+                //    if (param1.length > 0) {
+                //        for (let i = 0; i < param1.length; i++) {
+                //            item.value = param1[i].
+                //            list.appendChild(item.cloneNode(true));
+                //        }
+                //    }
+
+                }
+            });
+        }
+        catch (e) {
+            alert('Ошибка ' + e.name + ":" + e.message + "\n" + e.stack);
+        }
+            }
+
+
+
+    function get_Case_GetItemsOnOrder_list() {
+
+        let list = document.getElementById("addItem_list");
+        let item = document.createElement('option');
+
+        while (list.children.length) list.removeChild(list.children[0]);
+
+        try {
+            $.ajax({
+                url: '/Case/Case_GetItemsOnOrder',
+                /*data: {},*/
+                data: {OrderNo: @Model.OrderNo , Host: @Model.Host},
+
+                type: 'POST',
+                 /* dataType: 'binary', */
+                success: function (data) {
+    let json = JSON.parse(data);
+                   let param1 = json.ItemsOnOrder;
+                    if (param1.length > 0) {
+                        for (let i = 0; i < param1.length; i++) {
+                            item.value = param1[i].LineNo;
+                            item.innerText = param1[i].ItemDesc;
+                            list.appendChild(item.cloneNode(true));
+
+                        }
+
+                    }
+                }
+            });
+}
+        catch (e) {
+            alert('Ошибка ' + e.name + ":" + e.message + "\n" + e.stack);
+ }
+
+        let addItem1 = document.getElementById("addItem");
+
+
+    }
+
+
+    function Case_InsertLink() {
+
+        let addItem1 = document.getElementById("addItem").value;
+
+        alert('Вход! Case_InsertLink  CaseId =');
+        alert(@Model.Id);
+
+         // Добавляем в БД
+                    try {
+                    $.ajax({
+                        url: '/Case/Case_InsertLink',
+                        /*data: {}, */
+                        data: {CaseId1 : @Model.Id, OrderNo : @Model.OrderNo, Host : @Model.Host, LineNo : addItem1, UserId : 3},
+                        type: 'POST',
+                        success: alert(@Model.Id)
+                       /* dataType: 'binary', */
+                        });
+                    }
+                    catch (e) {
+                    alert('Ошибка ' + e.name + ":" + e.message + "\n" + e.stack);
+                    }
+
+
+        // Отрисовываем заново таблицу
+        //alert('Всё хорошо!');
+
+
+    }
+
+
+        function FileSend(input) {
+
+            let file = input.files[0];
+            var blob = file.slice();
+
+            //alert(`File name: ${file.name}`);
+
+            let reader = new FileReader();
+            reader.readAsArrayBuffer(blob);
+            //reader.readAsArrayBuffer(file);
+            //reader.readAsText(file);
+
+
+
+            //alert(file.name);
+            //alert(file.length);
+
+            //reader.onload = function () { alert(reader.result); };
+
+
+            @*reader.onload = function () {
+                               try {
+                                $.ajax({
+                                        url: '/Case/Case_FileSend',
+                                        //contentType: undefined,
+                                        //dataType: 'binary',
+                                        data: { FileName: file.name, Blob1: blob1, CaseId: @Model.Id},
+                                        //data: {Blob1: reader.result},
+                                        type: 'POST',
+                                    success: alert(reader.result)
+                                    });
+                                }
+                                catch (e) {
+                                        alert('Ошибка ' + e.name + ":" + e.message + "\n" + e.stack);
+                                }
+                               };*@
+
+            reader.onloadend = function (evt) {
+
+                                var cont = evt.target.result;
+                                let base64String = getB64Str(cont);//ArrayBufferToString(reader.result);
+
+
+                                //var model1 = {
+                                //                contentAsBase64String: base64String,
+                                //                fileName1: file.name
+                                //            };
+                                //
+                                //alert(`File name!!!!!: ${model1.fileName}`);
+                                //alert(JSON.stringify(model1));
+
+                                let fileName = file.name;
+                                alert(`File name!!!!: ${fileName}`);
+
+                               try {
+                                $.ajax({
+                                        url: '/Case/Case_FileSend22',
+                                        type: 'POST',
+                                        data: { base64String1: base64String, fileName1: fileName }   // ЗДЕСЬ БЫЛА ЗАПЯТАЯ В КOНЦЕ!!!!!
+                                        //JSON.stringify(model1),
+                                        //dataType: 'json',
+                                        //processData: false,
+                                        //async: false,
+                                        //contentType: 'application/json'
+                                   //  complete: function (data) {
+                                   //  console.log(data.responseText);
+                                   //  },
+                                   // error: function (response) {
+                                   //     console.log('Ошибка!');//(response.responseText);
+                                   // }
+                                    });
+                                }
+                                catch (e) {
+                                        alert('Ошибка ' + e.name + ":" + e.message + "\n" + e.stack);
+                                }
+
+                                        let modalBodyTdfiles = document.getElementById("modalBodyTdfiles");
+                                        let inHTML = '';
+                                        inHTML += '<label>Проба5;</label>'+'<button type="button" id="addItemBtn" name="DelFileBtn">Del</button>';
+                                        modalBodyTdfiles.innerHTML += inHTML;
+
+                                        GetFilesLinked();
+
+
+                               };
+
+              reader.onerror = function() {
+              console.log(reader.error);
+              };
+    }
+
+    // hhttps://www.codeproject.com/Tips/1065501/File-Upload-Using-Html-File-API-Ajax-Post
+    function getB64Str(buffer) {
+          var binary = '';
+          var bytes = new Uint8Array(buffer);
+          var len = bytes.byteLength;
+          for (var i = 0; i < len; i++) {
+              binary += String.fromCharCode(bytes[i]);
+          }
+          return window.btoa(binary);
+    }
+
+
+    function GetFilesLinked() {
+
+        let modalBodyTdfiles = document.getElementById("modalBodyTdfiles");
+        let inHTML = '';
+        //inHTML += '<label>Проба5;</label>'+'<button type="button" id="addItemBtn" name="DelFileBtn">Del</button>';
+        //modalBodyTdfiles.innerHTML += inHTML;
+
+        alert('GetFilesLinked!!!');
+
+        try {
+            $.ajax({
+                url: '/Case/Case_Attach_Get',
+                data: { CaseId: 3713042 },
+                type: 'POST',
+                /* dataType: 'binary', */
+                success: function (data) {
+
+                    alert('GetFilesLinked 222!!!');
+
+                    let tbl = JSON.parse(data).Res;
+                    if (tbl.length > 0) {
+                        let keys = [];
+                        let inHTML = '<table id = "tab1" name = "tab1" border = "1"  style = "border-collapse: collapse; font-size: 12px;">'
+
+                        //inHTML += '<tr><td>FGFGFGFGFG</td></tr>';
+
+                        Object.keys(tbl[0]).forEach(function (el) {
+                                                                   keys.push(el);
+                                                                   }
+                        );
+
+                        tbl.forEach(function (tel) {
+                                                    //inHTML += '<tr><td>FGFGFGFGFG</td></tr>';    
+                                                    inHTML += '<tr>';
+                                                    ////inHTML += '<td><input type="checkbox">к удалению</input></td>'
+                                                    for (let a = 0; a < 2; a++) {
+                                                                                            if (a==0){
+                                                                                                inHTML += '<td>' + (tel[keys[a]] == null ? '' : tel[keys[a]]) + '</td>';
+                                                                                                }
+                                                                                            if (a==1){
+                                                                                                inHTML +=
+                                                                                                    '<td>'
+                                                                                                    +'<button type="button" id="addItemBtn_'
+                                                                                                    + tel[keys[a]] + '" name="DelFileBtn_'
+                                                                                                    + tel[keys[a]] + '">'
+                                                                                                    + tel[keys[a]]
+                                                                                                    + '</button>'
+                                                                                                    //+ (tel[keys[a]] == null ? '' : tel[keys[a]])
+                                                                                                    + '</td>';
+                                                                                                }
+
+
+                                                                                          }
+                                                    inHTML += '</tr>';
+                                                    }
+                                    );
+
+                        inHTML += '</table>';
+
+                        modalBodyTdfiles.innerHTML = inHTML;
+                    }
+
+
+
+                }
+            });
+        }
+        catch (e) {
+            alert('Ошибка ' + e.name + ":" + e.message + "\n" + e.stack);
+        }
+    }
+
+
+</script>
+
+
+
+

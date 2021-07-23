@@ -1,0 +1,35 @@
+﻿<div>
+    <div id="calls-audio-player" style="outline: none;">
+        <audio controls id="callAudio"></audio>
+    </div>
+    <label id="callAudioLabel"></label>
+    <table style="border-collapse: collapse;" class="table table-condensed table-select">
+        @if (ViewData["RingsOnOrder"] != null)
+        {
+            System.Data.DataSet historyDataSet = (System.Data.DataSet)ViewData["RingsOnOrder"];
+            <tr style="background-color:#c2e3ff;">
+                @for (int hstr = 0; hstr < historyDataSet.Tables["RingsOnOrder"].Columns.Count; hstr++)
+                {
+
+                    string[] caption = historyDataSet.Tables["RingsOnOrder"].Columns[hstr].Caption.Split(" - ");
+                    <th style="border: 1px solid #8b9cff;">
+                        <b>
+                            @(caption[1] != "" ? caption[1] : historyDataSet.Tables["RingsOnOrder"].Columns[hstr].Caption)
+                        </b>
+                    </th>
+                }
+            </tr>
+            @for (int rows = 0; rows < historyDataSet.Tables["RingsOnOrder"].Rows.Count; rows++)
+            {
+                <tr ondblclick="getMP3(@historyDataSet.Tables["RingsOnOrder"].Rows[rows].ItemArray[3], this)">
+                    @for (int cols = 0; cols < historyDataSet.Tables["RingsOnOrder"].Columns.Count; cols++)
+                    {
+                        <td style="border: 1px solid #8b9cff;">
+                            @historyDataSet.Tables["RingsOnOrder"].Rows[rows].ItemArray[cols]
+                        </td>
+                    }
+                </tr>
+            }
+        }
+    </table>
+</div>

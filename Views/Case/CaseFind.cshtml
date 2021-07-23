@@ -1,0 +1,76 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Поиск заявок</title>
+</head>
+<<body>
+     <form id="caseFind_form" name="caseFind_form" asp-controller="Case" asp-action="Index1" method="post" style="width: 100%; height: 100%; position: fixed; top: 0; left: 0; display: flex; align-items: center;
+        align-content: center; justify-content: center">
+         <p>
+            <input id="caseId" name="caseId" value="" onkeydown="pass_press(event)" />
+            <button onclick="Ok_function()" type ="button">Вход по номеру Кейса!</button>
+            <br>
+             <input id="OrderNo" name="OrderNo" value="" onkeydown="pass_press2(event)" />
+             <button onclick="Ok_function2()" type ="button">Вход по номеру Заказа!</button>
+         </p>
+         <p>
+             <input id="whatBtn" name="whatBtn" value="" hidden/>
+         </p>      
+
+     </form>
+</body>
+</html>
+
+<script type="text/javascript">
+
+        Init_test();
+
+    function pass_press(evnt) {
+  
+            if (evnt.keyCode == 13) Ok_function();
+        }
+
+    function pass_press2(evnt) {
+
+              if (evnt.keyCode == 13) Ok_function2();
+        }
+
+        function Ok_function(s) {
+            elemInput = document.getElementById('OrderNo');
+            elemInput.value = "0";
+
+            elem = document.getElementById('caseFind_form');
+            elem.submit()
+        }
+
+    function Ok_function2(s) {
+            elemInput = document.getElementById('caseId');
+            elemInput.value = "0";
+
+            elem = document.getElementById('caseFind_form');
+            elem.submit()    
+        }
+
+        function Init_test() {
+            elemInput = document.getElementById('caseId');
+            elemInput.value = "3600573";
+
+            elemInput = document.getElementById('OrderNo');
+            elemInput.value = "2025290319";
+
+
+            //alert('Ok!') 
+
+        }
+
+
+
+    
+</script>

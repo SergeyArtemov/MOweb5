@@ -1,0 +1,14 @@
+﻿<div id="history">
+    @if (ViewData["History"] != null)
+    {
+        System.Data.DataSet historyDataSet = (System.Data.DataSet)ViewData["History"];
+        for (int hstr = 0; hstr < historyDataSet.Tables["History"].Rows.Count; hstr++)
+        {
+            string hstDescr = ((System.DateTime)historyDataSet.Tables["History"].Rows[hstr].ItemArray[3]).ToString("dd.MM.yyyy HH:mm:ss");
+            <label title="@hstDescr - @historyDataSet.Tables["History"].Rows[hstr].ItemArray[4]">
+                <label hidden>@historyDataSet.Tables["History"].Rows[hstr].ItemArray[5]</label>
+                @hstDescr - @historyDataSet.Tables["History"].Rows[hstr].ItemArray[4]
+            </label><br />
+        }
+    }
+</div>

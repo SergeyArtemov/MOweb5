@@ -1,0 +1,41 @@
+﻿<div style="">
+    <div style="margin: 10px 0; text-align:left;">
+        <label id="lbl_shippingGeocodeString" for="shippingGeocodeString">Адрес</label>
+        <input id="shippingGeocodeString" style="width: 360px;" onkeydown="shippingAddresssKeyDown(event)" />
+        <button type="button" id="btn_shippingUpdateGeocode" class="orderButton" onclick="getDataSet_Geocode_FindAddr_rai(document.getElementById('shippingGeocodeString').value,
+                                                                                                            document.getElementById('shippingGeoMode').value)">Обновить</button>
+        <button type="button" id="btn_shippingChangePoint" class="orderButton" onclick="shippingChangePoint()">Применить</button>
+        <button type="button" id="btn_shippingChangeInterval" onclick="getShippingIntervals(0, 0)" class="orderButton">Выбрать интервал</button>
+        <div id="div_Geocode_FindAddr_rai" style="height: 80px; border: 2px solid lightblue; margin: 5px 0 5px 0; max-width: 585px; overflow: auto;">
+        </div>
+        <button type="button" id="btn_shippingGeocode" onclick="shippingGeocode()" class="orderButton">Геокодировать</button>
+    </div>
+    <div style="text-align:center;">
+        <label for="mapScale">Масштаб </label>
+        <input id="shippingMapScale" type="range" min="0" max="17" value="@ViewBag.Scale" style="width:405px;"
+               onchange="getMapFromAddrId(document.getElementById('order.Delivery.DeliveryAddrId').value, document.getElementById('shippingMapScale').value)" />
+        <select id="shippingGeoMode">
+            @if (ViewBag.GCMode == "")
+            {
+                <option value="DaData">DaData</option>
+                <option value="Sputnik">Sputnik</option>
+                <option value="Архив(1мин)">Архив(1мин)</option>
+            }
+            else
+            {
+                string[] gmode = ViewBag.GCMode.Split(",");
+                for (int i = 0; i < gmode.Length; i++)
+                {
+                    <option value="@gmode[i]">@gmode[i]</option>
+                }
+            }
+        </select>
+    </div>
+    <div style="width: 585px; height: 405px; border:2px solid #8ef8ff; border-radius: 4px; margin: 2px; padding: 0; background-color: lightgray;">
+        <image id="shippingMap" src="@ViewBag.Map" alt="" style="width: 585px; height: 405px;"/><br />
+    </div>
+    <div hidden>
+        <input id="shippingLat" value="0" />
+        <input id="shippingLon" value="0" />
+    </div>
+</div>

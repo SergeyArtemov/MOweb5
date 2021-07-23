@@ -1,0 +1,723 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="~/css/common.css" />
+    <script charset="utf-8" src="~/js/commonScript.js"></script>
+    <script charset="utf-8" src="~/js/commonScript.min.js"></script>
+    <script charset="utf-8" src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script charset="utf-8" src="~/lib/jquery/dist/jquery-ui.js"></script>
+    <script charset="utf-8" src="~/lib/jquery.unobtrusive-ajax/jquery.unobtrusive-ajax.min.js"></script>
+
+    <title>MamsyMonitor</title>
+    <style>
+        body{
+            display: flex;
+        }
+        
+        .indicator{
+            display: block; 
+            padding: 5px;
+        }
+
+        .progress { 
+            display: block;
+            margin: 1px;
+            border: 2px solid black;
+            padding: 5px;
+            border-radius: 10px;
+            background-color: antiquewhite;
+        }
+
+        .progressBody {
+            margin: 0px;
+            background-color: lightgrey;
+            border: 2px solid grey;
+            border-radius: 5px;
+            min-width: 250px;
+        }
+
+        .progressIndicator {
+            border-radius: 5px;
+            font-weight: bold;
+            width: 0%;
+            height: 30px;
+            background-color: lightgreen;
+            text-align: center;
+            line-height: 30px;
+            color: black;
+            font-size: 28px;
+            white-space: nowrap;
+        }
+
+        #ind_block01params{
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        #ind_block01params td:nth-child(2n) {
+            text-align: right;
+        }
+
+        #ind_block01params td:nth-child(1n) {
+            font-size: 14px;
+        }
+
+    </style>
+</head>
+<body>
+    <!--Загрузка акций-->
+    <div class="progress no-select">
+        <div style="border: 2px solid blue; border-radius: 5px; background-color: lavender;">
+            <table id="ind_block01params">
+                <tr><td>Акция</td><td><input id="inp_block01_cmp" list="dl_cmp" /><datalist id="dl_cmp"></datalist></td></tr>
+                <tr><td style="text-align: center;" colspan="2">Указать интервал</td></tr>
+                <tr><td>Начиная с</td><td><input id="inp_block01_fromDate" type="datetime-local" /></td></tr>
+                <tr><td>Заканчивая</td><td><input id="inp_block01_toDate" type="datetime-local" /></td></tr>
+                <tr hidden><td style="text-align: center;" colspan="2">Или выбрать интервал</td></tr>
+                <tr hidden><td>Интервал от</td><td><select id="sel_fromDateTime"></select></td></tr>
+                <tr hidden><td>Интервал до</td><td><select id="sel_toDateTime"></select></td></tr>
+                <tr><td colspan="2">Только строки расхождений<input type="checkbox" id="inp_onlyErrors" checked /></td></tr>
+                <tr>
+                    <td style="text-align: right;" colspan="2"><button type="button" onclick="gp1_getIndicatorsValues()">Обновить</button></td>
+                </tr>
+            </table>
+        </div>
+        <div>
+            <!--Indicator 1-->
+            <div class="indicator">
+                <div>Выгруженные из Нав</div>
+                <div id="i01" class="progressBody" ondblclick="showIndicatorTable(1, 'Выгруженные из Нав');">
+                    <div class="progressIndicator">
+                        <label>0</label>
+                        <img hidden id="img_i1_load" src="~/images/loading5.gif" width="22" height="22" />
+                    </div>
+                </div>
+            </div>
+            <!--Indicator 2-->
+            <div class="indicator">
+                <div>Загруженные Мамси</div>
+                <div id="i02" class="progressBody" ondblclick="showIndicatorTable(2, 'Загруженные Мамси');">
+                    <div class="progressIndicator">
+                        <label>0</label>
+                        <img hidden id="img_i2_load" src="~/images/loading5.gif" width="22" height="22" />
+                    </div>
+                </div>
+            </div>
+            <div><label id="lbl_indBlock01">Обновлено в </label></div>
+        </div>
+    </div>
+    <!--Статусы Мамси в сравнении с МО-->
+    <div class="progress no-select">
+        <div>Различия статусов MSY</div>
+        <!--State 01-->
+        <div class="indicator">
+            <!--<div>Название</div>-->
+            <div id="i03" class="progressBody" ondblclick="showIndicatorTable(3, 'Заказы в статусе 01');">
+                <div class="progressIndicator">
+                    <label>0</label>
+                    <img hidden id="img_i3_load" src="~/images/loading5.gif" width="22" height="22" />
+                </div>
+            </div>
+        </div>
+        <!--State 02-->
+        <div class="indicator">
+            <!--<div>Название</div>-->
+            <div id="i04" class="progressBody" ondblclick="showIndicatorTable(4, 'Заказы в статусе 02');">
+                <div class="progressIndicator">
+                    <label>0</label>
+                    <img hidden id="img_i4_load" src="~/images/loading5.gif" width="22" height="22" />
+                </div>
+            </div>
+        </div>
+        <!--State 03-->
+        <div class="indicator">
+            <!--<div>Название</div>-->
+            <div id="i05" class="progressBody" ondblclick="showIndicatorTable(5, 'Заказы в статусе 03');">
+                <div class="progressIndicator">
+                    <label>0</label>
+                    <img hidden id="img_i5_load" src="~/images/loading5.gif" width="22" height="22" />
+                </div>
+            </div>
+        </div>
+        <!--State 04-->
+        <div class="indicator">
+            <!--<div>Название</div>-->
+            <div id="i06" class="progressBody" ondblclick="showIndicatorTable(6, 'Заказы в статусе 04');">
+                <div class="progressIndicator">
+                    <label>0</label>
+                    <img hidden id="img_i6_load" src="~/images/loading5.gif" width="22" height="22" />
+                </div>
+            </div>
+        </div>
+        <!--State 05-->
+        <div class="indicator">
+            <!--<div>Название</div>-->
+            <div id="i07" class="progressBody" ondblclick="showIndicatorTable(7, 'Заказы в статусе 02');">
+                <div class="progressIndicator">
+                    <label>0</label>
+                    <img hidden id="img_i7_load" src="~/images/loading5.gif" width="22" height="22" />
+                </div>
+            </div>
+        </div>
+        <!--State 10, 11-->
+        <div class="indicator">
+            <!--<div>Название</div>-->
+            <div id="i08" class="progressBody" ondblclick="showIndicatorTable(8, 'Заказы в статусах 10, 11');">
+                <div class="progressIndicator">
+                    <label>0</label>
+                    <img hidden id="img_i8_load" src="~/images/loading5.gif" width="22" height="22" />
+                </div>
+            </div>
+        </div>
+        <!--State 20, 21, 22, 23, 24-->
+        <div class="indicator">
+            <!--<div>Название</div>-->
+            <div id="i09" class="progressBody" ondblclick="showIndicatorTable(9, 'Заказы в статусах 20, 21, 22, 23, 24');">
+                <div class="progressIndicator">
+                    <label>0</label>
+                    <img hidden id="img_i9_load" src="~/images/loading5.gif" width="22" height="22" />
+                </div>
+            </div>
+        </div>
+        <!--State other-->
+        <div class="indicator" style="display: none;">
+            <!--<div>Название</div>-->
+            <div id="i10" class="progressBody" ondblclick="showIndicatorTable(10, 'Заказы прочее');">
+                <div class="progressIndicator">
+                    <label>0</label>
+                    <img hidden id="img_i10_load" src="~/images/loading5.gif" width="22" height="22" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="progress no-select">
+        <div class="indicator">
+            <div>Расхождение по строкам товаров</div>
+            <div id="i11" class="progressBody" ondblclick="showIndicatorTable(11, 'Расхождение по строкам товаров');">
+                <div class="progressIndicator">
+                    <label>0</label>
+                    <img hidden id="img_i11_load" src="~/images/loading5.gif" width="22" height="22" />
+                </div>
+            </div>
+        </div>
+
+        <div class="indicator">
+            <div>Расхождение по суммам товаров</div>
+            <div id="i12" class="progressBody" ondblclick="showIndicatorTable(12, 'Расхождение по суммам товаров');">
+                <div class="progressIndicator">
+                    <label>0</label>
+                    <img hidden id="img_i12_load" src="~/images/loading5.gif" width="22" height="22" />
+                </div>
+            </div>
+        </div>
+
+        <div class="indicator">
+            <div>Расхождение по количеству товаров</div>
+            <div id="i13" class="progressBody" ondblclick="showIndicatorTable(13, 'Расхождение по количеству товаров');">
+                <div class="progressIndicator">
+                    <label>0</label>
+                    <img hidden id="img_i13_load" src="~/images/loading5.gif" width="22" height="22" />
+                </div>
+            </div>
+        </div>
+
+        <div class="indicator">
+            <div>Не принято уменьшение товаров от нав</div>
+            <div id="i14" class="progressBody" ondblclick="showIndicatorTable(14, 'Не принято уменьшение товаров от нав');">
+                <div class="progressIndicator">
+                    <label>0</label>
+                    <img hidden id="img_i14_load" src="~/images/loading5.gif" width="22" height="22" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- >> MODAL WINDOW with CSS-->
+    <input class="lb_modal__check" type="checkbox" id="lb_modal" onchange="lb_modalChange()" />
+    <div class="lb_modal">
+        <label class="lb_modal__closetwo" for="lb_modal"></label>
+        <div class="lb_modal__info">
+            <div style="height: 16px; padding: 3px; background-color: cornflowerblue; color: antiquewhite; border-radius: 3px;" id="lb_modal_title" class="no-select">
+                <!--MODAL TITLE-->
+            </div>
+            <div id="modalBody" class="modalBody">
+                <!--MODAL BODY-->
+            </div>
+        </div>
+    </div>
+    <!-- << MODAL WINDOW with CSS-->
+    <!-- >> LOADING -->
+    <div id="loading" style="z-index: 9999; opacity: .95; filter: alpha(opacity=95); display:none; text-align: center; width: 100%; height: 100%;
+        position: fixed; top: 0; left: 0;">
+        <div style="border: 2px solid blue; border-radius: 10px; background-color: lightblue; position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%); padding: 10px;">
+            <label style="color: blue; font-size:16px;"><b>Загрузка...</b></label>
+            <br /><img src="~/images/loading.gif" width="100" height="100" />
+        </div>
+    </div>
+    <!-- << LOADING -->
+    <script>
+        document.getElementById("inp_block01_fromDate").value = new Date().toISOString().slice(0, 10) + "T00:00";
+        var lb_modal = document.getElementById("lb_modal");
+        var modalBody = document.getElementById("modalBody");
+        var lb_modal_title = document.getElementById("lb_modal_title");
+        var ind01Tbl = null;
+        var ind02Tbl = null;
+        var gp1_indQty = 2                      // 1-я группа. количество индикаторов
+        var gp1_indResultRecieved = 2           // 1-я группа. должен быть равен числу индикаторов
+        var gp2_indQty = 8
+        var gp2_indResultRecieved = 8
+        var gp3_indQty = 4
+        var gp3_indResultRecieved = 4
+        var valuesArr = new Array(15)            // на 1 больше общего числа индикаторов (для удобства в 0 элемент пишется текущая дата)
+        gp1_getParams();
+        gp2_getParams();
+        gp3_getParams();
+        var timer1 = setInterval(gp1_getParams, 120000);
+        var timer2 = setInterval(gp2_getParams, 120000);
+        var timer3 = setInterval(gp3_getParams, 120000);
+
+
+        function gp1_getParams() {
+            /* получение списка акций и дат выгрузки*/
+            let list = document.getElementById("dl_cmp");
+            let item = document.createElement('option');
+            while (list.children.length) list.removeChild(list.children[0]);
+            try {
+                $.ajax({
+                    url: '/MamsyMonitor/GetMamsyParams',
+                    data: {},
+                    type: 'POST',
+                    success: function (data) {
+                        let json = JSON.parse(data);
+                        let param1 = json.MamsyParams
+                        if (param1.length > 0) {
+                            for (let i = 0; i < param1.length; i++) {
+                                item.value = param1[i].Code;
+                                list.appendChild(item.cloneNode(true));
+                            }
+                        }
+                        let param2 = json.MamsyParams1;
+                        if (param2.length > 0) {
+                            let selFrom = document.getElementById("sel_fromDateTime");
+                            let selTo = document.getElementById("sel_toDateTime");
+                            let selFromOld = selFrom.value;
+                            let selToOld = selTo.value;
+                            while (selFrom.length > 0) selFrom.remove(0);
+                            while (selTo.length > 0) selTo.remove(0);
+                            item.value = '';
+                            item.text = '';
+                            selFrom.appendChild(item.cloneNode(true));
+                            selTo.appendChild(item.cloneNode(true));
+                            for (let i = 0; i < param2.length; i++) {
+                                item.value = param2[i].Date;
+                                item.text = dateFormat(param2[i].Date, 'yyyy.mm.dd HH:MM');
+                                selFrom.appendChild(item.cloneNode(true));
+                                selTo.appendChild(item.cloneNode(true));
+                            }
+                            selFrom.value = selFromOld;
+                            selTo.value = selToOld;
+                        }
+                        if (gp1_indResultRecieved >= gp1_indQty) gp1_getIndicatorsValues();
+                    }
+                });
+            }
+            catch (e) {
+                alert('Ошибка ' + e.name + ":" + e.message + "\n" + e.stack);
+            }
+        }
+
+        function gp1_getIndicatorsValues() {
+            gp1_indResultRecieved = 0;
+            let inp_block01_cmp = document.getElementById("inp_block01_cmp");
+            let param_cmp = inp_block01_cmp.value;
+            let param_fromDate = document.getElementById("inp_block01_fromDate").value;
+            let param_toDate = document.getElementById("inp_block01_toDate").value;
+            let param_fromDateSel = document.getElementById("sel_fromDateTime").value;
+            let param_toDateSel = document.getElementById("sel_toDateTime").value;
+            let param_onlyErrors = document.getElementById("inp_onlyErrors").checked ? 1 : 0;
+            let fromDateTime = null;
+            let toDateTime = null;
+            if (param_fromDateSel == '') fromDateTime = param_fromDate;
+            else fromDateTime = param_fromDateSel;
+            if (param_toDateSel == '') toDateTime = param_toDate;
+            else toDateTime = param_toDateSel;
+            inp_block01_cmp.blur();
+            gp1_getIndicatorsValuesById(1, param_cmp, fromDateTime, toDateTime, param_onlyErrors);
+            gp1_getIndicatorsValuesById(2, param_cmp, fromDateTime, toDateTime, param_onlyErrors);
+        }
+
+        function gp1_getIndicatorsValuesById(indId, param_cmp, fromDateTime, toDateTime, param_onlyErrors) {
+            /* получение значений индикаторов */
+            document.getElementById("img_i" + indId + "_load").hidden = false;
+            try {
+                $.ajax({
+                    url: '/MamsyMonitor/GetMamsyMonitoringValues',
+                    data: { cmp: param_cmp, fromDate: fromDateTime, toDate: toDateTime, onlyErrors: param_onlyErrors, indId: indId },
+                    type: 'POST',
+                    success: function (data) {
+                        gp1_indResultRecieved++;
+                        valuesArr[0] = new Date();
+                        valuesArr[indId] = data;
+                        let ds = JSON.parse(data);
+                        if (ds) {
+                            for (let i = 0; i < 2; i++) {
+                                let el = ds.MamsyMonitoringValues[i];
+                                let curV = ds["MamsyMonitoringValues" + (i + 1)].length;
+                                setIndicatorProperties(el.indId, el.greenV, el.yellowV, el.redV, curV, indId);
+                            }
+                        }
+                    },
+                    error: function () {
+                        document.getElementById("img_i" + indId + "_load").hidden = true;
+                        gp1_indResultRecieved++;
+                    }
+                });
+            }
+            catch (e) {
+                alert('Ошибка ' + e.name + ":" + e.message + "\n" + e.stack);
+            }
+        }
+
+        function gp2_getParams() {
+            /* получение значений для 2й группы индикаторов*/
+            if (gp2_indResultRecieved >= gp2_indQty) {
+                gp2_indResultRecieved = 0;
+                for (let a = 1; a <= gp2_indQty; a++) gp2_getParam(a);
+            }
+        }
+
+        function gp3_getParams() {
+            /* получение значений для 3й группы индикаторов*/
+            if (gp3_indResultRecieved >= gp3_indQty) {
+                gp3_indResultRecieved = 0;
+                for (let a = 1; a <= gp3_indQty; a++) gp3_getParam(a);
+            }
+        }
+
+        function gp2_getParam(id) {
+            /* получение значений отдельно для каждого индикатора 2й группы*/ 
+            let indId;
+            let str = "";
+            switch (id) {
+                case 1: indId = 3; str = "статус 01:"; break;
+                case 2: indId = 4; str = "статус 02:"; break;
+                case 3: indId = 5; str = "статус 03:"; break;
+                case 4: indId = 6; str = "статус 04:"; break;
+                case 5: indId = 7; str = "статус 05:"; break;
+                case 6: indId = 8; str = "статусы 10е:"; break;
+                case 7: indId = 9; str = "статусы 20е:"; break;
+                case 8: indId = 10; str = "прочее:"; break;
+            }
+            document.getElementById("img_i" + indId + "_load").hidden = false;
+            try {
+                $.ajax({
+                    url: '/MamsyMonitor/GetMamsyMonitoringValuesState',
+                    data: { monitoringState: id },
+                    type: 'POST',
+                    success: function (data) {
+                        gp2_indResultRecieved++;
+                        valuesArr[indId] = data;
+                        let ds = JSON.parse(data);
+                        if (ds) {
+                            for (let i = 0; i < 2; i++) {
+                                let el = ds.MamsyMonitoringValues[i];
+                                let curV = ds["MamsyMonitoringValues" + (i + 1)].length;
+                                setIndicatorProperties(el.indId, el.greenV, el.yellowV, el.redV, curV, indId, str);
+                            }
+                        }
+                    },
+                    error: function () {
+                        alert('Не удалось получить данные');
+                        document.getElementById("img_i" + indId + "_load").hidden = true;
+                        gp2_indResultRecieved++;
+                    }
+                });
+            }
+            catch (e) {
+                alert('Ошибка ' + e.name + ":" + e.message + "\n" + e.stack);
+            }
+
+        }
+
+        function gp3_getParam(id) {
+            /* получение значений отдельно для каждого индикатора 3й группы*/
+            let indId;
+            let str = "";
+            switch (id) {
+                case 1: indId = 11; break;
+                case 2: indId = 12; break;
+                case 3: indId = 13; break;
+                case 4: indId = 14; break;
+            }
+            document.getElementById("img_i" + indId + "_load").hidden = false;
+            try {
+                $.ajax({
+                    url: '/MamsyMonitor/GetMamsyMonitoringValuesItems',
+                    data: { paramId: id },
+                    type: 'POST',
+                    success: function (data) {
+                        gp3_indResultRecieved++;
+                        valuesArr[indId] = data;
+                        let ds = JSON.parse(data);
+                        if (ds) {
+                            for (let i = 0; i < 2; i++) {
+                                let el = ds.MamsyMonitoringValues[i];
+                                let curV = ds["MamsyMonitoringValues" + (i + 1)].length;
+                                setIndicatorProperties(el.indId, el.greenV, el.yellowV, el.redV, curV, indId, str);
+                            }
+                        }
+                    },
+                    error: function () {
+                        alert('Не удалось получить данные');
+                        document.getElementById("img_i" + indId + "_load").hidden = true;
+                        gp3_indResultRecieved++;
+                    }
+                });
+            }
+            catch (e) {
+                alert('Ошибка ' + e.name + ":" + e.message + "\n" + e.stack);
+            }
+
+        }
+
+        function showIndicatorTable(indId, str) {
+            /* показ связанной таблицы с индикатором*/
+            let json = valuesArr[indId];
+            let tbl = JSON.parse(json).MamsyMonitoringValues1;
+
+            if (tbl.length > 10000) {
+                inHTML = '<div style="display: block; text-align: center;">' +
+                    '<div><label>Результат содержит более 10000 записей.</label><br />' +
+                    '<label>Возможно долгое открытие. Какие дальнейшие действия?</label><br /><br /></div>' +
+                    '<div><button type="button" id="quest_btn_01"><div>Продолжить<img id="img_proceed" hidden src="/images/loading5.gif" width="13" height="13"/></div></button>' +
+                    '<button id="btn_inXLS" type="button"><div>в Excel <img id="img_inXLS_load" hidden src="/images/loading5.gif" width="13" height="13"/></div></button>' +
+                    '<button type="button" onclick="lb_modal.click();">Отмена</button></div></div>';
+                lb_modal_title.innerHTML = '<b>' + str + '<label style="font-size: 24px;" class="lb_modal__close" for="lb_modal"> &times;</label></b>';
+                modalBody.innerHTML = inHTML;
+                document.getElementById("quest_btn_01").onclick = function () {
+                    document.getElementById("img_proceed").hidden = false;
+                    getHtmlFromJson(indId, tbl, str);
+                    lb_modal.click();
+                };
+                document.getElementById("btn_inXLS").onclick = function () { loadExcel(indId); }
+                lb_modal.click();
+            }
+            else if (tbl.length > 0) getHtmlFromJson(indId, tbl, str);
+        }
+
+        function getHtmlFromJson(indId, tbl, str) {
+            /* на входе распаршенный Json вставляем в модальное окно*/
+            if (tbl.length > 0) {
+                let keys = [];
+                let inHTML = '<div style="height: calc(90vH - 24px); overflow: hidden; margin: 0; padding: 0;">'
+                    + '<div style = "height: 32px; line-height: 32px; text-align: right; vertical-align: middle;" class="no-select">'
+                    + '<button id="btn_inXLS" type="button"><div>в Excel <img id="img_inXLS_load" hidden src="/images/loading5.gif" width="13" height="13"/></div></button></div>'
+                    + '<div style="overflow: auto; height: calc(100% - 36px); weight: 100%; border: 1px solid black; padding: 1px;">'
+                    + '<table border = "1" style = "border-collapse: collapse; font-size: 12px;" ondblclick="copyModalBodyInnerText()">'
+                    + '<tr style = "background-color: antiquewhite;">';
+                Object.keys(tbl[0]).forEach(function (el) {
+                    keys.push(el);
+                    inHTML += '<th>' + el + '</th>';
+                });
+                inHTML += '</tr>';
+                tbl.forEach(function (tel) {
+                    inHTML += '<tr>';
+                    for (let a = 0; a < keys.length; a++) {
+                        inHTML += '<td>' + (tel[keys[a]] == null ? '' : tel[keys[a]]) + '</td>';
+                    }
+                    inHTML += '</tr>';
+                });
+                inHTML += '</table></div></div>';
+                modalBody.innerHTML = inHTML;
+                lb_modal_title.innerHTML = '<b>' + str + '<label style="font-size: 24px;" class="lb_modal__close" for="lb_modal"> &times;</label></b>';
+                document.getElementById("btn_inXLS").onclick = function () { loadExcel(indId); }
+                lb_modal.click();
+            }
+        }
+
+        function loadExcel_gp2(indId, hidden = 0) {
+            /* выгрузка в Эксель для 2 группы индикаторов*/
+            if (!hidden) {
+                document.getElementById("img_inXLS_load").hidden = false;
+                document.getElementById("btn_inXLS").disabled = true;
+            }
+            try {
+                $.ajax({
+                    url: '/MamsyMonitor/LoadExcel_gp2',
+                    data: { monitoringState: indId },
+                    type: 'POST',
+                    dataType: 'binary',
+                    xhrFields: { 'responseType': 'blob' },
+                    success: function (data) {
+                        let link = document.createElement('a');
+                        let filename = 'msy' + dateFormat(new Date(), 'yyyymmdd_HHMMss') + '.xlsx';
+                        link.href = URL.createObjectURL(data);
+                        link.download = filename;
+                        link.click();
+                        if (!hidden) {
+                            document.getElementById("img_inXLS_load").hidden = true;
+                            document.getElementById("btn_inXLS").disabled = false;
+                        }
+                    }
+                });
+            }
+            catch (e) {
+                alert('Ошибка ' + e.name + ":" + e.message + "\n" + e.stack);
+                if (!hidden) {
+                    document.getElementById("img_inXLS_load").hidden = true;
+                    document.getElementById("btn_inXLS").disabled = false;
+                }
+            }
+        }
+
+        function loadExcel_gp3(indId, hidden = 0) {
+            /* выгрузка в Эксель для 2 группы индикаторов*/
+            if (!hidden) {
+                document.getElementById("img_inXLS_load").hidden = false;
+                document.getElementById("btn_inXLS").disabled = true;
+            }
+            try {
+                $.ajax({
+                    url: '/MamsyMonitor/LoadExcel_gp3',
+                    data: { paramId: indId },
+                    type: 'POST',
+                    dataType: 'binary',
+                    xhrFields: { 'responseType': 'blob' },
+                    success: function (data) {
+                        let link = document.createElement('a');
+                        let filename = 'msy' + dateFormat(new Date(), 'yyyymmdd_HHMMss') + '.xlsx';
+                        link.href = URL.createObjectURL(data);
+                        link.download = filename;
+                        link.click();
+                        if (!hidden) {
+                            document.getElementById("img_inXLS_load").hidden = true;
+                            document.getElementById("btn_inXLS").disabled = false;
+                        }
+                    }
+                });
+            }
+            catch (e) {
+                alert('Ошибка ' + e.name + ":" + e.message + "\n" + e.stack);
+                if (!hidden) {
+                    document.getElementById("img_inXLS_load").hidden = true;
+                    document.getElementById("btn_inXLS").disabled = false;
+                }
+            }
+        }
+
+        function setIndicatorProperties(indId_str, greenV, yellowV, redV, value, indNum, str = "") {
+            /* установка значений для индикатора*/
+            let el = document.getElementById(indId_str);
+            if (el) {
+                let elChld = el.children[0];
+                if (elChld) {
+                    elChld.children[0].innerText = str == "" ? value : str + ' ' + value;
+                    elChld.style.textAlign = str == "" ? "center" : "left";
+                    if (value > 0) {
+                        if (value > redV) value = redV;
+                        if (value >= redV) elChld.style.backgroundColor = 'lightcoral';
+                        if (value >= yellowV && value < redV) elChld.style.backgroundColor = 'yellow';
+                        if (value >= greenV && value < yellowV) elChld.style.backgroundColor = 'lightgreen';
+                        elChld.style.width = "" + (value / redV * 100) + "%";
+                    }
+                    else {
+                        elChld.style.backgroundColor = 'lightsteelblue';
+                        elChld.style.width = "100%";
+                    }
+                }
+            }
+            document.getElementById("img_i" + indNum + "_load").hidden = true;
+            document.getElementById("lbl_indBlock01").innerText = "Обновлено в " + dateFormat(valuesArr[0], 'HH:MM:ss');
+        }
+
+
+
+        function loadExcel(indId, hidden = 0) {
+            /* в зависимости от группы индикаторов придётся вызывать разные функции*/
+            switch (indId) {
+                case 1: loadExcel_gp1(1, hidden); break;
+                case 2: loadExcel_gp1(2, hidden); break;
+                case 3: loadExcel_gp2(1, hidden); break;
+                case 4: loadExcel_gp2(2, hidden); break;
+                case 5: loadExcel_gp2(3, hidden); break;
+                case 6: loadExcel_gp2(4, hidden); break;
+                case 7: loadExcel_gp2(5, hidden); break;
+                case 8: loadExcel_gp2(6, hidden); break;
+                case 9: loadExcel_gp2(7, hidden); break;
+                case 10: loadExcel_gp2(8, hidden); break;
+                case 11: loadExcel_gp3(1, hidden); break;
+                case 12: loadExcel_gp3(2, hidden); break;
+                case 13: loadExcel_gp3(3, hidden); break;
+                case 14: loadExcel_gp3(4, hidden); break;
+            }
+        }
+
+        function loadExcel_gp1(indId, hidden = 0) {
+            /* выгрузка в Эксель для 1 группы индикаторов*/
+            if (!hidden) {
+                document.getElementById("img_inXLS_load").hidden = false;
+                document.getElementById("btn_inXLS").disabled = true;
+            }
+            let inp_block01_cmp = document.getElementById("inp_block01_cmp");
+            let param_cmp = inp_block01_cmp.value;
+            let param_fromDate = document.getElementById("inp_block01_fromDate").value;
+            let param_toDate = document.getElementById("inp_block01_toDate").value;
+            let param_fromDateSel = document.getElementById("sel_fromDateTime").value;
+            let param_toDateSel = document.getElementById("sel_toDateTime").value;
+            let param_onlyErrors = document.getElementById("inp_onlyErrors").checked ? 1 : 0;
+            let fromDateTime = null;
+            let toDateTime = null;
+            if (param_fromDateSel == '') fromDateTime = param_fromDate;
+            else fromDateTime = param_fromDateSel;
+            if (param_toDateSel == '') toDateTime = param_toDate;
+            else toDateTime = param_toDateSel;
+            try {
+                $.ajax({
+                    url: '/MamsyMonitor/LoadExcel_gp1',
+                    data: { cmp: param_cmp, fromDate: fromDateTime, toDate: toDateTime, onlyErrors: param_onlyErrors, indId: indId },
+                    type: 'POST',
+                    dataType: 'binary',
+                    xhrFields: { 'responseType': 'blob' },
+                    success: function (data) {
+                        let link = document.createElement('a');
+                        let filename = 'msy' + dateFormat(new Date(), 'yyyymmdd_HHMMss') + '.xlsx';
+                        link.href = URL.createObjectURL(data);
+                        link.download = filename;
+                        link.click();
+                        if (!hidden) {
+                            document.getElementById("img_inXLS_load").hidden = true;
+                            document.getElementById("btn_inXLS").disabled = false;
+                        }
+                    }
+                });
+            }
+            catch (e) {
+                alert('Ошибка ' + e.name + ":" + e.message + "\n" + e.stack);
+                if (!hidden) {
+                    document.getElementById("img_inXLS_load").hidden = true;
+                    document.getElementById("btn_inXLS").disabled = false;
+                }
+            }
+        }
+
+        function copyModalBodyInnerText() {
+            /* если внутри модального окна таблица, то копируем её*/
+            if (modalBody.getElementsByTagName("TABLE").length > 0) {
+                navigator.clipboard.writeText(modalBody.getElementsByTagName("TABLE")[0].innerText);
+                alert("В буфер скопировано содержимое окна");
+            }
+        }
+
+    </script>
+</body>
+</html>

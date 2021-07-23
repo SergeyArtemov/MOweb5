@@ -1,0 +1,16 @@
+﻿<nav id="outletListMenu">
+    <ul class="event-menu__items">
+        @if (ViewData["OutletList"] != null)
+        {
+            System.Data.DataSet dataSet = (System.Data.DataSet)ViewData["OutletList"];
+            for (int rw = 0; rw < dataSet.Tables["OutletList"].Rows.Count; rw++)
+            {
+                var funcstr = "getNameAndPriceOfAgent(" + dataSet.Tables["OutletList"].Rows[rw].ItemArray[14] + ")";
+                <li class="event-menu__item" onclick="@funcstr">
+                    <label hidden>@dataSet.Tables["OutletList"].Rows[rw].ItemArray[14]</label>
+                    @dataSet.Tables["OutletList"].Rows[rw].ItemArray[12]
+                </li>
+            }
+        }
+    </ul>
+</nav>

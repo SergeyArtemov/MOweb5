@@ -1,0 +1,81 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+@model IEnumerable<Orders.Order>
+@{
+
+    <!--Layout = null;-->
+    Layout = "_Layout";
+}
+<!DOCTYPE html>
+
+<html>
+<head>
+
+</head>
+<body>
+
+
+    <div class="container-fluid">
+        <form method="post">
+            <input type="number" /><br />
+            <input type="number" /><br />
+            <input type="submit" value="Отправить" />
+        </form>
+    </div>
+    <h3>Заказы</h3>
+    <table border="1" cellspacing="0">
+        <tr>
+            <td>Имя</td>
+            <td>Фамилия</td>
+            <td>Заказ</td>
+            <td>Хост</td>
+        </tr>
+        @foreach (var order in Model)
+        {
+            <tr>
+                <td>@order.Customer.Name</td>
+                <td>@order.Customer.Surname</td>
+                <td>@order.OrderNo</td>
+                <td>@order.Host</td>
+                <td><button onclick="location.href = '@Url.Action("ShowOrderHost")' + '?' + 'OrderNo=@order.OrderNo'+ '&Host=@order.Host'">@order.OrderNo</button></td>
+                <td><button onclick="location.href = '@Url.Action("ShowId")'+ '?' + 'id=@order.OrderNo.ToString()'+'-'+ '@order.Host.ToString()'">ShowId</button></td>
+                <td><button class="btn btn-lg btn-success" data-toggle="modal" data-target="#basicModal">Click to open Modal</button></td>
+            </tr>
+        }
+    </table>
+
+    <br />
+    <br />
+
+
+    <label>Телефор</label>
+    <input type="text" id="TelPhone" name="TelPhone" value="79057881444" />
+    <br />
+    <br />
+
+    <label>Линия</label>
+    <input type="text" id="Line" name="Line" value="57393309" />
+
+    <br />
+    <br />
+
+
+    <button onclick="showOnOk1()"> 45666635</button>
+
+    <script>
+        function showOnOk1() {
+            var TP = document.getElementById('TelPhone');
+            var LN = document.getElementById('Line');
+
+            the_call(TP.value, LN.value)
+        }
+    </script>
+
+
+
+
+
+</body>
+</html >
